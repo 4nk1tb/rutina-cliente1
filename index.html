@@ -4,234 +4,389 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="icon-180.png">
-  <title>Rutina Fuerza + Hipertrofia — 5 días</title>
-  <meta name="theme-color" content="#0f0f12" />
+  <title>Rutina de Entrenamiento</title>
+  <meta name="theme-color" content="#1A1A1C" />
+  <!-- Nueva Fuente: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#0f0f12; --elev:#17171c; --card:#1f2026; --ink:#e8ecf1; --muted:#a9b0bc;
-      --brand:#7bdcff; --brand-2:#a3ff85; --warn:#ffba53; --accent:#b495ff; --danger:#ff6b6b;
-      --ok:#72e6a6; --line:#2a2c36; --halo:0 10px 30px rgba(0,0,0,.55);
-      --radius:14px; --radius-sm:10px; --shadow:0 8px 24px rgba(0,0,0,.35);
-      --font: ui-sans-serif, -apple-system, Segoe UI, Roboto, Inter, "SF Pro Text", system-ui, Arial, sans-serif;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    /*
+     * RE-DISEÑO ELEGANTE Y DINÁMICO v2
+     * Author: Gemini
+     * Focus: Profundidad (3D), tipografía premium, animaciones sutiles.
+    */
+    :root {
+      --bg: #1A1A1C;
+      --bg-noise: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.05"/></svg>');
+      --elev: #28282A;
+      --elev-2: #363638;
+      --ink: #F5F5F7;
+      --muted: #8A8A8E;
+      --line: #3A3A3C;
+      --brand: #FDB813;
+      --ok: #34C759;
+      --warn: #FF9500;
+      --danger: #FF3B30;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      /* Sombras con efecto de profundidad */
+      --shadow-lifted: 0 1px 2px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.3);
+      --shadow-pressed: inset 0 2px 4px rgba(0,0,0,0.5);
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --mono: "SF Mono", "Menlo", "Consolas", monospace;
+      color-scheme: dark;
     }
-    *{box-sizing:border-box} html,body{height:100%}
-    body{margin:0;background:linear-gradient(180deg,#0f0f12,#0b0b0e);color:var(--ink);font:15px/1.4 var(--font);-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
-    header{
-      position:sticky;top:0;z-index:50;backdrop-filter:saturate(1.2) blur(10px);
-      background:rgba(15,15,18,.75);border-bottom:1px solid var(--line)
+    
+    * { box-sizing: border-box; }
+    
+    html, body { height: 100%; }
+    
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      background-image: var(--bg-noise);
+      color: var(--ink);
+      font: 16px/1.6 var(--font);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    .wrap{max-width:1080px;margin:0 auto;padding:18px 16px}
-    .title{display:flex;align-items:center;gap:12px}
-    .badge{padding:6px 10px;border-radius:999px;background:linear-gradient(135deg,var(--brand),var(--accent));color:#061014;font-weight:700;font-size:12px}
-    h1{font-size:20px;margin:0}
-    .subtitle{color:var(--muted);font-size:13px;margin-top:6px}
-    .quick{
-      display:grid;grid-template-columns:1fr auto auto;gap:10px;margin-top:14px;align-items:center
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem;
     }
-    .day-tabs{
-      display:grid;grid-template-columns:repeat(6,1fr);gap:8px
+
+    /* --- Cabecera --- */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: saturate(1.5) blur(20px);
+      -webkit-backdrop-filter: saturate(1.5) blur(20px);
+      background: rgba(26, 26, 28, 0.75);
+      border-bottom: 1px solid var(--line);
     }
-    .tab{padding:10px 8px;border-radius:10px;background:var(--elev);border:1px solid var(--line);
-      text-align:center;color:var(--ink);cursor:pointer;user-select:none;transition:.2s}
-    .tab.active{outline:2px solid var(--brand);box-shadow:0 0 0 6px rgba(123,220,255,.08) inset}
-    .actions{display:flex;gap:8px}
-    .btn{
-      padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--elev);
-      color:var(--ink);cursor:pointer;font-weight:600;transition:.2s
+    .header-content { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+    .title { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .logo { height: 36px; width: auto; }
+    h1 { font-size: 1.25rem; margin: 0; font-weight: 700; }
+    .subtitle { color: var(--muted); font-size: 0.9rem; margin: 0; }
+
+    /* --- Pestañas de Días --- */
+    .day-tabs-container { margin-top: 1rem; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .day-tabs-container::-webkit-scrollbar { display: none; }
+    .day-tabs { display: flex; gap: 0.75rem; padding-bottom: 0.5rem; }
+    .tab {
+      position: relative;
+      overflow: hidden;
+      flex: 0 0 auto;
+      padding: 0.6rem 1rem;
+      border-radius: var(--radius-md);
+      background: var(--elev);
+      border: 1px solid var(--line);
+      text-align: center;
+      color: var(--muted);
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease-out;
+      white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-    .btn:hover{filter:brightness(1.08)}
-    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
-    @media (max-width:900px){.grid{grid-template-columns:1fr}}
-    .card{
-      background:linear-gradient(180deg,#1b1c22,#17171c);border:1px solid var(--line);
-      border-radius:var(--radius);box-shadow:var(--shadow);padding:16px
+    .tab:hover { transform: translateY(-2px); background: var(--elev-2); color: var(--ink); }
+    .tab.active { background: var(--brand); color: #1A1A1C; border-color: transparent; font-weight: 700; }
+    .tab.today { border-color: var(--brand); }
+    
+    .progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background-color: var(--brand);
+      width: 0%;
+      transition: width 0.4s ease-out;
+      border-radius: 0 0 var(--radius-md) var(--radius-md);
     }
-    h2{margin:0 0 10px;font-size:18px}
-    h3{margin:18px 0 8px;font-size:15px;color:var(--brand)}
-    .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);
-      border-radius:999px;background:var(--elev);color:var(--muted);font-weight:600;font-size:12px}
-    .plan-note{margin:10px 0;color:var(--muted);font-size:13px}
-    .exercise{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--card)}
-    .head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap: wrap;}
-    .name{font-weight:800;font-size:16px}
-    .meta{display:flex;gap:8px;flex-wrap:wrap}
-    .pill{padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px;color:#091015}
-    .p-rir{background:linear-gradient(135deg,var(--warn),#ffd37f)}
-    .p-rep{background:linear-gradient(135deg,var(--brand-2),#e0ffcf)}
-    .p-rest{background:linear-gradient(135deg,var(--b2b7ff),#d4ccff)}
-    .sets{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px}
-    @media (max-width:520px){.sets{grid-template-columns:repeat(3,1fr)}}
-    .set{
-      padding:10px;border-radius:10px;border:1px dashed var(--line);text-align:center;
-      cursor:pointer;user-select:none;background:#191a20
+    
+    /* --- Acciones y Layout Principal --- */
+    .actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
+    .btn {
+      padding: 0.6rem 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: var(--elev);
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease-out;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-    .set.done{background:linear-gradient(180deg,#152018,#0e1711);border-color:#1d3525}
-    .set small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
-    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
-    .timer{
-      display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);
-      padding:8px 10px;border-radius:10px;background:#14161b;font-variant-numeric:tabular-nums
+    .btn:hover { transform: translateY(-2px); filter: brightness(1.15); border-color: var(--muted); }
+    
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+    
+    /* --- Contenido Principal y Tarjetas --- */
+    .card {
+      background-image: linear-gradient(180deg, var(--elev), #242426);
+      border: 1px solid var(--line);
+      border-top-color: #48484A; /* Borde superior brillante para efecto 3D */
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lifted);
+      /* Animación de entrada */
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 0.5s ease-out forwards;
     }
-    .timer b{font-family:var(--mono);font-size:14px}
-    .alt{margin-top:8px;color:var(--muted);font-size:12px}
-    details{border:1px solid var(--line);border-radius:12px;padding:10px;background:#16171d;margin-top:10px}
-    details summary{cursor:pointer;font-weight:700}
-    /* right column */
-    .sticky{position:sticky;top:86px}
-    .panel{display:grid;gap:12px}
-    textarea{
-      width:100%;min-height:100px;background:#14161b;color:var(--ink);border:1px solid var(--line);
-      border-radius:10px;padding:10px;font-family:var(--mono)
+    /* Animación de entrada */
+    @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+    .day { display: none; }
+    h2 { margin: 0 0 1.5rem; font-size: 1.3rem; font-weight: 700; }
+
+    /* --- Ejercicios --- */
+    .exercise {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: var(--bg);
     }
-    .legend{display:flex;gap:8px;flex-wrap:wrap}
-    .legend .chip b{color:var(--ink)}
-    .footer{color:var(--muted);font-size:12px;opacity:.9}
-    .small{font-size:12px;color:var(--muted)}
-    .today{outline:2px solid var(--accent);box-shadow:0 0 0 6px rgba(180,149,255,.08) inset}
-    .ghost{opacity:.7; pointer-events: none;}
+    .exercise:last-child { margin-bottom: 0; }
+    .head { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+    .name { font-weight: 700; font-size: 1.1rem; }
+    .meta { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .pill {
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: var(--bg);
+    }
+    .p-rir { background: var(--warn); }
+    .p-rep { background: var(--ok); }
+    .p-rest { background: var(--muted); color: var(--ink); }
+
+    /* --- Series --- */
+    .sets { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.75rem; }
+    .set {
+      aspect-ratio: 1 / 1;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      text-align: center; cursor: pointer; user-select: none;
+      background-image: linear-gradient(180deg, var(--elev), #242426);
+      font-weight: 600;
+      transition: all 0.2s ease-out;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .set:hover { transform: translateY(-3px); }
+    .set.done { background: var(--brand); color: #1A1A1C; border-color: transparent; box-shadow: var(--shadow-pressed); }
+    .set small { font-size: 0.7rem; color: var(--muted); margin-top: 0.25rem; transition: color 0.2s ease-out; }
+    .set.done small { color: #1A1A1C; opacity: 0.8; }
+
+    .row { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
+    .timer {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      border: 1px solid var(--line);
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-sm);
+      background: var(--elev);
+    }
+    .timer b { font-family: var(--mono); font-size: 1rem; }
+    
+    /* --- Panel Lateral y Footer --- */
+    .sticky { position: sticky; top: 110px; }
+    .panel { display: grid; gap: 1.5rem; }
+    textarea {
+      width: 100%; min-height: 120px; background: var(--bg); color: var(--ink);
+      border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem;
+      font-family: var(--font); font-size: 1rem;
+    }
+    .footer { color: var(--muted); font-size: 0.8rem; opacity: .8; text-align: center; margin-top: 1rem; }
+    
+    /* ------------------------------------------- */
+    /* --- MEDIA QUERIES PARA PANTALLAS GRANDES --- */
+    /* ------------------------------------------- */
+    @media (min-width: 600px) {
+      .wrap { padding: 2rem; }
+      .header-content { padding: 1rem 2rem; }
+      .head { flex-direction: row; justify-content: space-between; align-items: center; }
+    }
+
+    @media (min-width: 900px) {
+      .wrap { padding: 3rem 2rem; }
+      .grid { grid-template-columns: 1fr 0.6fr; }
+      .day-tabs-container { overflow-x: visible; }
+      .day-tabs { display: grid; grid-template-columns: repeat(6, 1fr); }
+      .quick-actions { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; }
+    }
   </style>
 </head>
 <body>
+
 <header>
-  <div class="wrap">
+  <div class="header-content">
     <div class="title">
-      <span class="badge">Fuerza + Hipertrofia — 5 días</span>
-      <h1>Plan personalizado: pérdida de grasa + fuerza</h1>
+      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAJgAmADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAn/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAABgj/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwD2gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA," alt="Logo" class="logo">
+      <div>
+        <h1>Rutina Personalizada</h1>
+        <div class="subtitle">Plan de Fuerza + Hipertrofia</div>
+      </div>
     </div>
-    <div class="subtitle">Usuario: 115&nbsp;kg · 1.68&nbsp;m · Objetivo 6 meses · Prioridad: Pérdida 5/5 · Fuerza 4/5 · Piernas/Glúteos 3/5</div>
-    <div class="quick">
+    <div class="day-tabs-container">
       <div class="day-tabs" id="tabs">
-        <div class="tab" data-day="0">L • Piernas</div>
-        <div class="tab" data-day="1">M • Torso A</div>
-        <div class="tab" data-day="2">X • Glúteo/Fem.</div>
-        <div class="tab" data-day="3">J • Torso B</div>
-        <div class="tab" data-day="4">V • Piernas Full</div>
-        <div class="tab" data-day="5">S/D • Descanso</div>
+        <div class="tab" data-day="0">
+          <span>Lunes • Piernas</span>
+          <div class="progress-bar"></div>
+        </div>
+        <div class="tab" data-day="1">
+          <span>Martes • Torso A</span>
+          <div class="progress-bar"></div>
+        </div>
+        <div class="tab" data-day="2">
+          <span>Miércoles • Glúteo/Fem.</span>
+          <div class="progress-bar"></div>
+        </div>
+        <div class="tab" data-day="3">
+          <span>Jueves • Torso B</span>
+          <div class="progress-bar"></div>
+        </div>
+        <div class="tab" data-day="4">
+          <span>Viernes • Piernas Full</span>
+          <div class="progress-bar"></div>
+        </div>
+        <div class="tab" data-day="5">
+          <span>S/D • Descanso</span>
+          <div class="progress-bar"></div>
+        </div>
       </div>
-      <div class="actions">
-        <button class="btn" id="toggleTheme">🌗 Tema</button>
-        <button class="btn" id="resetDay">↺ Reset día</button>
-      </div>
-      <div class="chip">RIR general: <b>2–3</b></div>
+    </div>
+    <div class="quick-actions">
+        <div class="actions">
+            <button class="btn" id="toggleTheme">🌗 Tema</button>
+            <button class="btn" id="resetDay">↺ Reset día</button>
+        </div>
     </div>
   </div>
 </header>
 
 <main class="wrap grid">
-  <!-- LEFT: WORKOUTS -->
+  <!-- COLUMNA IZQUIERDA: ENTRENAMIENTOS -->
   <section id="workouts">
+    <!-- Los días se renderizan aquí. La estructura interna no cambia. -->
     <!-- Día 1 – Piernas (énfasis cuádriceps) -->
-    <article class="card day" data-day="0">
-      <h2>Día 1 – Piernas (énfasis cuádriceps)</h2>
-      <div class="exercise" data-ex="prensa45">
-        <div class="head">
-          <div class="name">Prensa 45°</div>
-          <div class="meta"><span class="pill p-rep">4×6–8</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">2–3′</span></div>
+    <article class="card day" data-day="0" style="animation-delay: 0.1s;">
+        <h2>Día 1 – Piernas (énfasis cuádriceps)</h2>
+        <div class="exercise" data-ex="prensa45">
+            <div class="head">
+                <div class="name">Prensa 45°</div>
+                <div class="meta"><span class="pill p-rep">4×6–8</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">2–3′</span></div>
+            </div>
+            <div class="sets" data-default="4"></div>
+            <div class="row"><div class="timer" data-min="2" data-max="3"><b>02:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
-        <div class="sets" data-default="4"></div>
-        <div class="row"><div class="timer" data-min="2" data-max="3"><b>02:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-      </div>
-      <div class="exercise" data-ex="goblet">
-        <div class="head">
-          <div class="name">Sentadilla goblet o hack squat</div>
-          <div class="meta"><span class="pill p-rep">3×8–10</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">90–120″</span></div>
+        <div class="exercise" data-ex="goblet">
+            <div class="head">
+                <div class="name">Sentadilla goblet o hack</div>
+                <div class="meta"><span class="pill p-rep">3×8–10</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">90–120″</span></div>
+            </div>
+            <div class="sets" data-default="3"></div>
+            <div class="row"><div class="timer" data-min="1.5" data-max="2"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
-        <div class="sets" data-default="3"></div>
-        <div class="row"><div class="timer" data-min="1.5" data-max="2"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-      </div>
-      <div class="exercise" data-ex="zancadas">
-        <div class="head">
-          <div class="name">Zancadas caminando con mancuernas</div>
-          <div class="meta"><span class="pill p-rep">3×10–12/lado</span><span class="pill p-rir">RIR 2–3</span><span class="pill p-rest">90″</span></div>
+        <div class="exercise" data-ex="zancadas">
+            <div class="head">
+                <div class="name">Zancadas caminando</div>
+                <div class="meta"><span class="pill p-rep">3×10–12/lado</span><span class="pill p-rir">RIR 2–3</span><span class="pill p-rest">90″</span></div>
+            </div>
+            <div class="sets" data-default="3"></div>
+            <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
-        <div class="sets" data-default="3"></div>
-        <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-      </div>
-      <div class="exercise" data-ex="ext-cuad">
-        <div class="head">
-          <div class="name">Extensión de cuádriceps</div>
-          <div class="meta"><span class="pill p-rep">3×12–15</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">60–90″</span></div>
+        <div class="exercise" data-ex="ext-cuad">
+            <div class="head">
+                <div class="name">Extensión de cuádriceps</div>
+                <div class="meta"><span class="pill p-rep">3×12–15</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">60–90″</span></div>
+            </div>
+            <div class="sets" data-default="3"></div>
+            <div class="row"><div class="timer" data-min="1" data-max="1.5"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
-        <div class="sets" data-default="3"></div>
-        <div class="row"><div class="timer" data-min="1" data-max="1.5"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-      </div>
-      <div class="exercise" data-ex="talones">
-        <div class="head">
-          <div class="name">Elevación de talones en prensa</div>
-          <div class="meta"><span class="pill p-rep">4×10–12</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">60″</span></div>
+        <div class="exercise" data-ex="talones">
+            <div class="head">
+                <div class="name">Elevación de talones</div>
+                <div class="meta"><span class="pill p-rep">4×10–12</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">60″</span></div>
+            </div>
+            <div class="sets" data-default="4"></div>
+            <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
-        <div class="sets" data-default="4"></div>
-        <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-      </div>
-       <div class="exercise" data-ex="core1">
-        <div class="head">
-          <div class="name">Plancha + hollow body</div>
-          <div class="meta"><span class="pill p-rep">3×30–40 s</span><span class="pill p-rir">Al fallo</span><span class="pill p-rest">60″</span></div>
+        <div class="exercise" data-ex="core1">
+            <div class="head">
+                <div class="name">Plancha + hollow body</div>
+                <div class="meta"><span class="pill p-rep">3×30–40 s</span><span class="pill p-rir">Al fallo</span><span class="pill p-rest">60″</span></div>
+            </div>
+            <div class="sets" data-default="3"></div>
+            <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
-        <div class="sets" data-default="3"></div>
-        <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-      </div>
     </article>
-
     <!-- Día 2 – Torso A (empuje/tirón) -->
-    <article class="card day" data-day="1">
-      <h2>Día 2 – Torso A (empuje/tirón)</h2>
-      <div class="exercise" data-ex="pressbanca">
-        <div class="head">
-          <div class="name">Press banca en máquina o mancuernas</div>
-          <div class="meta"><span class="pill p-rep">4×6–8</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">2–3′</span></div>
+    <article class="card day" data-day="1" style="animation-delay: 0.1s;">
+        <h2>Día 2 – Torso A (empuje/tirón)</h2>
+        <div class="exercise" data-ex="pressbanca">
+            <div class="head">
+                <div class="name">Press banca</div>
+                <div class="meta"><span class="pill p-rep">4×6–8</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">2–3′</span></div>
+            </div>
+            <div class="sets" data-default="4"></div>
+            <div class="row"><div class="timer" data-min="2" data-max="3"><b>02:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
-        <div class="sets" data-default="4"></div>
-        <div class="row"><div class="timer" data-min="2" data-max="3"><b>02:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-      </div>
-      <div class="exercise" data-ex="remo-pecho">
-        <div class="head">
-          <div class="name">Remo pecho apoyado (chest-supported)</div>
-          <div class="meta"><span class="pill p-rep">4×8–10</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">90–120″</span></div>
+        <div class="exercise" data-ex="remo-pecho">
+            <div class="head">
+                <div class="name">Remo pecho apoyado</div>
+                <div class="meta"><span class="pill p-rep">4×8–10</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">90–120″</span></div>
+            </div>
+            <div class="sets" data-default="4"></div>
+            <div class="row"><div class="timer" data-min="1.5" data-max="2"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
-        <div class="sets" data-default="4"></div>
-        <div class="row"><div class="timer" data-min="1.5" data-max="2"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-      </div>
-      <div class="exercise" data-ex="jalon-pecho">
-        <div class="head">
-          <div class="name">Jalón al pecho</div>
-          <div class="meta"><span class="pill p-rep">3×8–10</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">90″</span></div>
+        <div class="exercise" data-ex="jalon-pecho">
+            <div class="head">
+                <div class="name">Jalón al pecho</div>
+                <div class="meta"><span class="pill p-rep">3×8–10</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">90″</span></div>
+            </div>
+            <div class="sets" data-default="3"></div>
+            <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
-        <div class="sets" data-default="3"></div>
-        <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-      </div>
-      <div class="exercise" data-ex="press-inc">
-        <div class="head">
-          <div class="name">Press inclinado mancuernas</div>
-          <div class="meta"><span class="pill p-rep">3×10–12</span><span class="pill p-rir">RIR 2–3</span><span class="pill p-rest">90″</span></div>
+        <div class="exercise" data-ex="press-inc">
+            <div class="head">
+                <div class="name">Press inclinado</div>
+                <div class="meta"><span class="pill p-rep">3×10–12</span><span class="pill p-rir">RIR 2–3</span><span class="pill p-rest">90″</span></div>
+            </div>
+            <div class="sets" data-default="3"></div>
+            <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
-        <div class="sets" data-default="3"></div>
-        <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-      </div>
-      <div class="exercise" data-ex="laterales">
-        <div class="head">
-          <div class="name">Elevaciones laterales</div>
-          <div class="meta"><span class="pill p-rep">3×12–15</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">60″</span></div>
+        <div class="exercise" data-ex="laterales">
+            <div class="head">
+                <div class="name">Elevaciones laterales</div>
+                <div class="meta"><span class="pill p-rep">3×12–15</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">60″</span></div>
+            </div>
+            <div class="sets" data-default="3"></div>
+            <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
-        <div class="sets" data-default="3"></div>
-        <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-      </div>
-      <div class="exercise" data-ex="superserie1">
-        <div class="head">
-          <div class="name">Superserie: curl bíceps + jalón tríceps</div>
-          <div class="meta"><span class="pill p-rep">3×12–15 c/u</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">90″</span></div>
+        <div class="exercise" data-ex="superserie1">
+            <div class="head">
+                <div class="name">SS: curl bíceps + jalón tríceps</div>
+                <div class="meta"><span class="pill p-rep">3×12–15 c/u</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">90″</span></div>
+            </div>
+            <div class="sets" data-default="3"></div>
+            <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
-        <div class="sets" data-default="3"></div>
-        <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-      </div>
     </article>
-
     <!-- Día 3 – Glúteos/Isquios (bisagra) -->
-    <article class="card day" data-day="2">
-        <h2>Día 3 – Glúteos/Isquios (bisagra)</h2>
+    <article class="card day" data-day="2" style="animation-delay: 0.1s;">
+        <h2>Día 3 – Glúteos/Isquios</h2>
         <div class="exercise" data-ex="hipthrust">
             <div class="head">
                 <div class="name">Hip thrust con barra</div>
@@ -281,13 +436,12 @@
             <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
     </article>
-
     <!-- Día 4 – Torso B (hombro/espalda/pecho) -->
-    <article class="card day" data-day="3">
-        <h2>Día 4 – Torso B (hombro/espalda/pecho)</h2>
+    <article class="card day" data-day="3" style="animation-delay: 0.1s;">
+        <h2>Día 4 – Torso B</h2>
         <div class="exercise" data-ex="militar">
             <div class="head">
-                <div class="name">Press militar (barra o máquina)</div>
+                <div class="name">Press militar</div>
                 <div class="meta"><span class="pill p-rep">4×5–7</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">2–3′</span></div>
             </div>
             <div class="sets" data-default="4"></div>
@@ -295,7 +449,7 @@
         </div>
         <div class="exercise" data-ex="remo-neutro">
             <div class="head">
-                <div class="name">Remo en máquina agarre neutro</div>
+                <div class="name">Remo agarre neutro</div>
                 <div class="meta"><span class="pill p-rep">4×8–10</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">90–120″</span></div>
             </div>
             <div class="sets" data-default="4"></div>
@@ -311,7 +465,7 @@
         </div>
         <div class="exercise" data-ex="press-conv">
             <div class="head">
-                <div class="name">Press en máquina convergente</div>
+                <div class="name">Press convergente</div>
                 <div class="meta"><span class="pill p-rep">3×10–12</span><span class="pill p-rir">RIR 2–3</span><span class="pill p-rest">90″</span></div>
             </div>
             <div class="sets" data-default="3"></div>
@@ -327,20 +481,19 @@
         </div>
         <div class="exercise" data-ex="superserie2">
             <div class="head">
-                <div class="name">Curl inclinado + fondos en máquina</div>
+                <div class="name">SS: Curl inclinado + fondos</div>
                 <div class="meta"><span class="pill p-rep">3×10–12 c/u</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">90″</span></div>
             </div>
             <div class="sets" data-default="3"></div>
             <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
     </article>
-
     <!-- Día 5 – Piernas full (mixto + acondicionamiento) -->
-    <article class="card day" data-day="4">
-        <h2>Día 5 – Piernas full (mixto + acondicionamiento)</h2>
+    <article class="card day" data-day="4" style="animation-delay: 0.1s;">
+        <h2>Día 5 – Piernas full</h2>
         <div class="exercise" data-ex="box-squat">
             <div class="head">
-                <div class="name">Sentadilla a caja (box squat)</div>
+                <div class="name">Sentadilla a caja</div>
                 <div class="meta"><span class="pill p-rep">4×5–6</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">2–3′</span></div>
             </div>
             <div class="sets" data-default="4"></div>
@@ -348,11 +501,10 @@
         </div>
         <div class="exercise" data-ex="buenos-dias">
             <div class="head">
-                <div class="name">Buenos días con barra ligera</div>
+                <div class="name">Buenos días con barra</div>
                 <div class="meta"><span class="pill p-rep">3×8–10</span><span class="pill p-rir">RIR 2–3</span><span class="pill p-rest">90″</span></div>
             </div>
             <div class="sets" data-default="3"></div>
-            <div class="alt">Alternativa: hip hinge con mancuerna.</div>
             <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
         </div>
         <div class="exercise" data-ex="step-ups">
@@ -383,66 +535,40 @@
             <div class="head">
                 <div class="name">Acondicionamiento (opcional)</div>
             </div>
-            <p class="plan-note">Trineo/prowler o bici: 8–12 min en intervalos (20” fuerte / 100” suave).</p>
+            <p style="color: var(--muted); margin: 0;">Trineo/prowler o bici: 8–12 min en intervalos.</p>
         </div>
     </article>
-
     <!-- Descanso -->
-    <article class="card day" data-day="5">
-      <h2>Sábado/Domingo · Descanso</h2>
-      <p class="plan-note">Descanso activo: paseo ligero, movilidad suave. El objetivo es recuperar bien para la próxima semana.</p>
+    <article class="card day" data-day="5" style="animation-delay: 0.1s;">
+        <h2>Descanso Activo</h2>
+        <p style="color: var(--muted); margin: 0;">Paseo ligero, movilidad suave. El objetivo es recuperar bien para la próxima semana.</p>
     </article>
   </section>
 
-  <!-- RIGHT: PANELS -->
+  <!-- COLUMNA DERECHA: PANELES -->
   <aside class="panel sticky">
-    <section class="card">
-      <h2>Progresión del Mesociclo</h2>
-      <ul class="small">
-        <li><b>Sem 1–2:</b> volumen base (RIR ~3→2).</li>
-        <li><b>Sem 3:</b> sube intensidad, últimas series clave a <b>RIR 1</b>.</li>
-        <li><b>Sem 5:</b> si todo fluye, añade <b>+1 serie</b> a cuádriceps/hip thrust.</li>
-        <li><b>Sem 6 (Deload):</b> reduce volumen <b>40–50%</b> y sube RIR +1–2.</li>
-      </ul>
-      <div class="row">
-        <label class="chip">Semana actual:
-          <select id="week" style="background:#121319;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin-left:6px">
-            <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6 · Deload</option>
-          </select>
-        </label>
-        <span class="chip" id="weekHint">Sigue el plan base.</span>
-      </div>
+    <section class="card" style="animation-delay: 0.2s;">
+        <h2>Progresión</h2>
+        <div class="row">
+            <label style="color: var(--muted); font-weight: 500;">Semana actual:</label>
+            <select id="week" style="background: var(--elev-2); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.5rem;">
+                <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6 · Deload</option>
+            </select>
+        </div>
+        <p id="weekHint" style="margin-top: 1rem; color: var(--muted);"></p>
     </section>
-
-    <section class="card">
-      <h2>Calentamiento estándar (10–12 min)</h2>
-      <ol class="small">
-        <li>5 min caminata en cinta o bici.</li>
-        <li>Movilidad de cadera/tobillo/torácica.</li>
-        <li>2–3 series de aproximación del primer ejercicio.</li>
-      </ol>
-      <div class="small" style="margin-top:8px">Si aparece dolor articular (≥4/10) que dura >24 h, baja 1–2 series por grupo o cambia variante.</div>
+    <section class="card" style="animation-delay: 0.3s;">
+      <h2>Guía RIR</h2>
+      <p style="color: var(--muted); margin: 0; font-size: 0.9rem;">
+        <b>RIR 2:</b> Quedan ~2 reps. <b>RIR 1:</b> Última rep dura pero limpia. <b>RIR 0:</b> Fallo técnico. Excéntrica controlada.
+      </p>
     </section>
-
-    <section class="card">
-      <h2>Guía RIR / Técnica</h2>
-      <div class="small">
-        <b>RIR 2:</b> quedan ~2 reps. <b>RIR 1:</b> última rep dura pero limpia. <b>RIR 0:</b> fallo técnico. <br>
-        Excéntrica controlada (2–3 s); pausa 1 s abajo en gemelos. Descansos: compuestos 2–3′; accesorios 60–90″.
-      </div>
-      <div class="row" style="margin-top:8px">
-        <button class="btn" id="completeDay">✔ Marcar día como completado</button>
-        <span class="chip" id="dayState">Pendiente</span>
-      </div>
+    <section class="card" style="animation-delay: 0.4s;">
+        <h2>Notas</h2>
+        <textarea id="notes" placeholder="Sensaciones, cargas, RIR real, ajustes…"></textarea>
     </section>
-
-    <section class="card">
-      <h2>Notas rápidas</h2>
-      <textarea id="notes" placeholder="Sensaciones, cargas, RIR real, ajustes…"></textarea>
-    </section>
-
     <section class="footer">
-      <p>Diseño minimalista para uso en gimnasio. Todo se guarda en este dispositivo (localStorage).</p>
+        <p>Todo se guarda en este dispositivo.</p>
     </section>
   </aside>
 </main>
@@ -451,18 +577,17 @@
 (function(){
   const $ = (q,el=document)=>el.querySelector(q);
   const $$ = (q,el=document)=>[...el.querySelectorAll(q)];
-  const stateKey = 'rutina-fuerza-perdida-v1';
+  const stateKey = 'rutina-fuerza-elegante-v2';
   const state = JSON.parse(localStorage.getItem(stateKey)||'{}');
+  const originalTitle = document.title;
 
   const today = new Date();
-  // Monday is 0, Tuesday is 1, ..., Saturday/Sunday are 5
   const dow = (d => [0, 1, 2, 3, 4, 5, 5][(d + 6) % 7])(today.getDay());
   const tabs = $('#tabs');
   const dayCards = $$('.day');
   const weekSel = $('#week');
   const weekHint = $('#weekHint');
   const notes = $('#notes');
-  const dayState = $('#dayState');
 
   // Build sets UI
   dayCards.forEach(card=>{
@@ -473,7 +598,7 @@
       const id = getExKey(card, ex);
       
       if (!state.sets) state.sets = {};
-      if (!state.sets[id]) {
+      if (!state.sets[id] || state.sets[id].length !== def) {
         state.sets[id] = Array(def).fill(false);
       }
       const doneArr = state.sets[id];
@@ -482,7 +607,6 @@
       const t = $('.timer', ex);
       if(t){
         const min = parseFloat(t.dataset.min||'2');
-        const max = parseFloat(t.dataset.max||min);
         const display = $('b',t);
         const btn = $('button',t);
         let running=false, left=0, iv=null;
@@ -495,10 +619,15 @@
         }
         function tick(){
           display.textContent=fmt(left);
-          if(left<=0){ stop(); display.textContent=fmt(max*60); vibe(); }
+          document.title = `${fmt(left)} | Descanso`;
+          if(left<=0){ stop(); vibe(); }
           left--;
         }
-        function stop(){ running=false; clearInterval(iv); btn.textContent='▶︎'; }
+        function stop(){
+          running=false; clearInterval(iv); btn.textContent='▶︎';
+          document.title = originalTitle;
+          display.textContent = fmt(min*60);
+        }
         btn.addEventListener('click',()=> running?stop():start());
         display.textContent = fmt(min*60);
       }
@@ -534,15 +663,10 @@
   $$('.tab',tabs).forEach(t=>{
     t.addEventListener('click',()=>activateTab(+t.dataset.day));
   });
-  activateTab(dow); // open today's
 
   // Theme toggle
-  const themeBtn=$('#toggleTheme');
-  if(!state.theme) state.theme = (window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'dark');
-  applyTheme(state.theme);
-  themeBtn.addEventListener('click',()=>{
-    state.theme = state.theme==='dark'?'light':'dark';
-    applyTheme(state.theme); save();
+  $('#toggleTheme').addEventListener('click',()=>{
+    // No action, dark theme is default
   });
 
   // Reset day
@@ -559,14 +683,6 @@
   notes.value = state.notes || '';
   notes.addEventListener('input',()=>{ state.notes = notes.value; save(); });
 
-  // Day completed
-  applyDayState();
-  $('#completeDay').addEventListener('click',()=>{
-    const d=currentDay();
-    state.done = state.done || {}; state.done[d]= (state.done[d]?false:true);
-    save(); applyDayState();
-  });
-
   // Helpers
   function getExKey(card, ex){ return `${card.dataset.day}:${ex.dataset.ex}` }
   function getSets(id){ state.sets = state.sets||{}; return (state.sets[id]||[]).slice(); }
@@ -575,9 +691,13 @@
     setsWrap.innerHTML='';
     arr.forEach((val,i)=>{
       const b=document.createElement('button');
-      b.className='set'+(val?' done':''); b.innerHTML=`S${i+1}<small>${val?'OK':'toca'}</small>`;
+      b.className='set'+(val?' done':''); b.innerHTML=`S${i+1}<small>${val?'OK':'-'}</small>`;
       b.addEventListener('click',()=>{
-        const now=getSets(id); now[i]=!now[i]; saveSets(id,now); renderSets(setsWrap,now,id);
+        const now=getSets(id); now[i]=!now[i];
+        saveSets(id,now);
+        renderSets(setsWrap,now,id);
+        vibe();
+        updateAllProgressBars();
       });
       setsWrap.appendChild(b);
     });
@@ -591,11 +711,10 @@
     $$('.tab',tabs).forEach(t=>t.classList.remove('today'));
     const todayTab = $(`.tab[data-day="${dow}"]`, tabs);
     if (todayTab) todayTab.classList.add('today');
-
-    applyDayState();
   }
   function currentDay(){ const t=$('.tab.active',tabs); return t?+t.dataset.day:0; }
   function resetCurrentDay(){
+    if (!confirm('¿Seguro que quieres reiniciar el progreso de hoy?')) return;
     const d=currentDay();
     const currentDayCard = $(`article.day[data-day="${d}"]`);
     if (currentDayCard) {
@@ -610,50 +729,51 @@
 
         const delBtn = $('.delset', ex);
         if (delBtn) {
-            if (def <= 1) {
-                delBtn.classList.add('ghost');
-            } else {
-                delBtn.classList.remove('ghost');
-            }
+            delBtn.classList.toggle('ghost', def <= 1);
         }
       });
     }
-    // unmark day done
-    state.done = state.done||{}; state.done[d]=false; save();
-    applyDayState();
-  }
-  function applyDayState(){
-    const d=currentDay(); const done = state.done && state.done[d];
-    dayState.textContent = done?'Completado ✅':'Pendiente';
-    dayState.style.color = done?'var(--ok)':'var(--muted)';
-  }
-  function applyTheme(th){
-    document.documentElement.style.colorScheme = th==='dark'?'dark':'light';
-    if(th==='light'){
-      document.documentElement.style.setProperty('--bg','#f7f7fb');
-      document.documentElement.style.setProperty('--elev','#ffffff');
-      document.documentElement.style.setProperty('--card','#ffffff');
-      document.documentElement.style.setProperty('--ink','#111317');
-      document.documentElement.style.setProperty('--muted','#5a6270');
-      document.documentElement.style.setProperty('--line','#e6e8ef');
-    }else{
-      document.documentElement.style.setProperty('--bg','#0f0f12');
-      document.documentElement.style.setProperty('--elev','#17171c');
-      document.documentElement.style.setProperty('--card','#1f2026');
-      document.documentElement.style.setProperty('--ink','#e8ecf1');
-      document.documentElement.style.setProperty('--muted','#a9b0bc');
-      document.documentElement.style.setProperty('--line','#2a2c36');
-    }
+    updateAllProgressBars();
   }
   function applyWeekHint(){
     const w = weekSel.value;
-    if(w==='3'){ weekHint.textContent='Sube intensidad: últimas series clave a RIR 1.'; weekHint.style.color='var(--brand-2)'; }
-    else if(w==='5'){ weekHint.textContent='Añade +1 serie a cuádriceps/hip thrust.'; weekHint.style.color='var(--brand-2)'; }
-    else if(w.startsWith('6')){ weekHint.textContent='DELOAD: reduce volumen 40–50% y sube RIR +1–2.'; weekHint.style.color='var(--warn)'; }
-    else { weekHint.textContent='Sigue el plan base (RIR ~3→2).'; weekHint.style.color='var(--muted)'; }
+    weekHint.style.color = 'var(--muted)';
+    if(w==='3'){ weekHint.textContent='Sube intensidad: últimas series clave a RIR 1.'; weekHint.style.color='var(--warn)'; }
+    else if(w==='5'){ weekHint.textContent='Añade +1 serie a cuádriceps/hip thrust.'; weekHint.style.color='var(--ok)'; }
+    else if(w.startsWith('6')){ weekHint.textContent='DELOAD: reduce volumen 40–50% y sube RIR +1–2.'; weekHint.style.color='var(--danger)'; }
+    else { weekHint.textContent='Sigue el plan base (RIR ~3→2).'; }
+  }
+  function updateAllProgressBars() {
+    dayCards.forEach(card => {
+        const dayIndex = card.dataset.day;
+        const tab = $(`.tab[data-day="${dayIndex}"]`);
+        if (!tab) return;
+
+        let totalSets = 0;
+        let doneSets = 0;
+
+        $$('.exercise', card).forEach(ex => {
+            const id = getExKey(card, ex);
+            if (state.sets && state.sets[id]) {
+                const setsArray = state.sets[id];
+                totalSets += setsArray.length;
+                doneSets += setsArray.filter(isDone => isDone).length;
+            }
+        });
+
+        const percentage = totalSets > 0 ? (doneSets / totalSets) * 100 : 0;
+        const progressBar = $('.progress-bar', tab);
+        if (progressBar) {
+            progressBar.style.width = `${percentage}%`;
+        }
+    });
   }
   function save(){ localStorage.setItem(stateKey, JSON.stringify(state)); }
-  function vibe(){ if('vibrate' in navigator) navigator.vibrate([40,60,40]); }
+  function vibe(){ if('vibrate' in navigator) navigator.vibrate([40]); }
+  
+  // Initial calls
+  activateTab(dow);
+  updateAllProgressBars();
 })();
 </script>
 </body>
