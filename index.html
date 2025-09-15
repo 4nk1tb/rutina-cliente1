@@ -68,10 +68,16 @@
       z-index: 100;
       backdrop-filter: saturate(1.5) blur(20px);
       -webkit-backdrop-filter: saturate(1.5) blur(20px);
-      background: rgba(26, 26, 28, 0.75);
+      background: rgba(26, 26, 28, 0.85); /* Más oscuro para mejor contraste */
       border-bottom: 1px solid var(--line);
     }
-    .header-content { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+    .header-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1rem;
+      /* Añade padding superior para respetar el notch del iPhone en modo PWA */
+      padding-top: calc(1rem + env(safe-area-inset-top));
+    }
     .title { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
     .logo { height: 36px; width: auto; }
     h1 { font-size: 1.25rem; margin: 0; font-weight: 700; }
@@ -215,7 +221,7 @@
     /* ------------------------------------------- */
     @media (min-width: 600px) {
       .wrap { padding: 2rem; }
-      .header-content { padding: 1rem 2rem; }
+      .header-content { padding: 1rem 2rem; padding-top: calc(1rem + env(safe-area-inset-top)); }
       .head { flex-direction: row; justify-content: space-between; align-items: center; }
     }
 
@@ -787,5 +793,4 @@
 </script>
 </body>
 </html>
-
 
