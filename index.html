@@ -8,230 +8,70 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <title>Rutina de Entrenamiento</title>
   <meta name="theme-color" content="#1A1A1C" />
-  <!-- Nueva Fuente: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /*
-     * RE-DISEÑO ELEGANTE Y DINÁMICO v2
-     * Author: Gemini
-     * Focus: Profundidad (3D), tipografía premium, animaciones sutiles.
-    */
+    /* Estilos (sin cambios) */
     :root {
-      --bg: #1A1A1C;
-      --bg-noise: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.05"/></svg>');
-      --elev: #28282A;
-      --elev-2: #363638;
-      --ink: #F5F5F7;
-      --muted: #8A8A8E;
-      --line: #3A3A3C;
-      --brand: #FDB813;
-      --ok: #34C759;
-      --warn: #FF9500;
-      --danger: #FF3B30;
-      --radius-lg: 18px;
-      --radius-md: 14px;
-      --radius-sm: 10px;
-      /* Sombras con efecto de profundidad */
-      --shadow-lifted: 0 1px 2px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.3);
-      --shadow-pressed: inset 0 2px 4px rgba(0,0,0,0.5);
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --mono: "SF Mono", "Menlo", "Consolas", monospace;
-      color-scheme: dark;
+      --bg: #1A1A1C; --bg-noise: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.05"/></svg>'); --elev: #28282A; --elev-2: #363638; --ink: #F5F5F7; --muted: #8A8A8E; --line: #3A3A3C; --brand: #FDB813; --ok: #34C759; --warn: #FF9500; --danger: #FF3B30; --radius-lg: 18px; --radius-md: 14px; --radius-sm: 10px; --shadow-lifted: 0 1px 2px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.3); --shadow-pressed: inset 0 2px 4px rgba(0,0,0,0.5); --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; --mono: "SF Mono", "Menlo", "Consolas", monospace; color-scheme: dark;
     }
-    
     * { box-sizing: border-box; }
-    
     html, body { height: 100%; }
-    
-    body {
-      margin: 0;
-      background-color: var(--bg);
-      background-image: var(--bg-noise);
-      color: var(--ink);
-      font: 16px/1.6 var(--font);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 1.5rem 1rem;
-    }
-
-    /* --- Cabecera --- */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: saturate(1.5) blur(20px);
-      -webkit-backdrop-filter: saturate(1.5) blur(20px);
-      background: rgba(26, 26, 28, 0.85); /* Más oscuro para mejor contraste */
-      border-bottom: 1px solid var(--line);
-    }
-    .header-content {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 1rem;
-      /* Añade padding superior para respetar el notch del iPhone en modo PWA */
-      padding-top: calc(1rem + env(safe-area-inset-top));
-    }
+    body { margin: 0; background-color: var(--bg); background-image: var(--bg-noise); color: var(--ink); font: 16px/1.6 var(--font); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; }
+    header { position: sticky; top: 0; z-index: 100; backdrop-filter: saturate(1.5) blur(20px); -webkit-backdrop-filter: saturate(1.5) blur(20px); background: rgba(26, 26, 28, 0.85); border-bottom: 1px solid var(--line); }
+    .header-content { max-width: 1100px; margin: 0 auto; padding: 1rem; padding-top: calc(1rem + env(safe-area-inset-top)); }
     .title { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
     .logo { height: 36px; width: auto; }
     h1 { font-size: 1.25rem; margin: 0; font-weight: 700; }
     .subtitle { color: var(--muted); font-size: 0.9rem; margin: 0; }
-
-    /* --- Pestañas de Días --- */
     .day-tabs-container { margin-top: 1rem; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
     .day-tabs-container::-webkit-scrollbar { display: none; }
     .day-tabs { display: flex; gap: 0.75rem; padding-bottom: 0.5rem; }
-    .tab {
-      position: relative;
-      overflow: hidden;
-      flex: 0 0 auto;
-      padding: 0.6rem 1rem;
-      border-radius: var(--radius-md);
-      background: var(--elev);
-      border: 1px solid var(--line);
-      text-align: center;
-      color: var(--muted);
-      font-weight: 600;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.2s ease-out;
-      white-space: nowrap;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
+    .tab { position: relative; overflow: hidden; flex: 0 0 auto; padding: 0.6rem 1rem; border-radius: var(--radius-md); background: var(--elev); border: 1px solid var(--line); text-align: center; color: var(--muted); font-weight: 600; cursor: pointer; user-select: none; transition: all 0.2s ease-out; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     .tab:hover { transform: translateY(-2px); background: var(--elev-2); color: var(--ink); }
     .tab.active { background: var(--brand); color: #1A1A1C; border-color: transparent; font-weight: 700; }
     .tab.today { border-color: var(--brand); }
-    
-    .progress-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 3px;
-      background-color: var(--brand);
-      width: 0%;
-      transition: width 0.4s ease-out;
-      border-radius: 0 0 var(--radius-md) var(--radius-md);
-    }
-    
-    /* --- Acciones y Layout Principal --- */
+    .progress-bar { position: absolute; bottom: 0; left: 0; height: 3px; background-color: var(--brand); width: 0%; transition: width 0.4s ease-out; border-radius: 0 0 var(--radius-md) var(--radius-md); }
+    .tab.active .progress-bar { background-color: rgba(26, 26, 28, 0.4); }
     .actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
-    .btn {
-      padding: 0.6rem 1rem;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--line);
-      background: var(--elev);
-      color: var(--ink);
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s ease-out;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
+    .btn { padding: 0.6rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--line); background: var(--elev); color: var(--ink); cursor: pointer; font-weight: 600; transition: all 0.2s ease-out; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     .btn:hover { transform: translateY(-2px); filter: brightness(1.15); border-color: var(--muted); }
-    
     .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
-    
-    /* --- Contenido Principal y Tarjetas --- */
-    .card {
-      background-image: linear-gradient(180deg, var(--elev), #242426);
-      border: 1px solid var(--line);
-      border-top-color: #48484A; /* Borde superior brillante para efecto 3D */
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      box-shadow: var(--shadow-lifted);
-      /* Animación de entrada */
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeIn 0.5s ease-out forwards;
-    }
-    /* Animación de entrada */
+    .card { background-image: linear-gradient(180deg, var(--elev), #242426); border: 1px solid var(--line); border-top-color: #48484A; border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-lifted); opacity: 0; transform: translateY(20px); animation: fadeIn 0.5s ease-out forwards; }
     @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
     .day { display: none; }
     h2 { margin: 0 0 1.5rem; font-size: 1.3rem; font-weight: 700; }
-
-    /* --- Ejercicios --- */
-    .exercise {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      padding: 1rem;
-      margin-bottom: 1rem;
-      background: var(--bg);
-    }
+    .exercise-note { font-size: 0.85rem; color: var(--muted); background-color: var(--elev-2); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); margin-top: 0.5rem; margin-bottom: 0; }
+    .exercise { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1rem; background: var(--bg); }
     .exercise:last-child { margin-bottom: 0; }
     .head { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
     .name { font-weight: 700; font-size: 1.1rem; }
     .meta { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .pill {
-      padding: 0.25rem 0.75rem;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 0.75rem;
-      color: var(--bg);
-    }
+    .pill { padding: 0.25rem 0.75rem; border-radius: 999px; font-weight: 700; font-size: 0.75rem; color: var(--bg); }
     .p-rir { background: var(--warn); }
     .p-rep { background: var(--ok); }
     .p-rest { background: var(--muted); color: var(--ink); }
-
-    /* --- Series --- */
     .sets { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.75rem; }
-    .set {
-      aspect-ratio: 1 / 1;
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      padding: 0.5rem;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--line);
-      text-align: center; cursor: pointer; user-select: none;
-      background-image: linear-gradient(180deg, var(--elev), #242426);
-      font-weight: 600;
-      transition: all 0.2s ease-out;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
+    .set { aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--line); text-align: center; cursor: pointer; user-select: none; background-image: linear-gradient(180deg, var(--elev), #242426); font-weight: 600; transition: all 0.2s ease-out; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
     .set:hover { transform: translateY(-3px); }
     .set.done { background: var(--brand); color: #1A1A1C; border-color: transparent; box-shadow: var(--shadow-pressed); }
     .set small { font-size: 0.7rem; color: var(--muted); margin-top: 0.25rem; transition: color 0.2s ease-out; }
     .set.done small { color: #1A1A1C; opacity: 0.8; }
-
     .row { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
-    .timer {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      border: 1px solid var(--line);
-      padding: 0.5rem 0.75rem;
-      border-radius: var(--radius-sm);
-      background: var(--elev);
-    }
+    .timer { display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid var(--line); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); background: var(--elev); }
     .timer b { font-family: var(--mono); font-size: 1rem; }
-    
-    /* --- Panel Lateral y Footer --- */
     .sticky { position: sticky; top: 110px; }
     .panel { display: grid; gap: 1.5rem; }
-    textarea {
-      width: 100%; min-height: 120px; background: var(--bg); color: var(--ink);
-      border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem;
-      font-family: var(--font); font-size: 1rem;
-    }
+    textarea { width: 100%; min-height: 120px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; font-family: var(--font); font-size: 1rem; }
     .footer { color: var(--muted); font-size: 0.8rem; opacity: .8; text-align: center; margin-top: 1rem; }
-    
-    /* ------------------------------------------- */
-    /* --- MEDIA QUERIES PARA PANTALLAS GRANDES --- */
-    /* ------------------------------------------- */
-    @media (min-width: 600px) {
-      .wrap { padding: 2rem; }
-      .header-content { padding: 1rem 2rem; padding-top: calc(1rem + env(safe-area-inset-top)); }
-      .head { flex-direction: row; justify-content: space-between; align-items: center; }
-    }
-
-    @media (min-width: 900px) {
-      .wrap { padding: 3rem 2rem; }
-      .grid { grid-template-columns: 1fr 0.6fr; }
-      .day-tabs-container { overflow-x: visible; }
-      .day-tabs { display: grid; grid-template-columns: repeat(6, 1fr); }
-      .quick-actions { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; }
-    }
+    #notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 1rem 1.5rem; border-radius: var(--radius-md); background-color: var(--elev-2); color: var(--ink); box-shadow: var(--shadow-lifted); transition: bottom 0.5s ease-in-out; z-index: 200; text-align: center; }
+    #notification.show { bottom: 20px; }
+    #notification.success { background-color: var(--ok); color: var(--bg); }
+    #notification.error { background-color: var(--danger); color: var(--ink); }
+    @media (min-width: 600px) { .wrap { padding: 2rem; } .header-content { padding: 1rem 2rem; padding-top: calc(1rem + env(safe-area-inset-top)); } .head { flex-direction: row; justify-content: space-between; align-items: center; } }
+    @media (min-width: 900px) { .wrap { padding: 3rem 2rem; } .grid { grid-template-columns: 1fr 0.6fr; } .day-tabs-container { overflow-x: visible; } .day-tabs { display: grid; grid-template-columns: repeat(7, 1fr); } .quick-actions { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; } }
   </style>
 </head>
 <body>
@@ -246,32 +86,8 @@
       </div>
     </div>
     <div class="day-tabs-container">
-      <div class="day-tabs" id="tabs">
-        <div class="tab" data-day="0">
-          <span>Lunes • Piernas</span>
-          <div class="progress-bar"></div>
-        </div>
-        <div class="tab" data-day="1">
-          <span>Martes • Torso A</span>
-          <div class="progress-bar"></div>
-        </div>
-        <div class="tab" data-day="2">
-          <span>Miércoles • Glúteo/Fem.</span>
-          <div class="progress-bar"></div>
-        </div>
-        <div class="tab" data-day="3">
-          <span>Jueves • Torso B</span>
-          <div class="progress-bar"></div>
-        </div>
-        <div class="tab" data-day="4">
-          <span>Viernes • Piernas Full</span>
-          <div class="progress-bar"></div>
-        </div>
-        <div class="tab" data-day="5">
-          <span>S/D • Descanso</span>
-          <div class="progress-bar"></div>
-        </div>
-      </div>
+      <!-- 1. Contenedor de pestañas vacío. Se rellenará con JavaScript. -->
+      <div class="day-tabs" id="tabs"></div>
     </div>
     <div class="quick-actions">
         <div class="actions">
@@ -283,282 +99,17 @@
 </header>
 
 <main class="wrap grid">
-  <!-- COLUMNA IZQUIERDA: ENTRENAMIENTOS -->
-  <section id="workouts">
-    <!-- Los días se renderizan aquí. La estructura interna no cambia. -->
-    <!-- Día 1 – Piernas (énfasis cuádriceps) -->
-    <article class="card day" data-day="0" style="animation-delay: 0.1s;">
-        <h2>Día 1 – Piernas (énfasis cuádriceps)</h2>
-        <div class="exercise" data-ex="prensa45">
-            <div class="head">
-                <div class="name">Prensa 45°</div>
-                <div class="meta"><span class="pill p-rep">4×6–8</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">2–3′</span></div>
-            </div>
-            <div class="sets" data-default="4"></div>
-            <div class="row"><div class="timer" data-min="2" data-max="3"><b>02:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="goblet">
-            <div class="head">
-                <div class="name">Sentadilla goblet o hack</div>
-                <div class="meta"><span class="pill p-rep">3×8–10</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">90–120″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1.5" data-max="2"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="zancadas">
-            <div class="head">
-                <div class="name">Zancadas caminando</div>
-                <div class="meta"><span class="pill p-rep">3×10–12/lado</span><span class="pill p-rir">RIR 2–3</span><span class="pill p-rest">90″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="ext-cuad">
-            <div class="head">
-                <div class="name">Extensión de cuádriceps</div>
-                <div class="meta"><span class="pill p-rep">3×12–15</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">60–90″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1" data-max="1.5"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="talones">
-            <div class="head">
-                <div class="name">Elevación de talones</div>
-                <div class="meta"><span class="pill p-rep">4×10–12</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">60″</span></div>
-            </div>
-            <div class="sets" data-default="4"></div>
-            <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="core1">
-            <div class="head">
-                <div class="name">Plancha + hollow body</div>
-                <div class="meta"><span class="pill p-rep">3×30–40 s</span><span class="pill p-rir">Al fallo</span><span class="pill p-rest">60″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-    </article>
-    <!-- Día 2 – Torso A (empuje/tirón) -->
-    <article class="card day" data-day="1" style="animation-delay: 0.1s;">
-        <h2>Día 2 – Torso A (empuje/tirón)</h2>
-        <div class="exercise" data-ex="pressbanca">
-            <div class="head">
-                <div class="name">Press banca</div>
-                <div class="meta"><span class="pill p-rep">4×6–8</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">2–3′</span></div>
-            </div>
-            <div class="sets" data-default="4"></div>
-            <div class="row"><div class="timer" data-min="2" data-max="3"><b>02:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="remo-pecho">
-            <div class="head">
-                <div class="name">Remo pecho apoyado</div>
-                <div class="meta"><span class="pill p-rep">4×8–10</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">90–120″</span></div>
-            </div>
-            <div class="sets" data-default="4"></div>
-            <div class="row"><div class="timer" data-min="1.5" data-max="2"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="jalon-pecho">
-            <div class="head">
-                <div class="name">Jalón al pecho</div>
-                <div class="meta"><span class="pill p-rep">3×8–10</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">90″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="press-inc">
-            <div class="head">
-                <div class="name">Press inclinado</div>
-                <div class="meta"><span class="pill p-rep">3×10–12</span><span class="pill p-rir">RIR 2–3</span><span class="pill p-rest">90″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="laterales">
-            <div class="head">
-                <div class="name">Elevaciones laterales</div>
-                <div class="meta"><span class="pill p-rep">3×12–15</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">60″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="superserie1">
-            <div class="head">
-                <div class="name">SS: curl bíceps + jalón tríceps</div>
-                <div class="meta"><span class="pill p-rep">3×12–15 c/u</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">90″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-    </article>
-    <!-- Día 3 – Glúteos/Isquios (bisagra) -->
-    <article class="card day" data-day="2" style="animation-delay: 0.1s;">
-        <h2>Día 3 – Glúteos/Isquios</h2>
-        <div class="exercise" data-ex="hipthrust">
-            <div class="head">
-                <div class="name">Hip thrust con barra</div>
-                <div class="meta"><span class="pill p-rep">5×6–8</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">2–3′</span></div>
-            </div>
-            <div class="sets" data-default="5"></div>
-            <div class="row"><div class="timer" data-min="2" data-max="3"><b>02:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="rdl">
-            <div class="head">
-                <div class="name">Peso muerto rumano</div>
-                <div class="meta"><span class="pill p-rep">3×8–10</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">2′</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="2" data-max="2"><b>02:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="curl-femoral">
-            <div class="head">
-                <div class="name">Curl femoral tumbado</div>
-                <div class="meta"><span class="pill p-rep">3×10–12</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">60–90″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1" data-max="1.5"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="ext45">
-            <div class="head">
-                <div class="name">Extensiones 45° (hip hinge)</div>
-                <div class="meta"><span class="pill p-rep">3×12–15</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">60″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="abduccion">
-            <div class="head">
-                <div class="name">Abducción en polea/banda</div>
-                <div class="meta"><span class="pill p-rep">3×15–20</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">60″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="gemelo-sentado">
-            <div class="head">
-                <div class="name">Gemelos sentado</div>
-                <div class="meta"><span class="pill p-rep">3×12–15</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">60″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-    </article>
-    <!-- Día 4 – Torso B (hombro/espalda/pecho) -->
-    <article class="card day" data-day="3" style="animation-delay: 0.1s;">
-        <h2>Día 4 – Torso B</h2>
-        <div class="exercise" data-ex="militar">
-            <div class="head">
-                <div class="name">Press militar</div>
-                <div class="meta"><span class="pill p-rep">4×5–7</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">2–3′</span></div>
-            </div>
-            <div class="sets" data-default="4"></div>
-            <div class="row"><div class="timer" data-min="2" data-max="3"><b>02:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="remo-neutro">
-            <div class="head">
-                <div class="name">Remo agarre neutro</div>
-                <div class="meta"><span class="pill p-rep">4×8–10</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">90–120″</span></div>
-            </div>
-            <div class="sets" data-default="4"></div>
-            <div class="row"><div class="timer" data-min="1.5" data-max="2"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="jalon-amplio">
-            <div class="head">
-                <div class="name">Jalón agarre amplio</div>
-                <div class="meta"><span class="pill p-rep">3×10–12</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">90″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="press-conv">
-            <div class="head">
-                <div class="name">Press convergente</div>
-                <div class="meta"><span class="pill p-rep">3×10–12</span><span class="pill p-rir">RIR 2–3</span><span class="pill p-rest">90″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="facepull">
-            <div class="head">
-                <div class="name">Face pull</div>
-                <div class="meta"><span class="pill p-rep">3×12–15</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">60″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="superserie2">
-            <div class="head">
-                <div class="name">SS: Curl inclinado + fondos</div>
-                <div class="meta"><span class="pill p-rep">3×10–12 c/u</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">90″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-    </article>
-    <!-- Día 5 – Piernas full (mixto + acondicionamiento) -->
-    <article class="card day" data-day="4" style="animation-delay: 0.1s;">
-        <h2>Día 5 – Piernas full</h2>
-        <div class="exercise" data-ex="box-squat">
-            <div class="head">
-                <div class="name">Sentadilla a caja</div>
-                <div class="meta"><span class="pill p-rep">4×5–6</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">2–3′</span></div>
-            </div>
-            <div class="sets" data-default="4"></div>
-            <div class="row"><div class="timer" data-min="2" data-max="3"><b>02:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="buenos-dias">
-            <div class="head">
-                <div class="name">Buenos días con barra</div>
-                <div class="meta"><span class="pill p-rep">3×8–10</span><span class="pill p-rir">RIR 2–3</span><span class="pill p-rest">90″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="step-ups">
-            <div class="head">
-                <div class="name">Step-ups altos</div>
-                <div class="meta"><span class="pill p-rep">3×10–12/lado</span><span class="pill p-rir">RIR 2–3</span><span class="pill p-rest">90″</span></div>
-            </div>
-            <div class="sets" data-default="3"></div>
-            <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="hipthrust2">
-            <div class="head">
-                <div class="name">Hip thrust</div>
-                <div class="meta"><span class="pill p-rep">2×10–12</span><span class="pill p-rir">RIR 2</span><span class="pill p-rest">90″</span></div>
-            </div>
-            <div class="sets" data-default="2"></div>
-            <div class="row"><div class="timer" data-min="1.5" data-max="1.5"><b>01:30</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="curl-sentado2">
-            <div class="head">
-                <div class="name">Curl femoral sentado</div>
-                <div class="meta"><span class="pill p-rep">2×12–15</span><span class="pill p-rir">RIR 1–2</span><span class="pill p-rest">60″</span></div>
-            </div>
-            <div class="sets" data-default="2"></div>
-            <div class="row"><div class="timer" data-min="1" data-max="1"><b>01:00</b> <button class="btn btn-mini">▶︎</button></div> <button class="btn addset">+ Serie</button> <button class="btn delset ghost">– Serie</button></div>
-        </div>
-        <div class="exercise" data-ex="acond">
-            <div class="head">
-                <div class="name">Acondicionamiento (opcional)</div>
-            </div>
-            <p style="color: var(--muted); margin: 0;">Trineo/prowler o bici: 8–12 min en intervalos.</p>
-        </div>
-    </article>
-    <!-- Descanso -->
-    <article class="card day" data-day="5" style="animation-delay: 0.1s;">
-        <h2>Descanso Activo</h2>
-        <p style="color: var(--muted); margin: 0;">Paseo ligero, movilidad suave. El objetivo es recuperar bien para la próxima semana.</p>
-    </article>
-  </section>
+  <!-- 2. Contenedor de entrenamientos vacío. Se rellenará con JavaScript. -->
+  <section id="workouts"></section>
 
-  <!-- COLUMNA DERECHA: PANELES -->
+  <!-- COLUMNA DERECHA: PANELES (esta no cambia) -->
   <aside class="panel sticky">
     <section class="card" style="animation-delay: 0.2s;">
-        <h2>Progresión</h2>
+        <h2>Progresión (6 semanas)</h2>
         <div class="row">
             <label style="color: var(--muted); font-weight: 500;">Semana actual:</label>
             <select id="week" style="background: var(--elev-2); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.5rem;">
-                <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6 · Deload</option>
+                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4 (Deload)</option> <option value="5">5</option> <option value="6">6</option>
             </select>
         </div>
         <p id="weekHint" style="margin-top: 1rem; color: var(--muted);"></p>
@@ -566,7 +117,7 @@
     <section class="card" style="animation-delay: 0.3s;">
       <h2>Guía RIR</h2>
       <p style="color: var(--muted); margin: 0; font-size: 0.9rem;">
-        <b>RIR 2:</b> Quedan ~2 reps. <b>RIR 1:</b> Última rep dura pero limpia. <b>RIR 0:</b> Fallo técnico. Excéntrica controlada.
+          <b>RIR 2:</b> Quedan ~2 reps. <b>RIR 1:</b> Última rep dura pero limpia. <b>RIR 0:</b> Fallo técnico. Excéntrica controlada.
       </p>
     </section>
     <section class="card" style="animation-delay: 0.4s;">
@@ -575,121 +126,216 @@
     </section>
     <section class="footer">
         <p>Todo se guarda en este dispositivo.</p>
+        <div class="row" style="justify-content: center; margin-top: 0.5rem;">
+            <button id="importBtn" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">📥 Importar JSON</button>
+            <button id="exportBtn" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">📤 Exportar JSON</button>
+            <input type="file" id="importFile" accept=".json,application/json" style="display:none;">
+        </div>
     </section>
   </aside>
 </main>
 
+<div id="notification"></div>
+
 <script>
 (function(){
+
+  /* --- 3. AQUÍ VA LA RUTINA DEL CLIENTE (FORMATO JSON) --- */
+  // Para cambiar la rutina, solo tienes que editar este bloque.
+  const defaultRoutineData = {
+    days: [
+      {
+        title: "Lunes • Push (Pecho)",
+        exercises: [
+          { id: "press_banca", name: "Press banca barra", sets: 3, reps: "5-8", rir: "RIR 2", rest: "2-3’", timer: 2.5 },
+          { id: "press_inclinado_manc", name: "Press inclinado mancuernas", sets: 3, reps: "8-12", rir: "RIR 1-2", rest: "2’", timer: 2 },
+          { id: "press_maquina", name: "Press máquina convergente", sets: 2, reps: "10-12", rir: "RIR 1", rest: "90”", timer: 1.5 },
+          { id: "aperturas_cable", name: "Aperturas en cable", sets: 2, reps: "12-15", rir: "RIR 0-1", rest: "60-90”", timer: 1.5 },
+          { id: "laterales_maint", name: "Elevación lateral (mantenimiento)", sets: 2, reps: "12-20", rir: "RIR 1", rest: "60-90”", timer: 1.5 },
+          { id: "gemelos_pie_l", name: "Gemelos de pie", sets: 3, reps: "8-12", rir: "RIR 1", rest: "60-90”", timer: 1.5, note: "Pausa de 2 segundos abajo." }
+        ]
+      },
+      {
+        title: "Martes • Pull (Dorsal)",
+        exercises: [
+          { id: "dominadas", name: "Dominadas lastradas", sets: 4, reps: "6-8", rir: "RIR 1-2", rest: "2-3’", timer: 2.5 },
+          { id: "jalon_neutro", name: "Jalón agarre neutro", sets: 3, reps: "8-12", rir: "RIR 1-2", rest: "2’", timer: 2 },
+          { id: "pullover_polea", name: "Pullover en polea (estirado)", sets: 2, reps: "12-15", rir: "RIR 1", rest: "90”", timer: 1.5 },
+          { id: "face_pull", name: "Face pull", sets: 2, reps: "15-20", rir: "RIR 0-1", rest: "60-90”", timer: 1.5 },
+          { id: "curl_barra", name: "Curl barra", sets: 3, reps: "6-10", rir: "RIR 1-2", rest: "90”", timer: 1.5 },
+          { id: "gemelos_sentado_m", name: "Gemelos sentado (sóleo)", sets: 4, reps: "12-20", rir: "RIR 1", rest: "60-90”", timer: 1.5, note: "Al final, estiramiento cargado 30 s." }
+        ]
+      },
+      {
+        title: "Miércoles • Pierna (Quads)",
+        exercises: [
+            { id: "prep_rodilla", name: "Preparación de Rodilla (6–8 min)", note: "TKE banda 2×15–20 + Isométricos extensión 2×20–30 s + Trineo atrás 2×20 m." },
+            { id: "prensa_45_x", name: "Prensa 45°", sets: 4, reps: "10-12", rir: "RIR 1-2", rest: "2-3’", timer: 2.5, note: "Pies medios, ROM sin dolor." },
+            { id: "extension_iso", name: "Extensión de rodilla", sets: 3, reps: "12-15", rir: "RIR 1", rest: "90”", timer: 1.5, note: "Isométrico 2-3 s en medio de la rep." },
+            { id: "rdl_x", name: "Peso muerto rumano", sets: 3, reps: "6-10", rir: "RIR 2", rest: "2-3’", timer: 2.5 },
+            { id: "hip_thrust_x", name: "Hip thrust barra", sets: 3, reps: "6-10", rir: "RIR 1-2", rest: "2’", timer: 2 },
+            { id: "curl_femoral_x", name: "Curl femoral tumbado", sets: 3, reps: "8-12", rir: "RIR 1", rest: "90”", timer: 1.5 },
+            { id: "gemelos_pie_x", name: "Gemelos de pie", sets: 3, reps: "8-12", rir: "RIR 1", rest: "60-90”", timer: 1.5 }
+        ]
+      },
+      {
+        title: "Jueves • Push (Delts)",
+        exercises: [
+            { id: "militar_manc", name: "Press militar sentado mancuernas", sets: 3, reps: "6-10", rir: "RIR 2", rest: "2’", timer: 2 },
+            { id: "press_cerrado_smith", name: "Press banca agarre cerrado Smith", sets: 2, reps: "8-12", rir: "RIR 1-2", rest: "2’", timer: 2 },
+            { id: "laterales_j", name: "Elevación lateral", sets: 2, reps: "12-20", rir: "RIR 1", rest: "60-90”", timer: 1.5 },
+            { id: "peck_deck", name: "Peck-deck", sets: 2, reps: "10-15", rir: "RIR 1", rest: "90”", timer: 1.5 },
+            { id: "triceps_ez", name: "Extensión tríceps barra EZ", sets: 2, reps: "10-12", rir: "RIR 1", rest: "60-90”", timer: 1.5 },
+            { id: "gemelos_sentado_j", name: "Gemelos sentado", sets: 3, reps: "12-20", rir: "RIR 1", rest: "60-90”", timer: 1.5 }
+        ]
+      },
+      {
+        title: "Viernes • Pull (Espesor)",
+        exercises: [
+            { id: "remo_t", name: "Remo T apoyado pecho", sets: 4, reps: "6-10", rir: "RIR 1-2", rest: "2-3’", timer: 2.5 },
+            { id: "remo_cable_neutro", name: "Remo cable neutro", sets: 3, reps: "8-12", rir: "RIR 1-2", rest: "2’", timer: 2 },
+            { id: "reverse_fly", name: "Reverse fly", sets: 2, reps: "15-20", rir: "RIR 0-1", rest: "60-90”", timer: 1.5 },
+            { id: "curl_martillo", name: "Curl martillo", sets: 2, reps: "8-12", rir: "RIR 1", rest: "90”", timer: 1.5 },
+            { id: "curl_inclinado", name: "Curl inclinado (estirado)", sets: 2, reps: "10-15", rir: "RIR 1", rest: "90”", timer: 1.5 }
+        ]
+      },
+      {
+        title: "Sábado • Pierna (Full)",
+        exercises: [
+            { id: "hack_squat", name: "Hack squat / Pendulum", sets: 4, reps: "8-12", rir: "RIR 1-2", rest: "2-3’", timer: 2.5, note: "ROM Cómodo. Si duele: step-up bajo o belt squat." },
+            { id: "prensa_pies_bajos", name: "Prensa 45° pies bajos", sets: 3, reps: "10-15", rir: "RIR 1-2", rest: "2-3’", timer: 2.5, note: "Hacer si se tolera (más quad)." },
+            { id: "extension_1.5", name: "Extensión 1.5 reps", sets: 3, reps: "12-15", rir: "RIR 1", rest: "90”", timer: 1.5, note: "Recorrido: mitad → completo → mitad." },
+            { id: "curl_femoral_sentado", name: "Curl femoral sentado", sets: 3, reps: "10-15", rir: "RIR 1", rest: "90”", timer: 1.5 },
+            { id: "gemelos_pie_s", name: "Gemelos de pie", sets: 4, reps: "8-12", rir: "RIR 1", rest: "60-90”", timer: 1.5 }
+        ]
+      },
+      {
+        title: "Domingo • Descanso",
+        exercises: [
+            { id: "descanso", name: "Descanso Activo", note: "Paseo ligero, movilidad suave. El objetivo es recuperar bien para la próxima semana." }
+        ]
+      }
+    ]
+  };
+
   const $ = (q,el=document)=>el.querySelector(q);
   const $$ = (q,el=document)=>[...el.querySelectorAll(q)];
-  const stateKey = 'rutina-fuerza-elegante-v2';
-  const state = JSON.parse(localStorage.getItem(stateKey)||'{}');
+  const stateKey = 'rutina-fuerza-elegante-v4';
+  let state = JSON.parse(localStorage.getItem(stateKey)||'{}');
   const originalTitle = document.title;
-
   const today = new Date();
-  const dow = (d => [0, 1, 2, 3, 4, 5, 5][(d + 6) % 7])(today.getDay());
-  const tabs = $('#tabs');
-  const dayCards = $$('.day');
+  const dow = (today.getDay() + 6) % 7;
+  const tabsContainer = $('#tabs');
+  const workoutsContainer = $('#workouts');
   const weekSel = $('#week');
   const weekHint = $('#weekHint');
   const notes = $('#notes');
+  let routineData; // Contendrá la rutina activa (por defecto o importada)
 
-  // Build sets UI
-  dayCards.forEach(card=>{
-    $$('.exercise',card).forEach(ex=>{
-      const setsWrap = $('.sets',ex);
-      if (!setsWrap) return;
-      const def = +setsWrap.dataset.default || 3;
-      const id = getExKey(card, ex);
-      
-      if (!state.sets) state.sets = {};
-      if (!state.sets[id] || state.sets[id].length !== def) {
-        state.sets[id] = Array(def).fill(false);
-      }
-      const doneArr = state.sets[id];
-      renderSets(setsWrap, doneArr, id);
+  // --- NUEVA LÓGICA PARA RENDERIZAR LA RUTINA DESDE EL JSON ---
+  function renderRoutine(data) {
+    tabsContainer.innerHTML = '';
+    workoutsContainer.innerHTML = '';
 
-      const t = $('.timer', ex);
-      if(t){
-        const min = parseFloat(t.dataset.min||'2');
-        const display = $('b',t);
-        const btn = $('button',t);
-        let running=false, left=0, iv=null;
+    data.days.forEach((day, dayIndex) => {
+      // Crear Pestaña
+      const tab = document.createElement('div');
+      tab.className = 'tab';
+      tab.dataset.day = dayIndex;
+      tab.innerHTML = `<span>${day.title}</span><div class="progress-bar"></div>`;
+      tabsContainer.appendChild(tab);
 
-        function fmt(s){const m=Math.floor(s/60), r=String(Math.floor(s%60)).padStart(2,'0'); return `${String(m).padStart(2,'0')}:${r}`}
-        function start(){
-          left = Math.round(min*60);
-          running=true; btn.textContent='⏸'; tick();
-          iv=setInterval(tick,1000);
+      // Crear Tarjeta del Día
+      const dayCard = document.createElement('article');
+      dayCard.className = 'card day';
+      dayCard.dataset.day = dayIndex;
+      dayCard.style.animationDelay = '0.1s';
+      let exercisesHTML = `<h2>${day.title.replace(/•/g, '–')}</h2>`;
+
+      day.exercises.forEach(ex => {
+        // Si no hay series, es solo una nota (como el descanso o la preparación)
+        if (!ex.sets) {
+            exercisesHTML += `
+              <div class="exercise" data-ex="${ex.id}">
+                  <div class="head"><div class="name">${ex.name}</div></div>
+                  ${ex.note ? `<p class="exercise-note" style="margin-top:0;">${ex.note}</p>` : ''}
+              </div>`;
+            return;
         }
-        function tick(){
-          display.textContent=fmt(left);
-          document.title = `${fmt(left)} | Descanso`;
-          if(left<=0){ stop(); vibe(); }
-          left--;
-        }
-        function stop(){
-          running=false; clearInterval(iv); btn.textContent='▶︎';
-          document.title = originalTitle;
-          display.textContent = fmt(min*60);
-        }
-        btn.addEventListener('click',()=> running?stop():start());
-        display.textContent = fmt(min*60);
-      }
 
-      const add = $('.addset', ex);
-      const del = $('.delset', ex);
-      
-      if(add){
-        add.addEventListener('click',()=>{
-          const current = getSets(id);
-          current.push(false);
-          saveSets(id,current); renderSets(setsWrap,current,id);
-          if(del) del.classList.remove('ghost');
-        });
-      }
-      
-      if(del){
-        if(getSets(id).length <= 1) del.classList.add('ghost');
-        del.addEventListener('click',()=>{
-          const current = getSets(id);
-          if(current.length > 1){
-            current.pop(); 
-            saveSets(id,current); 
-            renderSets(setsWrap,current,id);
-            if(current.length <= 1) del.classList.add('ghost');
-          }
-        });
-      }
+        exercisesHTML += `
+          <div class="exercise" data-ex="${ex.id}">
+            <div class="head">
+                <div class="name">${ex.name}</div>
+                <div class="meta">
+                    <span class="pill p-rep">${ex.sets}×${ex.reps}</span>
+                    <span class="pill p-rir">${ex.rir}</span>
+                    <span class="pill p-rest">${ex.rest}</span>
+                </div>
+            </div>
+            <div class="sets" data-default="${ex.sets}"></div>
+            ${ex.note ? `<p class="exercise-note">${ex.note}</p>` : ''}
+            <div class="row">
+                <div class="timer" data-min="${ex.timer || 1.5}"><b>00:00</b> <button class="btn btn-mini">▶︎</button></div> 
+                <button class="btn addset">+ Serie</button> 
+                <button class="btn delset ghost">– Serie</button>
+            </div>
+          </div>`;
+      });
+      dayCard.innerHTML = exercisesHTML;
+      workoutsContainer.appendChild(dayCard);
     });
-  });
+  }
 
-  // Tabs, select today
-  $$('.tab',tabs).forEach(t=>{
-    t.addEventListener('click',()=>activateTab(+t.dataset.day));
-  });
+  // --- LÓGICA ORIGINAL (AHORA PARA AÑADIR INTERACTIVIDAD A ELEMENTOS CREADOS) ---
+  function attachEventListeners() {
+      const dayCards = $$('.day');
+      dayCards.forEach(card => {
+        $$('.exercise', card).forEach(ex => {
+          const setsWrap = $('.sets',ex);
+          if (!setsWrap) return;
+          const def = +setsWrap.dataset.default || 3;
+          const id = getExKey(card, ex);
+          
+          if (!state.sets) state.sets = {};
+          if (!state.sets[id]) {
+            state.sets[id] = Array(def).fill(false);
+          }
+          renderSets(setsWrap, state.sets[id], id);
 
-  // Theme toggle
-  $('#toggleTheme').addEventListener('click',()=>{
-    // No action, dark theme is default
-  });
+          const t = $('.timer', ex);
+          if (t) {
+            const min = parseFloat(t.dataset.min||'2');
+            const display = $('b',t);
+            const btn = $('button',t);
+            let running=false, left=0, iv=null;
 
-  // Reset day
+            function fmt(s){const m=Math.floor(s/60), r=String(Math.floor(s%60)).padStart(2,'0'); return `${String(m).padStart(2,'0')}:${r}`}
+            function start(){ left = Math.round(min*60); running=true; btn.textContent='⏸'; tick(); iv=setInterval(tick,1000); }
+            function tick(){ display.textContent=fmt(left); document.title = `${fmt(left)} | Descanso`; if(left<=0){ stop(); } left--; }
+            function stop(){ running=false; clearInterval(iv); btn.textContent='▶︎'; document.title = originalTitle; display.textContent = fmt(min*60); }
+            btn.addEventListener('click',()=> running?stop():start());
+            display.textContent = fmt(min*60);
+          }
+
+          const add = $('.addset', ex);
+          const del = $('.delset', ex);
+          if(add){ add.addEventListener('click',()=>{ const c = getSets(id); c.push(false); saveSets(id,c); renderSets(setsWrap,c,id); if(del) del.classList.remove('ghost'); }); }
+          if(del){ if(getSets(id).length <= 1) del.classList.add('ghost'); del.addEventListener('click',()=>{ const c = getSets(id); if(c.length > 1){ c.pop(); saveSets(id,c); renderSets(setsWrap,c,id); if(c.length <= 1) del.classList.add('ghost'); } }); }
+        });
+      });
+
+      $$('.tab', tabsContainer).forEach(t => t.addEventListener('click', () => activateTab(+t.dataset.day)));
+  }
+  
+  // --- FUNCIONES HELPERS (la mayoría sin cambios) ---
+  $('#toggleTheme').addEventListener('click',()=>{});
   $('#resetDay').addEventListener('click',resetCurrentDay);
-
-  // Week selector
   if(state.week) weekSel.value=state.week;
   applyWeekHint();
-  weekSel.addEventListener('change',()=>{
-    state.week = weekSel.value; save(); applyWeekHint();
-  });
-
-  // Notes
   notes.value = state.notes || '';
   notes.addEventListener('input',()=>{ state.notes = notes.value; save(); });
 
-  // Helpers
   function getExKey(card, ex){ return `${card.dataset.day}:${ex.dataset.ex}` }
   function getSets(id){ state.sets = state.sets||{}; return (state.sets[id]||[]).slice(); }
   function saveSets(id, arr){ state.sets = state.sets||{}; state.sets[id]=arr; save(); }
@@ -702,91 +348,145 @@
         const now=getSets(id); now[i]=!now[i];
         saveSets(id,now);
         renderSets(setsWrap,now,id);
-        vibe();
         updateAllProgressBars();
       });
       setsWrap.appendChild(b);
     });
-  }
-  function activateTab(idx){
-    $$('.tab',tabs).forEach(t=>t.classList.remove('active'));
-    const tab = $(`.tab[data-day="${idx}"]`, tabs);
-    if(tab) tab.classList.add('active');
-    dayCards.forEach(c=>c.style.display = (+c.dataset.day===idx)?'block':'none');
-    
-    $$('.tab',tabs).forEach(t=>t.classList.remove('today'));
-    const todayTab = $(`.tab[data-day="${dow}"]`, tabs);
-    if (todayTab) todayTab.classList.add('today');
-  }
-  function currentDay(){ const t=$('.tab.active',tabs); return t?+t.dataset.day:0; }
-  function resetCurrentDay(){
-    if (!confirm('¿Seguro que quieres reiniciar el progreso de hoy?')) return;
-    const d=currentDay();
-    const currentDayCard = $(`article.day[data-day="${d}"]`);
-    if (currentDayCard) {
-      $$(`.exercise`, currentDayCard).forEach(ex=>{
-        const setsWrap = $('.sets',ex);
-        if (!setsWrap) return;
-        const id=getExKey(currentDayCard, ex);
-        const def=+setsWrap.dataset.default||3;
-        const arr=Array(def).fill(false);
-        saveSets(id,arr); 
-        renderSets(setsWrap,arr,id);
-
-        const delBtn = $('.delset', ex);
-        if (delBtn) {
-            delBtn.classList.toggle('ghost', def <= 1);
-        }
-      });
-    }
     updateAllProgressBars();
   }
+  function activateTab(idx){
+    $$('.tab',tabsContainer).forEach(t=>t.classList.remove('active'));
+    $(`.tab[data-day="${idx}"]`, tabsContainer)?.classList.add('active');
+    $$('.day').forEach(c=>c.style.display = (+c.dataset.day===idx)?'block':'none');
+    $$('.tab',tabsContainer).forEach(t=>t.classList.remove('today'));
+    $(`.tab[data-day="${dow}"]`, tabsContainer)?.classList.add('today');
+  }
+  function currentDay(){ const t=$('.tab.active',tabsContainer); return t?+t.dataset.day:0; }
+  function resetCurrentDay(){
+    const d=currentDay();
+    const card = $(`.day[data-day="${d}"]`);
+    if (card) {
+      $$(`.exercise`, card).forEach(ex=>{
+        const setsWrap = $('.sets',ex);
+        if (!setsWrap) return;
+        const id=getExKey(card, ex);
+        const def=+setsWrap.dataset.default||3;
+        const arr=Array(def).fill(false);
+        saveSets(id,arr);  
+        renderSets(setsWrap,arr,id);
+        $('.delset', ex)?.classList.toggle('ghost', def <= 1);
+      });
+    }
+  }
   function applyWeekHint(){
-    const w = weekSel.value;
-    weekHint.style.color = 'var(--muted)';
-    if(w==='3'){ weekHint.textContent='Sube intensidad: últimas series clave a RIR 1.'; weekHint.style.color='var(--warn)'; }
-    else if(w==='5'){ weekHint.textContent='Añade +1 serie a cuádriceps/hip thrust.'; weekHint.style.color='var(--ok)'; }
-    else if(w.startsWith('6')){ weekHint.textContent='DELOAD: reduce volumen 40–50% y sube RIR +1–2.'; weekHint.style.color='var(--danger)'; }
-    else { weekHint.textContent='Sigue el plan base (RIR ~3→2).'; }
+    const w = weekSel.value; weekHint.style.color = 'var(--muted)'; weekHint.textContent = '';
+    if(w === '1'){ weekHint.textContent='Sem 1: Compuestos @RIR2–3; Accesorios @RIR1–2.'; } 
+    else if(w === '2' || w === '3'){ weekHint.textContent='Sem 2–3: Compuestos @RIR1–2; Accesorios @RIR0–1.'; weekHint.style.color='var(--warn)'; } 
+    else if(w === '4'){ weekHint.textContent='DELOAD: −40–50% series, +1–2 RIR.'; weekHint.style.color='var(--danger)'; } 
+    else if(w === '5' || w === '6'){ weekHint.textContent='Sem 5–6: Repite Sem 2-3 y añade +1 serie a quads o lats.'; weekHint.style.color='var(--ok)'; }
   }
   function updateAllProgressBars() {
-    dayCards.forEach(card => {
+    $$('.day').forEach(card => {
         const dayIndex = card.dataset.day;
         const tab = $(`.tab[data-day="${dayIndex}"]`);
         if (!tab) return;
-
-        let totalSets = 0;
-        let doneSets = 0;
-
+        let totalSets = 0, doneSets = 0;
         $$('.exercise', card).forEach(ex => {
             const id = getExKey(card, ex);
             if (state.sets && state.sets[id]) {
-                const setsArray = state.sets[id];
-                totalSets += setsArray.length;
-                doneSets += setsArray.filter(isDone => isDone).length;
+                totalSets += state.sets[id].length;
+                doneSets += state.sets[id].filter(d => d).length;
             }
         });
-
         const percentage = totalSets > 0 ? (doneSets / totalSets) * 100 : 0;
         const progressBar = $('.progress-bar', tab);
-        if (progressBar) {
-            progressBar.style.width = `${percentage}%`;
-        }
+        if (progressBar) progressBar.style.width = `${percentage}%`;
     });
   }
   function save(){ localStorage.setItem(stateKey, JSON.stringify(state)); }
-  function vibe(){ if('vibrate' in navigator) navigator.vibrate([40]); }
   
-  // Initial calls
-  activateTab(dow);
-  updateAllProgressBars();
+  let notificationTimeout;
+  function showNotification(message, type = 'success') {
+      const notification = document.getElementById('notification');
+      if (!notification) return;
+      clearTimeout(notificationTimeout);
+      notification.textContent = message;
+      notification.className = type;
+      setTimeout(() => { notification.classList.add('show'); }, 10);
+      notificationTimeout = setTimeout(() => { notification.classList.remove('show'); }, 3000);
+  }
+
+  function loadRoutineData() {
+      const savedRoutine = localStorage.getItem('customRoutineData');
+      if (savedRoutine) {
+          try { return JSON.parse(savedRoutine); } 
+          catch (e) { console.error("Error al cargar rutina guardada, usando la de por defecto.", e); return defaultRoutineData; }
+      }
+      return defaultRoutineData;
+  }
+
+  function handleImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+          try {
+              const importedData = JSON.parse(e.target.result);
+              if (!importedData.days || !Array.isArray(importedData.days)) { throw new Error("Formato de rutina inválido."); }
+              localStorage.setItem('customRoutineData', JSON.stringify(importedData));
+              localStorage.removeItem(stateKey); 
+              state = {};
+              init();
+              showNotification('Rutina importada con éxito.');
+          } catch (error) {
+              console.error("Fallo al importar la rutina:", error);
+              showNotification('Error: El archivo JSON no es válido.', 'error');
+          }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+  }
+
+  function handleExport() {
+      try {
+          const jsonString = JSON.stringify(routineData, null, 2);
+          const blob = new Blob([jsonString], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'mi-rutina.json';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showNotification('Rutina exportada.');
+      } catch (error) {
+          console.error("Fallo al exportar la rutina:", error);
+          showNotification('Error al exportar.', 'error');
+      }
+  }
+
+  // --- INICIALIZACIÓN DE LA APP ---
+  function init() {
+    routineData = loadRoutineData(); // 1. Carga la rutina (guardada o por defecto)
+    renderRoutine(routineData); // 2. Crea el HTML de la rutina
+    attachEventListeners();      // 3. Hace que los botones y elementos sean interactivos
+    activateTab(dow);            // 4. Activa la pestaña del día de hoy
+    updateAllProgressBars();     // 5. Calcula el progreso inicial
+  }
+
+  // Listeners para Importar/Exportar
+  $('#importBtn').addEventListener('click', () => $('#importFile').click());
+  $('#importFile').addEventListener('change', handleImport);
+  $('#exportBtn').addEventListener('click', handleExport);
+
+  init();
   
-  // Registrar el Service Worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
-        .then(registration => console.log('Service Worker registrado con éxito:', registration.scope))
-        .catch(err => console.log('Fallo en el registro del Service Worker:', err));
+        .then(reg => console.log('Service Worker: Registrado'))
+        .catch(err => console.log(`Service Worker: Error: ${err}`));
     });
   }
 })();
