@@ -71,7 +71,19 @@
     #notification.success { background-color: var(--ok); color: var(--bg); }
     #notification.error { background-color: var(--danger); color: var(--ink); }
     @media (min-width: 600px) { .wrap { padding: 2rem; } .header-content { padding: 1rem 2rem; padding-top: calc(1rem + env(safe-area-inset-top)); } .head { flex-direction: row; justify-content: space-between; align-items: center; } }
-    @media (min-width: 900px) { .wrap { padding: 3rem 2rem; } .grid { grid-template-columns: 1fr 0.6fr; } .day-tabs-container { overflow-x: visible; } .day-tabs { display: grid; grid-template-columns: repeat(7, 1fr); } .quick-actions { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; } }
+    @media (min-width: 900px) { 
+        .wrap { padding: 3rem 2rem; } 
+        .grid { grid-template-columns: 1fr 0.6fr; } 
+        .day-tabs-container { overflow-x: visible; } 
+        .day-tabs { display: grid; grid-template-columns: repeat(7, 1fr); } 
+        .quick-actions { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; } 
+        .tab {
+            white-space: normal; /* Permite que el texto se divida en varias líneas en PC */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
   </style>
 </head>
 <body>
@@ -79,7 +91,7 @@
 <header>
   <div class="header-content">
     <div class="title">
-      <img src="img/logo.png" alt="Logo" class="logo">
+      <img src="img/logo.PNG" alt="Logo" class="logo">
       <div>
         <h1>Rutina Personalizada</h1>
         <div class="subtitle">Plan de Fuerza + Hipertrofia</div>
@@ -493,7 +505,4 @@
 </script>
 </body>
 </html>
-
-
-
 
