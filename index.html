@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Estilos (sin cambios) */
+    /* Estilos */
     :root {
       --bg: #1A1A1C; --bg-noise: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.05"/></svg>'); --elev: #28282A; --elev-2: #363638; --ink: #F5F5F7; --muted: #8A8A8E; --line: #3A3A3C; --brand: #FDB813; --ok: #34C759; --warn: #FF9500; --danger: #FF3B30; --radius-lg: 18px; --radius-md: 14px; --radius-sm: 10px; --shadow-lifted: 0 1px 2px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.3); --shadow-pressed: inset 0 2px 4px rgba(0,0,0,0.5); --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; --mono: "SF Mono", "Menlo", "Consolas", monospace; color-scheme: dark;
     }
@@ -20,7 +20,8 @@
     html, body { height: 100%; }
     body { margin: 0; background-color: var(--bg); background-image: var(--bg-noise); color: var(--ink); font: 16px/1.6 var(--font); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
     .wrap { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; }
-    header { position: sticky; top: 0; z-index: 100; backdrop-filter: saturate(1.5) blur(20px); -webkit-backdrop-filter: saturate(1.5) blur(20px); background: rgba(26, 26, 28, 0.85); border-bottom: 1px solid var(--line); }
+    header { position: sticky; top: 0; z-index: 100; backdrop-filter: saturate(1.5) blur(20px); -webkit-backdrop-filter: saturate(1.5) blur(20px); background: rgba(26, 26, 28, 0.85); border-bottom: 1px solid var(--line); transition: box-shadow 0.3s ease; }
+    header.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
     .header-content { max-width: 1100px; margin: 0 auto; padding: 1rem; padding-top: calc(1rem + env(safe-area-inset-top)); }
     .title { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
     .logo { height: 75px; width: auto; }
@@ -38,9 +39,10 @@
     .actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
     .btn { padding: 0.6rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--line); background: var(--elev); color: var(--ink); cursor: pointer; font-weight: 600; transition: all 0.2s ease-out; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     .btn:hover { transform: translateY(-2px); filter: brightness(1.15); border-color: var(--muted); }
+    .btn:active { transform: scale(0.96); transition-duration: 0.1s; }
     .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
-    .card { background-image: linear-gradient(180deg, var(--elev), #242426); border: 1px solid var(--line); border-top-color: #48484A; border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-lifted); opacity: 0; transform: translateY(20px); animation: fadeIn 0.5s ease-out forwards; }
-    @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+    .card { background-image: linear-gradient(180deg, var(--elev), #242426); border: 1px solid var(--line); border-top-color: #48484A; border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-lifted); opacity: 0; transform: translateY(20px) scale(0.98); animation: fadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+    @keyframes fadeIn { to { opacity: 1; transform: translateY(0) scale(1); } }
     .day { display: none; }
     h2 { margin: 0 0 1.5rem; font-size: 1.3rem; font-weight: 700; }
     .exercise-note { font-size: 0.85rem; color: var(--muted); background-color: var(--elev-2); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); margin-top: 0.5rem; margin-bottom: 0; }
@@ -50,7 +52,7 @@
     .name {
       font-weight: 700;
       font-size: 1.1rem;
-      min-width: 0; /* Permite que el nombre del ejercicio se encoja si es necesario */
+      min-width: 0;
     }
     .meta { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .pill { padding: 0.25rem 0.75rem; border-radius: 999px; font-weight: 700; font-size: 0.75rem; color: var(--bg); }
@@ -60,34 +62,44 @@
     .sets { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.75rem; }
     .set { aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--line); text-align: center; cursor: pointer; user-select: none; background-image: linear-gradient(180deg, var(--elev), #242426); font-weight: 600; transition: all 0.2s ease-out; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
     .set:hover { transform: translateY(-3px); }
+    .set:active { transform: scale(0.95); transition-duration: 0.1s; }
     .set.done { background: var(--brand); color: #1A1A1C; border-color: transparent; box-shadow: var(--shadow-pressed); }
     .set small { font-size: 0.7rem; color: var(--muted); margin-top: 0.25rem; transition: color 0.2s ease-out; }
     .set.done small { color: #1A1A1C; opacity: 0.8; }
     .row { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
-    .timer { display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid var(--line); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); background: var(--elev); }
+    .timer { display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid var(--line); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); background: var(--elev); transition: all 0.3s ease; }
     .timer b { font-family: var(--mono); font-size: 1rem; }
     .sticky { position: sticky; top: 110px; }
     .panel { display: grid; gap: 1.5rem; }
     textarea { width: 100%; min-height: 120px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; font-family: var(--font); font-size: 1rem; }
     .footer { color: var(--muted); font-size: 0.8rem; opacity: .8; text-align: center; margin-top: 1rem; }
-    #notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 1rem 1.5rem; border-radius: var(--radius-md); background-color: var(--elev-2); color: var(--ink); box-shadow: var(--shadow-lifted); transition: bottom 0.5s ease-in-out; z-index: 200; text-align: center; }
-    #notification.show { bottom: 20px; }
+    #notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 0.8rem 1.2rem; border-radius: var(--radius-md); background-color: var(--elev-2); color: var(--ink); box-shadow: var(--shadow-lifted); transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); z-index: 200; text-align: center; display: flex; align-items: center; font-weight: 600; }
+    #notification.show { bottom: 20px; transform: translateX(-50%) scale(1); opacity: 1; }
     #notification.success { background-color: var(--ok); color: var(--bg); }
     #notification.error { background-color: var(--danger); color: var(--ink); }
+
+    .timer.running { border-color: var(--brand); box-shadow: 0 0 12px rgba(253, 184, 19, 0.6); animation: pulse-border 2s infinite alternate; }
+    .timer.running button { color: var(--brand); animation: pulse-glow-text 2s infinite alternate; }
+    @keyframes pulse-border {
+        from { box-shadow: 0 0 6px rgba(253, 184, 19, 0.4); }
+        to { box-shadow: 0 0 16px rgba(253, 184, 19, 0.8); }
+    }
+    @keyframes pulse-glow-text {
+        from { text-shadow: 0 0 2px var(--brand); }
+        to { text-shadow: 0 0 8px var(--brand), 0 0 10px var(--brand); }
+    }
+    .pop-animation { animation: pop 0.3s ease-out; }
+    @keyframes pop {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.15); }
+        100% { transform: scale(1); }
+    }
     
     @media (min-width: 600px) {
       .wrap { padding: 2rem; }
       .header-content { padding: 1rem 2rem; padding-top: calc(1rem + env(safe-area-inset-top)); }
-      .head {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem; /* Añade espacio entre el nombre y las pills */
-      }
-      .meta {
-        flex-wrap: nowrap; /* Mantiene las pills en una sola línea en pantallas grandes */
-        flex-shrink: 0; /* Evita que el contenedor de pills se encoja */
-      }
+      .head { flex-direction: row; justify-content: space-between; align-items: center; gap: 1rem; }
+      .meta { flex-wrap: nowrap; flex-shrink: 0; }
     }
 
     @media (min-width: 900px) { 
@@ -96,12 +108,7 @@
         .day-tabs-container { overflow-x: visible; } 
         .day-tabs { display: grid; grid-template-columns: repeat(7, 1fr); } 
         .quick-actions { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; } 
-        .tab {
-            white-space: normal; /* Permite que el texto se divida en varias líneas en PC */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .tab { white-space: normal; display: flex; align-items: center; justify-content: center; }
     }
   </style>
 </head>
@@ -117,12 +124,10 @@
       </div>
     </div>
     <div class="day-tabs-container">
-      <!-- 1. Contenedor de pestañas vacío. Se rellenará con JavaScript. -->
       <div class="day-tabs" id="tabs"></div>
     </div>
     <div class="quick-actions">
         <div class="actions">
-            <button class="btn" id="toggleTheme">🌗 Tema</button>
             <button class="btn" id="resetDay">↺ Reset día</button>
         </div>
     </div>
@@ -130,10 +135,8 @@
 </header>
 
 <main class="wrap grid">
-  <!-- 2. Contenedor de entrenamientos vacío. Se rellenará con JavaScript. -->
   <section id="workouts"></section>
 
-  <!-- COLUMNA DERECHA: PANELES (esta no cambia) -->
   <aside class="panel sticky">
     <section class="card" style="animation-delay: 0.2s;">
         <h2>Progresión (6 semanas)</h2>
@@ -171,8 +174,6 @@
 <script>
 (function(){
 
-  /* --- 3. AQUÍ VA LA RUTINA DEL CLIENTE (FORMATO JSON) --- */
-  // Para cambiar la rutina, solo tienes que editar este bloque.
   const defaultRoutineData = {
     days: [
       {
@@ -261,30 +262,26 @@
   const weekSel = $('#week');
   const weekHint = $('#weekHint');
   const notes = $('#notes');
-  let routineData; // Contendrá la rutina activa (por defecto o importada)
+  let routineData;
 
-  // --- NUEVA LÓGICA PARA RENDERIZAR LA RUTINA DESDE EL JSON ---
   function renderRoutine(data) {
     tabsContainer.innerHTML = '';
     workoutsContainer.innerHTML = '';
 
     data.days.forEach((day, dayIndex) => {
-      // Crear Pestaña
       const tab = document.createElement('div');
       tab.className = 'tab';
       tab.dataset.day = dayIndex;
       tab.innerHTML = `<span>${day.title}</span><div class="progress-bar"></div>`;
       tabsContainer.appendChild(tab);
 
-      // Crear Tarjeta del Día
       const dayCard = document.createElement('article');
       dayCard.className = 'card day';
       dayCard.dataset.day = dayIndex;
-      dayCard.style.animationDelay = '0.1s';
+      dayCard.style.animationDelay = `${0.1 + dayIndex * 0.05}s`;
       let exercisesHTML = `<h2>${day.title.replace(/•/g, '–')}</h2>`;
 
       day.exercises.forEach(ex => {
-        // Si no hay series, es solo una nota (como el descanso o la preparación)
         if (!ex.sets) {
             exercisesHTML += `
               <div class="exercise" data-ex="${ex.id}">
@@ -318,7 +315,6 @@
     });
   }
 
-  // --- LÓGICA ORIGINAL (AHORA PARA AÑADIR INTERACTIVIDAD A ELEMENTOS CREADOS) ---
   function attachEventListeners() {
       const dayCards = $$('.day');
       dayCards.forEach(card => {
@@ -334,17 +330,17 @@
           }
           renderSets(setsWrap, state.sets[id], id);
 
-          const t = $('.timer', ex);
-          if (t) {
-            const min = parseFloat(t.dataset.min||'2');
-            const display = $('b',t);
-            const btn = $('button',t);
+          const timerEl = $('.timer', ex);
+          if (timerEl) {
+            const min = parseFloat(timerEl.dataset.min||'2');
+            const display = $('b',timerEl);
+            const btn = $('button',timerEl);
             let running=false, left=0, iv=null;
 
             function fmt(s){const m=Math.floor(s/60), r=String(Math.floor(s%60)).padStart(2,'0'); return `${String(m).padStart(2,'0')}:${r}`}
-            function start(){ left = Math.round(min*60); running=true; btn.textContent='⏸'; tick(); iv=setInterval(tick,1000); }
+            function start(){ if(running) return; left = Math.round(min*60); running=true; btn.textContent='⏸'; timerEl.classList.add('running'); tick(); iv=setInterval(tick,1000); }
             function tick(){ display.textContent=fmt(left); document.title = `${fmt(left)} | Descanso`; if(left<=0){ stop(); } left--; }
-            function stop(){ running=false; clearInterval(iv); btn.textContent='▶︎'; document.title = originalTitle; display.textContent = fmt(min*60); }
+            function stop(){ running=false; clearInterval(iv); btn.textContent='▶︎'; timerEl.classList.remove('running'); document.title = originalTitle; display.textContent = fmt(min*60); }
             btn.addEventListener('click',()=> running?stop():start());
             display.textContent = fmt(min*60);
           }
@@ -359,8 +355,6 @@
       $$('.tab', tabsContainer).forEach(t => t.addEventListener('click', () => activateTab(+t.dataset.day)));
   }
   
-  // --- FUNCIONES HELPERS (la mayoría sin cambios) ---
-  $('#toggleTheme').addEventListener('click',()=>{});
   $('#resetDay').addEventListener('click',resetCurrentDay);
   if(state.week) weekSel.value=state.week;
   applyWeekHint();
@@ -376,10 +370,25 @@
       const b=document.createElement('button');
       b.className='set'+(val?' done':''); b.innerHTML=`S${i+1}<small>${val?'OK':'-'}</small>`;
       b.addEventListener('click',()=>{
-        const now=getSets(id); now[i]=!now[i];
+        const exerciseElement = setsWrap.closest('.exercise');
+        const now = getSets(id);
+        const isCompletingSet = !now[i];
+        now[i] = isCompletingSet;
+        
         saveSets(id,now);
         renderSets(setsWrap,now,id);
-        updateAllProgressBars();
+
+        if (isCompletingSet) {
+          b.classList.add('pop-animation');
+          b.addEventListener('animationend', () => b.classList.remove('pop-animation'), { once: true });
+          
+          if (exerciseElement) {
+            const timerButton = $('.timer button', exerciseElement);
+            if (timerButton && !timerButton.closest('.timer').classList.contains('running')) {
+              timerButton.click();
+            }
+          }
+        }
       });
       setsWrap.appendChild(b);
     });
@@ -441,7 +450,8 @@
       const notification = document.getElementById('notification');
       if (!notification) return;
       clearTimeout(notificationTimeout);
-      notification.textContent = message;
+      const icon = type === 'success' ? '✅' : '❌';
+      notification.innerHTML = `<span style="margin-right: 0.5rem;">${icon}</span> ${message}`;
       notification.className = type;
       setTimeout(() => { notification.classList.add('show'); }, 10);
       notificationTimeout = setTimeout(() => { notification.classList.remove('show'); }, 3000);
@@ -497,16 +507,19 @@
       }
   }
 
-  // --- INICIALIZACIÓN DE LA APP ---
   function init() {
-    routineData = loadRoutineData(); // 1. Carga la rutina (guardada o por defecto)
-    renderRoutine(routineData); // 2. Crea el HTML de la rutina
-    attachEventListeners();      // 3. Hace que los botones y elementos sean interactivos
-    activateTab(dow);            // 4. Activa la pestaña del día de hoy
-    updateAllProgressBars();     // 5. Calcula el progreso inicial
+    routineData = loadRoutineData();
+    renderRoutine(routineData);
+    attachEventListeners();
+    activateTab(dow);
+    updateAllProgressBars();
+    
+    const header = $('header');
+    window.addEventListener('scroll', () => {
+        header.classList.toggle('scrolled', window.scrollY > 10);
+    });
   }
 
-  // Listeners para Importar/Exportar
   $('#importBtn').addEventListener('click', () => $('#importFile').click());
   $('#importFile').addEventListener('change', handleImport);
   $('#exportBtn').addEventListener('click', handleExport);
@@ -524,6 +537,4 @@
 </script>
 </body>
 </html>
-
-
 
