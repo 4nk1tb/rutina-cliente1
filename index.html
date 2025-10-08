@@ -68,7 +68,7 @@
     .set.done small { color: #1A1A1C; opacity: 0.8; }
     .row { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
     .timer { display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid var(--line); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); background: var(--elev); transition: all 0.3s ease; }
-    .timer b { font-family: var(--mono); font-size: 1.2rem; transition: all 0.3s ease; }
+    .timer b { font-family: var(--mono); font-size: 1rem; }
     .sticky { position: sticky; top: 110px; }
     .panel { display: grid; gap: 1.5rem; }
     textarea { width: 100%; min-height: 120px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; font-family: var(--font); font-size: 1rem; }
@@ -79,7 +79,7 @@
     #notification.error { background-color: var(--danger); color: var(--ink); }
 
     .timer.running { border-color: var(--brand); box-shadow: 0 0 12px rgba(253, 184, 19, 0.6); animation: pulse-border 2s infinite alternate; }
-    .timer.running button, .timer.running b { color: var(--brand); animation: pulse-glow-text 2s infinite alternate; }
+    .timer.running button { color: var(--brand); animation: pulse-glow-text 2s infinite alternate; }
     @keyframes pulse-border {
         from { box-shadow: 0 0 6px rgba(253, 184, 19, 0.4); }
         to { box-shadow: 0 0 16px rgba(253, 184, 19, 0.8); }
