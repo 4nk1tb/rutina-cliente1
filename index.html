@@ -49,11 +49,7 @@
     .exercise { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1rem; background: var(--bg); }
     .exercise:last-child { margin-bottom: 0; }
     .head { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
-    .name {
-      font-weight: 700;
-      font-size: 1.1rem;
-      min-width: 0;
-    }
+    .name { font-weight: 700; font-size: 1.1rem; min-width: 0; }
     .meta { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .pill { padding: 0.25rem 0.75rem; border-radius: 999px; font-weight: 700; font-size: 0.75rem; color: var(--bg); }
     .p-rir { background: var(--warn); }
@@ -67,8 +63,8 @@
     .set small { font-size: 0.7rem; color: var(--muted); margin-top: 0.25rem; transition: color 0.2s ease-out; }
     .set.done small { color: #1A1A1C; opacity: 0.8; }
     .row { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
-    .timer { display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid var(--line); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); background: var(--elev); transition: all 0.3s ease; }
-    .timer b { font-family: var(--mono); font-size: 1rem; }
+    .timer { position: relative; display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid var(--line); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); background: var(--elev); transition: all 0.3s ease; }
+    .timer b { font-family: var(--mono); font-size: 1.2rem; transition: all 0.3s ease; }
     .sticky { position: sticky; top: 110px; }
     .panel { display: grid; gap: 1.5rem; }
     textarea { width: 100%; min-height: 120px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; font-family: var(--font); font-size: 1rem; }
@@ -78,15 +74,17 @@
     #notification.success { background-color: var(--ok); color: var(--bg); }
     #notification.error { background-color: var(--danger); color: var(--ink); }
 
-    .timer.running { border-color: var(--brand); box-shadow: 0 0 12px rgba(253, 184, 19, 0.6); animation: pulse-border 2s infinite alternate; }
-    .timer.running button { color: var(--brand); animation: pulse-glow-text 2s infinite alternate; }
-    @keyframes pulse-border {
-        from { box-shadow: 0 0 6px rgba(253, 184, 19, 0.4); }
-        to { box-shadow: 0 0 16px rgba(253, 184, 19, 0.8); }
+    .timer.running { border-color: var(--brand); }
+    .timer::before { content: ''; position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px; border-radius: var(--radius-sm); background: radial-gradient(circle, rgba(253, 184, 19, 0.6) 0%, rgba(253, 184, 19, 0) 70%); opacity: 0; transform: scale(0.95); transition: opacity 0.3s ease, transform 0.3s ease; z-index: -1; pointer-events: none; }
+    .timer.running::before { animation: pulse-glow 2s infinite alternate; }
+    .timer.running button, .timer.running b { color: var(--brand); animation: pulse-glow-text 2s infinite alternate; }
+    @keyframes pulse-glow {
+        from { transform: scale(0.98); opacity: 0.7; }
+        to { transform: scale(1.05); opacity: 1; }
     }
     @keyframes pulse-glow-text {
-        from { text-shadow: 0 0 2px var(--brand); }
-        to { text-shadow: 0 0 8px var(--brand), 0 0 10px var(--brand); }
+        from { text-shadow: 0 0 2px rgba(253, 184, 19, 0.7); }
+        to { text-shadow: 0 0 10px rgba(253, 184, 19, 1); }
     }
     .pop-animation { animation: pop 0.3s ease-out; }
     @keyframes pop {
@@ -250,10 +248,10 @@
     ]
   };
 
-  const $ = (q,el=document)=>el.querySelector(q);
-  const $$ = (q,el=document)=>[...el.querySelectorAll(q)];
-  const stateKey = 'rutina-fuerza-elegante-v4';
-  let state = JSON.parse(localStorage.getItem(stateKey)||'{}');
+  const $ = (q, el = document) => el.querySelector(q);
+  const $$ = (q, el = document) => [...el.querySelectorAll(q)];
+  const stateKey = 'rutina-fuerza-elegante-v5-optimized';
+  let state = JSON.parse(localStorage.getItem(stateKey) || '{}');
   const originalTitle = document.title;
   const today = new Date();
   const dow = (today.getDay() + 6) % 7;
@@ -263,6 +261,7 @@
   const weekHint = $('#weekHint');
   const notes = $('#notes');
   let routineData;
+  const timers = new Map();
 
   function renderRoutine(data) {
     tabsContainer.innerHTML = '';
@@ -282,17 +281,14 @@
       let exercisesHTML = `<h2>${day.title.replace(/•/g, '–')}</h2>`;
 
       day.exercises.forEach(ex => {
+        const exId = `${dayIndex}:${ex.id}`;
         if (!ex.sets) {
-            exercisesHTML += `
-              <div class="exercise" data-ex="${ex.id}">
-                  <div class="head"><div class="name">${ex.name}</div></div>
-                  ${ex.note ? `<p class="exercise-note" style="margin-top:0;">${ex.note}</p>` : ''}
-              </div>`;
+            exercisesHTML += `<div class="exercise" data-ex-id="${exId}"><div class="head"><div class="name">${ex.name}</div></div>${ex.note ? `<p class="exercise-note" style="margin-top:0;">${ex.note}</p>` : ''}</div>`;
             return;
         }
 
         exercisesHTML += `
-          <div class="exercise" data-ex="${ex.id}">
+          <div class="exercise" data-ex-id="${exId}">
             <div class="head">
                 <div class="name">${ex.name}</div>
                 <div class="meta">
@@ -304,9 +300,9 @@
             <div class="sets" data-default="${ex.sets}"></div>
             ${ex.note ? `<p class="exercise-note">${ex.note}</p>` : ''}
             <div class="row">
-                <div class="timer" data-min="${ex.timer || 1.5}"><b>00:00</b> <button class="btn btn-mini">▶︎</button></div> 
-                <button class="btn addset">+ Serie</button> 
-                <button class="btn delset ghost">– Serie</button>
+                <div class="timer" data-min="${ex.timer || 1.5}"><b>00:00</b><button class="btn btn-mini" data-action="toggle-timer">▶︎</button></div> 
+                <button class="btn" data-action="add-set">+ Serie</button> 
+                <button class="btn delset" data-action="del-set">– Serie</button>
             </div>
           </div>`;
       });
@@ -315,127 +311,136 @@
     });
   }
 
-  function attachEventListeners() {
-      const dayCards = $$('.day');
-      dayCards.forEach(card => {
-        $$('.exercise', card).forEach(ex => {
-          const setsWrap = $('.sets',ex);
-          if (!setsWrap) return;
-          const def = +setsWrap.dataset.default || 3;
-          const id = getExKey(card, ex);
+  function initializeTimers() {
+      $$('.timer').forEach(timerEl => {
+          const exId = timerEl.closest('.exercise').dataset.exId;
+          const min = parseFloat(timerEl.dataset.min || '2');
+          const display = $('b', timerEl);
+          const btn = $('button', timerEl);
+          let running = false, left = 0, iv = null;
+
+          const fmt = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+          const start = () => { if (running) return; left = Math.round(min * 60); running = true; btn.textContent = '⏸'; timerEl.classList.add('running'); tick(); iv = setInterval(tick, 1000); };
+          const stop = () => { running = false; clearInterval(iv); btn.textContent = '▶︎'; timerEl.classList.remove('running'); document.title = originalTitle; display.textContent = fmt(min * 60); };
+          const tick = () => { display.textContent = fmt(left); document.title = `${fmt(left)} | Descanso`; if (left-- <= 0) stop(); };
           
-          if (!state.sets) state.sets = {};
-          if (!state.sets[id]) {
-            state.sets[id] = Array(def).fill(false);
-          }
-          renderSets(setsWrap, state.sets[id], id);
-
-          const timerEl = $('.timer', ex);
-          if (timerEl) {
-            const min = parseFloat(timerEl.dataset.min||'2');
-            const display = $('b',timerEl);
-            const btn = $('button',timerEl);
-            let running=false, left=0, iv=null;
-
-            function fmt(s){const m=Math.floor(s/60), r=String(Math.floor(s%60)).padStart(2,'0'); return `${String(m).padStart(2,'0')}:${r}`}
-            function start(){ if(running) return; left = Math.round(min*60); running=true; btn.textContent='⏸'; timerEl.classList.add('running'); tick(); iv=setInterval(tick,1000); }
-            function tick(){ display.textContent=fmt(left); document.title = `${fmt(left)} | Descanso`; if(left<=0){ stop(); } left--; }
-            function stop(){ running=false; clearInterval(iv); btn.textContent='▶︎'; timerEl.classList.remove('running'); document.title = originalTitle; display.textContent = fmt(min*60); }
-            btn.addEventListener('click',()=> running?stop():start());
-            display.textContent = fmt(min*60);
-          }
-
-          const add = $('.addset', ex);
-          const del = $('.delset', ex);
-          if(add){ add.addEventListener('click',()=>{ const c = getSets(id); c.push(false); saveSets(id,c); renderSets(setsWrap,c,id); if(del) del.classList.remove('ghost'); }); }
-          if(del){ if(getSets(id).length <= 1) del.classList.add('ghost'); del.addEventListener('click',()=>{ const c = getSets(id); if(c.length > 1){ c.pop(); saveSets(id,c); renderSets(setsWrap,c,id); if(c.length <= 1) del.classList.add('ghost'); } }); }
-        });
+          display.textContent = fmt(min * 60);
+          timers.set(exId, { start, stop, isRunning: () => running });
       });
-
-      $$('.tab', tabsContainer).forEach(t => t.addEventListener('click', () => activateTab(+t.dataset.day)));
   }
   
-  $('#resetDay').addEventListener('click',resetCurrentDay);
-  if(state.week) weekSel.value=state.week;
-  applyWeekHint();
-  notes.value = state.notes || '';
-  notes.addEventListener('input',()=>{ state.notes = notes.value; save(); });
-
-  function getExKey(card, ex){ return `${card.dataset.day}:${ex.dataset.ex}` }
-  function getSets(id){ state.sets = state.sets||{}; return (state.sets[id]||[]).slice(); }
-  function saveSets(id, arr){ state.sets = state.sets||{}; state.sets[id]=arr; save(); }
-  function renderSets(setsWrap, arr, id){
-    setsWrap.innerHTML='';
-    arr.forEach((val,i)=>{
-      const b=document.createElement('button');
-      b.className='set'+(val?' done':''); b.innerHTML=`S${i+1}<small>${val?'OK':'-'}</small>`;
-      b.addEventListener('click',()=>{
-        const exerciseElement = setsWrap.closest('.exercise');
-        const now = getSets(id);
-        const isCompletingSet = !now[i];
-        now[i] = isCompletingSet;
-        
-        saveSets(id,now);
-        renderSets(setsWrap,now,id);
-
-        if (isCompletingSet) {
-          b.classList.add('pop-animation');
-          b.addEventListener('animationend', () => b.classList.remove('pop-animation'), { once: true });
-          
-          if (exerciseElement) {
-            const timerButton = $('.timer button', exerciseElement);
-            if (timerButton && !timerButton.closest('.timer').classList.contains('running')) {
-              timerButton.click();
-            }
-          }
-        }
-      });
-      setsWrap.appendChild(b);
+  function renderSets(setsWrap, arr, id) {
+    setsWrap.innerHTML = '';
+    arr.forEach((val, i) => {
+        const b = document.createElement('button');
+        b.className = 'set' + (val ? ' done' : '');
+        b.dataset.action = 'toggle-set';
+        b.dataset.index = i;
+        b.innerHTML = `S${i+1}<small>${val?'OK':'-'}</small>`;
+        setsWrap.appendChild(b);
     });
     updateAllProgressBars();
   }
-  function activateTab(idx){
-    $$('.tab',tabsContainer).forEach(t=>t.classList.remove('active'));
-    $(`.tab[data-day="${idx}"]`, tabsContainer)?.classList.add('active');
-    $$('.day').forEach(c=>c.style.display = (+c.dataset.day===idx)?'block':'none');
-    $$('.tab',tabsContainer).forEach(t=>t.classList.remove('today'));
-    $(`.tab[data-day="${dow}"]`, tabsContainer)?.classList.add('today');
+
+  function handleWorkoutClick(event) {
+    const target = event.target;
+    const action = target.dataset.action || target.closest('[data-action]')?.dataset.action;
+    if (!action) return;
+
+    const exerciseEl = target.closest('.exercise');
+    if (!exerciseEl) return;
+    const exId = exerciseEl.dataset.exId;
+    const setsWrap = $('.sets', exerciseEl);
+
+    switch (action) {
+        case 'toggle-set': {
+            const setIndex = parseInt(target.dataset.index, 10);
+            const now = state.sets[exId];
+            const isCompletingSet = !now[setIndex];
+            now[setIndex] = isCompletingSet;
+            
+            saveSets(exId, now);
+            renderSets(setsWrap, now, exId);
+            
+            if (isCompletingSet) {
+                const button = $(`.set[data-index='${setIndex}']`, setsWrap);
+                button.classList.add('pop-animation');
+                button.addEventListener('animationend', () => button.classList.remove('pop-animation'), { once: true });
+                timers.get(exId)?.start();
+            }
+            break;
+        }
+        case 'toggle-timer': {
+            const timer = timers.get(exId);
+            if (timer) timer.isRunning() ? timer.stop() : timer.start();
+            break;
+        }
+        case 'add-set': {
+            const now = state.sets[exId];
+            now.push(false);
+            saveSets(exId, now);
+            renderSets(setsWrap, now, exId);
+            break;
+        }
+        case 'del-set': {
+            const now = state.sets[exId];
+            if (now.length > 1) {
+                now.pop();
+                saveSets(exId, now);
+                renderSets(setsWrap, now, exId);
+            }
+            break;
+        }
+    }
   }
-  function currentDay(){ const t=$('.tab.active',tabsContainer); return t?+t.dataset.day:0; }
-  function resetCurrentDay(){
-    const d=currentDay();
+  
+  function saveSets(id, arr) {
+    state.sets = state.sets || {};
+    state.sets[id] = arr;
+    save();
+    const delBtn = $(`[data-ex-id="${id}"] .delset`);
+    if(delBtn) delBtn.classList.toggle('ghost', arr.length <= 1);
+  }
+
+  function activateTab(idx) {
+    $$('.tab', tabsContainer).forEach(t => t.classList.remove('active'));
+    $(`.tab[data-day="${idx}"]`, tabsContainer)?.classList.add('active');
+    $$('.day').forEach(c => c.style.display = (+c.dataset.day === idx) ? 'block' : 'none');
+    state.lastOpenedDay = idx;
+    save();
+  }
+
+  function resetCurrentDay() {
+    const d = currentDay();
     const card = $(`.day[data-day="${d}"]`);
     if (card) {
-      $$(`.exercise`, card).forEach(ex=>{
-        const setsWrap = $('.sets',ex);
+      $$('.exercise', card).forEach(ex => {
+        const setsWrap = $('.sets', ex);
         if (!setsWrap) return;
-        const id=getExKey(card, ex);
-        const def=+setsWrap.dataset.default||3;
-        const arr=Array(def).fill(false);
-        saveSets(id,arr);  
-        renderSets(setsWrap,arr,id);
-        $('.delset', ex)?.classList.toggle('ghost', def <= 1);
+        const exId = ex.dataset.exId;
+        const def = +setsWrap.dataset.default || 3;
+        const arr = Array(def).fill(false);
+        saveSets(exId, arr);
+        renderSets(setsWrap, arr, exId);
       });
     }
   }
-  function applyWeekHint(){
-    const w = weekSel.value; weekHint.style.color = 'var(--muted)'; weekHint.textContent = '';
-    if(w === '1'){ weekHint.textContent='Sem 1: Compuestos @RIR2–3; Accesorios @RIR1–2.'; } 
-    else if(w === '2' || w === '3'){ weekHint.textContent='Sem 2–3: Compuestos @RIR1–2; Accesorios @RIR0–1.'; weekHint.style.color='var(--warn)'; } 
-    else if(w === '4'){ weekHint.textContent='DELOAD: −40–50% series, +1–2 RIR.'; weekHint.style.color='var(--danger)'; } 
-    else if(w === '5' || w === '6'){ weekHint.textContent='Sem 5–6: Repite Sem 2-3 y añade +1 serie a quads o lats.'; weekHint.style.color='var(--ok)'; }
-  }
+
   function updateAllProgressBars() {
-    $$('.day').forEach(card => {
-        const dayIndex = card.dataset.day;
+    routineData.days.forEach((day, dayIndex) => {
         const tab = $(`.tab[data-day="${dayIndex}"]`);
         if (!tab) return;
         let totalSets = 0, doneSets = 0;
-        $$('.exercise', card).forEach(ex => {
-            const id = getExKey(card, ex);
-            if (state.sets && state.sets[id]) {
-                totalSets += state.sets[id].length;
-                doneSets += state.sets[id].filter(d => d).length;
+        day.exercises.forEach(ex => {
+            if (ex.sets) {
+                const exId = `${dayIndex}:${ex.id}`;
+                const setsArray = state.sets?.[exId];
+                if (setsArray) {
+                    totalSets += setsArray.length;
+                    doneSets += setsArray.filter(d => d).length;
+                } else {
+                    totalSets += ex.sets;
+                }
             }
         });
         const percentage = totalSets > 0 ? (doneSets / totalSets) * 100 : 0;
@@ -443,7 +448,63 @@
         if (progressBar) progressBar.style.width = `${percentage}%`;
     });
   }
-  function save(){ localStorage.setItem(stateKey, JSON.stringify(state)); }
+
+  function init() {
+    routineData = loadRoutineData();
+    renderRoutine(routineData);
+    
+    // Initialize state for exercises if not present
+    state.sets = state.sets || {};
+    routineData.days.forEach((day, dayIndex) => {
+        day.exercises.forEach(ex => {
+            if (ex.sets) {
+                const exId = `${dayIndex}:${ex.id}`;
+                if (!state.sets[exId]) {
+                    state.sets[exId] = Array(ex.sets).fill(false);
+                }
+                const setsWrap = $(`[data-ex-id="${exId}"] .sets`);
+                if(setsWrap) renderSets(setsWrap, state.sets[exId], exId);
+            }
+        });
+    });
+    
+    initializeTimers();
+    workoutsContainer.addEventListener('click', handleWorkoutClick);
+    tabsContainer.addEventListener('click', e => {
+        const tab = e.target.closest('.tab');
+        if (tab) activateTab(+tab.dataset.day);
+    });
+
+    $('#resetDay').addEventListener('click', resetCurrentDay);
+    if (state.week) weekSel.value = state.week;
+    applyWeekHint();
+    notes.value = state.notes || '';
+    notes.addEventListener('input', () => { state.notes = notes.value; save(); });
+
+    const initialDay = state.lastOpenedDay !== undefined ? state.lastOpenedDay : dow;
+    activateTab(initialDay);
+    $$('.tab', tabsContainer).forEach(t => {
+      if (t.dataset.day == dow) t.classList.add('today');
+    });
+    updateAllProgressBars();
+    
+    const header = $('header');
+    window.addEventListener('scroll', () => {
+        header.classList.toggle('scrolled', window.scrollY > 10);
+    });
+  }
+
+  function loadRoutineData() {
+      const savedRoutine = localStorage.getItem('customRoutineData');
+      if (savedRoutine) {
+          try { return JSON.parse(savedRoutine); } 
+          catch (e) { console.error("Error al cargar rutina guardada, usando la de por defecto.", e); return defaultRoutineData; }
+      }
+      return defaultRoutineData;
+  }
+  
+  function save() { localStorage.setItem(stateKey, JSON.stringify(state)); }
+  function currentDay() { const t = $('.tab.active', tabsContainer); return t ? +t.dataset.day : 0; }
   
   let notificationTimeout;
   function showNotification(message, type = 'success') {
@@ -457,13 +518,12 @@
       notificationTimeout = setTimeout(() => { notification.classList.remove('show'); }, 3000);
   }
 
-  function loadRoutineData() {
-      const savedRoutine = localStorage.getItem('customRoutineData');
-      if (savedRoutine) {
-          try { return JSON.parse(savedRoutine); } 
-          catch (e) { console.error("Error al cargar rutina guardada, usando la de por defecto.", e); return defaultRoutineData; }
-      }
-      return defaultRoutineData;
+  function applyWeekHint() {
+    const w = weekSel.value; weekHint.style.color = 'var(--muted)'; weekHint.textContent = '';
+    if(w === '1'){ weekHint.textContent='Sem 1: Compuestos @RIR2–3; Accesorios @RIR1–2.'; } 
+    else if(w === '2' || w === '3'){ weekHint.textContent='Sem 2–3: Compuestos @RIR1–2; Accesorios @RIR0–1.'; weekHint.style.color='var(--warn)'; } 
+    else if(w === '4'){ weekHint.textContent='DELOAD: −40–50% series, +1–2 RIR.'; weekHint.style.color='var(--danger)'; } 
+    else if(w === '5' || w === '6'){ weekHint.textContent='Sem 5–6: Repite Sem 2-3 y añade +1 serie a quads o lats.'; weekHint.style.color='var(--ok)'; }
   }
 
   function handleImport(event) {
@@ -505,19 +565,6 @@
           console.error("Fallo al exportar la rutina:", error);
           showNotification('Error al exportar.', 'error');
       }
-  }
-
-  function init() {
-    routineData = loadRoutineData();
-    renderRoutine(routineData);
-    attachEventListeners();
-    activateTab(dow);
-    updateAllProgressBars();
-    
-    const header = $('header');
-    window.addEventListener('scroll', () => {
-        header.classList.toggle('scrolled', window.scrollY > 10);
-    });
   }
 
   $('#importBtn').addEventListener('click', () => $('#importFile').click());
