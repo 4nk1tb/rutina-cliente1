@@ -17,8 +17,8 @@
       --bg: #1A1A1C; --bg-noise: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.05"/></svg>'); --elev: #28282A; --elev-2: #363638; --ink: #F5F5F7; --muted: #8A8A8E; --line: #3A3A3C; --brand: #FDB813; --ok: #34C759; --warn: #FF9500; --danger: #FF3B30; --radius-lg: 18px; --radius-md: 14px; --radius-sm: 10px; --shadow-lifted: 0 1px 2px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.3); --shadow-pressed: inset 0 2px 4px rgba(0,0,0,0.5); --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; --mono: "SF Mono", "Menlo", "Consolas", monospace; color-scheme: dark;
     }
     * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body { margin: 0; background-color: var(--bg); background-image: var(--bg-noise); color: var(--ink); font: 16px/1.6 var(--font); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    html { height: 100%; }
+    body { min-height: 100%; margin: 0; background-color: var(--bg); background-image: var(--bg-noise); color: var(--ink); font: 16px/1.6 var(--font); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; padding-bottom: 100px; }
     .wrap { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; }
     header { position: sticky; top: 0; z-index: 100; backdrop-filter: saturate(1.5) blur(20px); -webkit-backdrop-filter: saturate(1.5) blur(20px); background: rgba(26, 26, 28, 0.85); border-bottom: 1px solid var(--line); transition: box-shadow 0.3s ease; }
     header.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
@@ -33,7 +33,6 @@
     .tab { position: relative; overflow: hidden; flex: 0 0 auto; padding: 0.6rem 1rem; border-radius: var(--radius-md); background: var(--elev); border: 1px solid var(--line); text-align: center; color: var(--muted); font-weight: 600; cursor: pointer; user-select: none; transition: all 0.2s ease-out; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     .tab:hover { transform: translateY(-2px); background: var(--elev-2); color: var(--ink); }
     .tab.active { background: var(--brand); color: #1A1A1C; border-color: transparent; font-weight: 700; }
-    .tab.today { border-color: var(--brand); }
     .progress-bar { position: absolute; bottom: 0; left: 0; height: 3px; background-color: var(--brand); width: 0%; transition: width 0.4s ease-out; border-radius: 0 0 var(--radius-md) var(--radius-md); }
     .tab.active .progress-bar { background-color: rgba(26, 26, 28, 0.4); }
     .actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
@@ -93,6 +92,40 @@
         100% { transform: scale(1); }
     }
     
+    /* --- Estilos Nueva Página de Progreso --- */
+    .app-page { display: none; }
+    .app-page.active { display: block; }
+    #bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: calc(60px + env(safe-area-inset-bottom)); background: rgba(26, 26, 28, 0.85); backdrop-filter: saturate(1.5) blur(20px); -webkit-backdrop-filter: saturate(1.5) blur(20px); border-top: 1px solid var(--line); display: flex; justify-content: space-around; align-items: flex-start; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
+    .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; color: var(--muted); font-family: var(--font); font-size: 0.7rem; font-weight: 600; padding-top: 8px; flex-grow: 1; cursor: pointer; transition: color 0.2s ease; }
+    .nav-btn svg { width: 24px; height: 24px; margin-bottom: 2px; }
+    .nav-btn.active { color: var(--brand); }
+    .progress-list .exercise-item { background: var(--elev); border: 1px solid var(--line); border-radius: var(--radius-md); margin-bottom: 0.75rem; padding: 1rem; cursor: pointer; transition: all 0.2s ease; }
+    .progress-list .exercise-item:hover { transform: translateY(-2px); border-color: var(--muted); }
+    .progress-chart-container { margin-top: 2rem; }
+    #chart-svg { width: 100%; height: auto; font-family: var(--font); }
+    #chart-svg .grid-line { stroke: var(--line); stroke-dasharray: 2, 3; }
+    #chart-svg .axis-label-y { fill: var(--muted); font-size: 10px; }
+    #chart-svg .axis-label-x { fill: var(--muted); font-size: 9px; }
+    #chart-svg .data-label { fill: var(--ink); font-size: 10px; font-weight: 600; }
+    #chart-svg .data-line { stroke: var(--brand); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; animation: draw-line 1s ease-out forwards; }
+    #chart-svg .data-point { fill: var(--brand); r: 4; transition: r 0.2s ease; }
+    #chart-svg .data-point:hover { r: 6; }
+    @keyframes draw-line { from { stroke-dasharray: 1000; stroke-dashoffset: 1000; } to { stroke-dasharray: 1000; stroke-dashoffset: 0; } }
+    #progress-detail-view h3 { margin-top: 0; }
+    #progress-history-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    #progress-history-table th, #progress-history-table td { text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--line); }
+    #progress-history-table th { font-size: 0.8rem; color: var(--muted); }
+    #no-progress-data { text-align: center; color: var(--muted); padding: 3rem 1rem; }
+    #progressBtnDesktop { display: none; }
+    
+    /* --- Estilos Modal --- */
+    #modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 2000; display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
+    #modal-overlay.visible { opacity: 1; pointer-events: all; }
+    #modal-content { background: var(--elev); padding: 1.5rem; border-radius: var(--radius-lg); width: 90%; max-width: 320px; transform: scale(0.95); transition: transform 0.3s ease; }
+    #modal-overlay.visible #modal-content { transform: scale(1); }
+    #modal-content h3 { margin-top: 0; }
+    .modal-input { width: 100%; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.75rem; font-family: var(--font); font-size: 1rem; margin-bottom: 1rem; }
+    
     @media (min-width: 600px) {
       .wrap { padding: 2rem; }
       .header-content { padding: 1rem 2rem; padding-top: calc(1rem + env(safe-area-inset-top)); }
@@ -107,65 +140,99 @@
         .day-tabs { display: grid; grid-template-columns: repeat(7, 1fr); } 
         .quick-actions { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; } 
         .tab { white-space: normal; display: flex; align-items: center; justify-content: center; }
+        body { padding-bottom: 0; } 
+        #bottom-nav { display: none; }
+        #progressBtnDesktop { display: inline-flex; }
     }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="header-content">
-    <div class="title">
-      <img src="img/logo.png" alt="Logo" class="logo">
-      <div>
-        <h1>Rutina Personalizada</h1>
-        <div class="subtitle">Plan de Fuerza + Hipertrofia</div>
+    <div class="header-content">
+      <div class="title">
+        <img src="img/logo.png" alt="Logo" class="logo">
+        <div>
+          <h1 id="header-title">Rutina Personalizada</h1>
+          <div id="header-subtitle" class="subtitle">Plan de Fuerza + Hipertrofia</div>
+        </div>
+      </div>
+      <div id="header-tabs" class="day-tabs-container">
+        <div class="day-tabs" id="tabs"></div>
+      </div>
+      <div id="header-actions" class="quick-actions">
+          <div class="actions">
+              <button class="btn" id="progressBtnDesktop">📊 Progreso</button>
+              <button class="btn" id="resetDay">↺ Reset día</button>
+          </div>
       </div>
     </div>
-    <div class="day-tabs-container">
-      <div class="day-tabs" id="tabs"></div>
-    </div>
-    <div class="quick-actions">
-        <div class="actions">
-            <button class="btn" id="resetDay">↺ Reset día</button>
-        </div>
-    </div>
-  </div>
 </header>
 
-<main class="wrap grid">
-  <section id="workouts"></section>
+<div id="routine-page" class="app-page active">
+    <main class="wrap grid">
+      <section id="workouts"></section>
+      <aside class="panel sticky">
+        <section class="card" style="animation-delay: 0.2s;">
+            <h2>Progresión (6 semanas)</h2>
+            <div class="row">
+                <label style="color: var(--muted); font-weight: 500;">Semana actual:</label>
+                <select id="week" style="background: var(--elev-2); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.5rem;">
+                    <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4 (Deload)</option> <option value="5">5</option> <option value="6">6</option>
+                </select>
+            </div>
+            <p id="weekHint" style="margin-top: 1rem; color: var(--muted);"></p>
+        </section>
+        <section class="card" style="animation-delay: 0.3s;">
+          <h2>Guía RIR</h2>
+          <p style="color: var(--muted); margin: 0; font-size: 0.9rem;">
+              <b>RIR 2:</b> Quedan ~2 reps. <b>RIR 1:</b> Última rep dura pero limpia. <b>RIR 0:</b> Fallo técnico. Excéntrica controlada.
+          </p>
+        </section>
+        <section class="card" style="animation-delay: 0.4s;">
+            <h2>Notas</h2>
+            <textarea id="notes" placeholder="Sensaciones, cargas, RIR real, ajustes…"></textarea>
+        </section>
+        <section class="footer">
+            <p>Todo se guarda en este dispositivo.</p>
+            <div class="row" style="justify-content: center; margin-top: 0.5rem;">
+                <button id="importBtn" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">📥 Importar JSON</button>
+                <button id="exportBtn" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">📤 Exportar JSON</button>
+                <input type="file" id="importFile" accept=".json,application/json" style="display:none;">
+            </div>
+        </section>
+      </aside>
+    </main>
+</div>
 
-  <aside class="panel sticky">
-    <section class="card" style="animation-delay: 0.2s;">
-        <h2>Progresión (6 semanas)</h2>
-        <div class="row">
-            <label style="color: var(--muted); font-weight: 500;">Semana actual:</label>
-            <select id="week" style="background: var(--elev-2); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.5rem;">
-                <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4 (Deload)</option> <option value="5">5</option> <option value="6">6</option>
-            </select>
+<div id="progress-page" class="app-page">
+    <div id="progress-content" class="wrap">
+        <!-- El contenido de la página de progreso se generará aquí -->
+    </div>
+</div>
+
+<div id="modal-overlay">
+    <div id="modal-content">
+        <h3 id="modal-title">Registrar Carga</h3>
+        <input type="number" id="modal-weight-input" class="modal-input" placeholder="Peso (kg)">
+        <div class="row" style="justify-content: flex-end;">
+            <button id="modal-cancel" class="btn">Cancelar</button>
+            <button id="modal-save" class="btn" style="background: var(--brand); color: var(--bg);">Guardar</button>
         </div>
-        <p id="weekHint" style="margin-top: 1rem; color: var(--muted);"></p>
-    </section>
-    <section class="card" style="animation-delay: 0.3s;">
-      <h2>Guía RIR</h2>
-      <p style="color: var(--muted); margin: 0; font-size: 0.9rem;">
-          <b>RIR 2:</b> Quedan ~2 reps. <b>RIR 1:</b> Última rep dura pero limpia. <b>RIR 0:</b> Fallo técnico. Excéntrica controlada.
-      </p>
-    </section>
-    <section class="card" style="animation-delay: 0.4s;">
-        <h2>Notas</h2>
-        <textarea id="notes" placeholder="Sensaciones, cargas, RIR real, ajustes…"></textarea>
-    </section>
-    <section class="footer">
-        <p>Todo se guarda en este dispositivo.</p>
-        <div class="row" style="justify-content: center; margin-top: 0.5rem;">
-            <button id="importBtn" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">📥 Importar JSON</button>
-            <button id="exportBtn" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">📤 Exportar JSON</button>
-            <input type="file" id="importFile" accept=".json,application/json" style="display:none;">
-        </div>
-    </section>
-  </aside>
-</main>
+    </div>
+</div>
+
+<nav id="bottom-nav">
+    <button class="nav-btn active" data-page="routine-page">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 2.236a1 1 0 0 1 2 0v5.326a1 1 0 0 1-2 0V2.236zM3.414 4.828a1 1 0 1 1 1.414-1.414l3.768 3.768a1 1 0 0 1-1.414 1.414L3.414 4.828zM15.39 8.61a1 1 0 0 1 1.414-1.414l3.768 3.768a1 1 0 0 1-1.414 1.414l-3.768-3.768zM2 13a1 1 0 0 1 1-1h5.326a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1zm14.674-1a1 1 0 1 1 0 2H21a1 1 0 1 1 0-2h-4.326zM8.61 15.39a1 1 0 1 1-1.414 1.414l-3.768-3.768a1 1 0 1 1 1.414-1.414l3.768 3.768zm7.362 5.182a1 1 0 0 1-1.414 1.414l-3.768-3.768a1 1 0 0 1 1.414-1.414l3.768 3.768zM12 21.764a1 1 0 0 1 0-2v5.326a1 1 0 1 1 0-2v-3.326z"/></svg>
+        <span>Rutina</span>
+    </button>
+    <button class="nav-btn" data-page="progress-page">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 12h2v9H3v-9zm16 0h2v9h-2v-9zm-8-5h2v14h-2V7z"/></svg>
+        <span>Progreso</span>
+    </button>
+</nav>
+
 
 <div id="notification"></div>
 
@@ -250,7 +317,7 @@
 
   const $ = (q, el = document) => el.querySelector(q);
   const $$ = (q, el = document) => [...el.querySelectorAll(q)];
-  const stateKey = 'rutina-fuerza-elegante-v5-optimized';
+  const stateKey = 'rutina-fuerza-elegante-v7-final';
   let state = JSON.parse(localStorage.getItem(stateKey) || '{}');
   const originalTitle = document.title;
   const today = new Date();
@@ -260,8 +327,14 @@
   const weekSel = $('#week');
   const weekHint = $('#weekHint');
   const notes = $('#notes');
+  const header = $('header');
+  const headerTitle = $('#header-title');
+  const headerSubtitle = $('#header-subtitle');
+  const headerTabs = $('#header-tabs');
+  const headerActions = $('#header-actions');
   let routineData;
   const timers = new Map();
+  let activeTimerId = null;
 
   function renderRoutine(data) {
     tabsContainer.innerHTML = '';
@@ -288,7 +361,7 @@
         }
 
         exercisesHTML += `
-          <div class="exercise" data-ex-id="${exId}">
+          <div class="exercise" data-ex-id="${exId}" data-ex-name="${ex.name}">
             <div class="head">
                 <div class="name">${ex.name}</div>
                 <div class="meta">
@@ -310,8 +383,9 @@
       workoutsContainer.appendChild(dayCard);
     });
   }
-
+  
   function initializeTimers() {
+      timers.clear();
       $$('.timer').forEach(timerEl => {
           const exId = timerEl.closest('.exercise').dataset.exId;
           const min = parseFloat(timerEl.dataset.min || '2');
@@ -320,8 +394,30 @@
           let running = false, left = 0, iv = null;
 
           const fmt = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
-          const start = () => { if (running) return; left = Math.round(min * 60); running = true; btn.textContent = '⏸'; timerEl.classList.add('running'); tick(); iv = setInterval(tick, 1000); };
-          const stop = () => { running = false; clearInterval(iv); btn.textContent = '▶︎'; timerEl.classList.remove('running'); document.title = originalTitle; display.textContent = fmt(min * 60); };
+          const start = () => { 
+              if (running) return;
+              if (activeTimerId && activeTimerId !== exId) {
+                  timers.get(activeTimerId)?.stop();
+              }
+              activeTimerId = exId;
+              left = Math.round(min * 60); 
+              running = true; 
+              btn.textContent = '⏸'; 
+              timerEl.classList.add('running'); 
+              tick(); 
+              iv = setInterval(tick, 1000); 
+          };
+          const stop = () => { 
+              running = false; 
+              clearInterval(iv); 
+              btn.textContent = '▶︎'; 
+              timerEl.classList.remove('running'); 
+              document.title = originalTitle; 
+              display.textContent = fmt(min * 60);
+              if (activeTimerId === exId) {
+                  activeTimerId = null;
+              }
+          };
           const tick = () => { display.textContent = fmt(left); document.title = `${fmt(left)} | Descanso`; if (left-- <= 0) stop(); };
           
           display.textContent = fmt(min * 60);
@@ -350,6 +446,7 @@
     const exerciseEl = target.closest('.exercise');
     if (!exerciseEl) return;
     const exId = exerciseEl.dataset.exId;
+    const exName = exerciseEl.dataset.exName;
     const setsWrap = $('.sets', exerciseEl);
 
     switch (action) {
@@ -367,6 +464,11 @@
                 button.classList.add('pop-animation');
                 button.addEventListener('animationend', () => button.classList.remove('pop-animation'), { once: true });
                 timers.get(exId)?.start();
+
+                const allSetsDone = now.every(s => s === true);
+                if (allSetsDone) {
+                    showWeightModal(exId, exName);
+                }
             }
             break;
         }
@@ -395,10 +497,9 @@
   }
   
   function saveSets(id, arr) {
-    state.sets = state.sets || {};
     state.sets[id] = arr;
     save();
-    const delBtn = $(`[data-ex-id="${id}"] .delset`);
+    const delBtn = $(`[data-ex-id="${id}"] [data-action="del-set"]`);
     if(delBtn) delBtn.classList.toggle('ghost', arr.length <= 1);
   }
 
@@ -409,24 +510,188 @@
     state.lastOpenedDay = idx;
     save();
   }
+  
+  function switchPage(pageId) {
+    $$('.app-page').forEach(p => p.classList.remove('active'));
+    $(`#${pageId}`)?.classList.add('active');
+    $$('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === pageId));
+    
+    if (pageId === 'progress-page') {
+        headerTitle.textContent = "Progreso";
+        headerSubtitle.style.display = 'none';
+        headerTabs.style.display = 'none';
+        headerActions.style.display = 'none';
+        renderProgressPage();
+    } else {
+        headerTitle.textContent = "Rutina Personalizada";
+        headerSubtitle.style.display = 'block';
+        headerTabs.style.display = 'block';
+        headerActions.style.display = 'block';
+    }
+  }
 
-  function resetCurrentDay() {
+  function renderProgressPage() {
+      const contentEl = $('#progress-content');
+      state.progress = state.progress || {};
+      const exercisesWithProgress = Object.keys(state.progress).filter(key => state.progress[key].length > 0);
+
+      if (exercisesWithProgress.length === 0) {
+          contentEl.innerHTML = `<div id="no-progress-data">Aún no has registrado ningún progreso. ¡Completa un ejercicio para empezar!</div>`;
+          return;
+      }
+
+      let listHTML = '<div class="progress-list">';
+      exercisesWithProgress.forEach(exId => {
+          const exName = state.progress[exId][0].name; // Get name from first record
+          listHTML += `<div class="exercise-item" data-ex-id="${exId}">${exName}</div>`;
+      });
+      listHTML += '</div>';
+      contentEl.innerHTML = listHTML;
+  }
+
+  function renderProgressDetail(exId) {
+      const records = state.progress[exId];
+      if (!records || records.length === 0) return;
+      
+      const contentEl = $('#progress-content');
+      const exName = records[0].name;
+
+      let tableHTML = `
+        <div id="progress-detail-view">
+            <button class="btn" id="back-to-progress-list" style="margin-bottom: 1rem;">← Volver</button>
+            <h3>${exName}</h3>
+            <div class="progress-chart-container card"><svg id="chart-svg" viewBox="0 0 300 150"></svg></div>
+            <table id="progress-history-table">
+                <thead><tr><th>Fecha</th><th>Peso (kg)</th></tr></thead>
+                <tbody>`;
+      [...records].reverse().forEach(r => {
+          tableHTML += `<tr><td>${r.date}</td><td>${r.weight}</td></tr>`;
+      });
+      tableHTML += `</tbody></table></div>`;
+      contentEl.innerHTML = tableHTML;
+      
+      renderChart(records);
+  }
+
+  function renderChart(records) {
+      const svg = $('#chart-svg');
+      if (!svg) return;
+      
+      const data = records.slice(-10);
+      const weights = data.map(d => d.weight);
+      const minWeight = Math.min(...weights);
+      const maxWeight = Math.max(...weights);
+      let weightRange = maxWeight - minWeight;
+      
+      const width = 300;
+      const height = 150;
+      const padding = { top: 20, right: 15, bottom: 30, left: 35 };
+
+      if (weightRange === 0) {
+          weightRange = maxWeight * 0.2 || 10; // 20% del peso o 10kg como rango
+      }
+      const yMin = Math.max(0, minWeight - weightRange * 0.1);
+      const yMax = maxWeight + weightRange * 0.1;
+      const finalRange = yMax - yMin;
+
+      const getX = (index) => padding.left + (index * (width - padding.left - padding.right) / (data.length - 1 || 1));
+      const getY = (weight) => (height - padding.bottom) - ((weight - yMin) / (finalRange || 1)) * (height - padding.top - padding.bottom);
+      
+      let points = data.map((d, i) => `${getX(i)},${getY(d.weight)}`).join(' ');
+      
+      let svgContent = `
+          <line class="grid-line" x1="${padding.left}" y1="${padding.top}" x2="${width - padding.right}" y2="${padding.top}"></line>
+          <line class="grid-line" x1="${padding.left}" y1="${height - padding.bottom}" x2="${width - padding.right}" y2="${height - padding.bottom}"></line>
+          <text class="axis-label-y" x="${padding.left - 5}" y="${padding.top}" dominant-baseline="middle" text-anchor="end">${Math.round(yMax)}kg</text>
+          <text class="axis-label-y" x="${padding.left - 5}" y="${height - padding.bottom}" dominant-baseline="middle" text-anchor="end">${Math.round(yMin)}kg</text>
+      `;
+      if(data.length > 1) {
+          svgContent += `<polyline class="data-line" points="${points}"></polyline>`;
+      }
+      data.forEach((d, i) => {
+          const x = getX(i);
+          const y = getY(d.weight);
+          const shortDate = d.date.substring(0, 5); // DD/MM
+          svgContent += `
+            <circle class="data-point" cx="${x}" cy="${y}"><title>${d.date}: ${d.weight}kg</title></circle>
+            <text class="data-label" x="${x}" y="${y - 8}" text-anchor="middle">${d.weight}</text>
+            <text class="axis-label-x" x="${x}" y="${height - padding.bottom + 15}" text-anchor="middle">${shortDate}</text>
+          `;
+      });
+      
+      svg.innerHTML = svgContent;
+  }
+  
+  function showWeightModal(exId, exName) {
+      const overlay = $('#modal-overlay');
+      $('#modal-title').textContent = `Registrar carga para ${exName}`;
+      const weightInput = $('#modal-weight-input');
+      weightInput.value = '';
+      
+      const lastRecord = state.progress?.[exId]?.slice(-1)[0];
+      if (lastRecord) {
+          weightInput.placeholder = `Último peso: ${lastRecord.weight}kg`;
+      } else {
+          weightInput.placeholder = 'Peso (kg)';
+      }
+
+      overlay.classList.add('visible');
+      weightInput.focus();
+
+      const saveHandler = () => {
+          const weight = parseFloat(weightInput.value);
+          if (weight && weight > 0) {
+              state.progress = state.progress || {};
+              state.progress[exId] = state.progress[exId] || [];
+              state.progress[exId].push({
+                  name: exName,
+                  date: getFormattedDate(),
+                  weight: weight
+              });
+              save();
+              showNotification('Progreso guardado.');
+          }
+          closeModal();
+      };
+
+      const cancelHandler = () => closeModal();
+      const keyHandler = (e) => { if(e.key === 'Enter') saveHandler(); };
+
+      $('#modal-save').onclick = saveHandler;
+      $('#modal-cancel').onclick = cancelHandler;
+      weightInput.onkeydown = keyHandler;
+      
+      function closeModal() {
+          overlay.classList.remove('visible');
+          $('#modal-save').onclick = null;
+          $('#modal-cancel').onclick = null;
+          weightInput.onkeydown = null;
+      }
+  }
+
+  function currentDay() { 
+      const t = $('.tab.active', tabsContainer); 
+      return t ? +t.dataset.day : 0; 
+  }
+
+  function resetCurrentDay(){
     const d = currentDay();
     const card = $(`.day[data-day="${d}"]`);
     if (card) {
-      $$('.exercise', card).forEach(ex => {
-        const setsWrap = $('.sets', ex);
+      $$('.exercise', card).forEach(ex=>{
+        const setsWrap = $('.sets',ex);
         if (!setsWrap) return;
         const exId = ex.dataset.exId;
-        const def = +setsWrap.dataset.default || 3;
+        const def = +setsWrap.dataset.default || 0;
         const arr = Array(def).fill(false);
-        saveSets(exId, arr);
+        saveSets(exId, arr);  
         renderSets(setsWrap, arr, exId);
       });
     }
   }
 
   function updateAllProgressBars() {
+    if (!routineData) return;
     routineData.days.forEach((day, dayIndex) => {
         const tab = $(`.tab[data-day="${dayIndex}"]`);
         if (!tab) return;
@@ -439,7 +704,7 @@
                     totalSets += setsArray.length;
                     doneSets += setsArray.filter(d => d).length;
                 } else {
-                    totalSets += ex.sets;
+                    totalSets += (ex.sets || 0);
                 }
             }
         });
@@ -453,14 +718,13 @@
     routineData = loadRoutineData();
     renderRoutine(routineData);
     
-    // Initialize state for exercises if not present
     state.sets = state.sets || {};
     routineData.days.forEach((day, dayIndex) => {
         day.exercises.forEach(ex => {
             if (ex.sets) {
                 const exId = `${dayIndex}:${ex.id}`;
                 if (!state.sets[exId]) {
-                    state.sets[exId] = Array(ex.sets).fill(false);
+                   state.sets[exId] = Array(ex.sets).fill(false);
                 }
                 const setsWrap = $(`[data-ex-id="${exId}"] .sets`);
                 if(setsWrap) renderSets(setsWrap, state.sets[exId], exId);
@@ -474,37 +738,71 @@
         const tab = e.target.closest('.tab');
         if (tab) activateTab(+tab.dataset.day);
     });
+    
+    $('#bottom-nav').addEventListener('click', e => {
+        const navBtn = e.target.closest('.nav-btn');
+        if (navBtn) switchPage(navBtn.dataset.page);
+    });
+    
+    $('#progress-content').addEventListener('click', e => {
+        const item = e.target.closest('.exercise-item');
+        if (item) {
+            renderProgressDetail(item.dataset.exId);
+        } else if (e.target.id === 'back-to-progress-list') {
+            renderProgressPage();
+        }
+    });
 
     $('#resetDay').addEventListener('click', resetCurrentDay);
+    $('#progressBtnDesktop').addEventListener('click', () => switchPage('progress-page'));
+    
     if (state.week) weekSel.value = state.week;
     applyWeekHint();
     notes.value = state.notes || '';
-    notes.addEventListener('input', () => { state.notes = notes.value; save(); });
+    notes.addEventListener('change', () => { state.notes = notes.value; save(); }); // Optimizado a 'change'
 
     const initialDay = state.lastOpenedDay !== undefined ? state.lastOpenedDay : dow;
     activateTab(initialDay);
-    $$('.tab', tabsContainer).forEach(t => {
-      if (t.dataset.day == dow) t.classList.add('today');
-    });
     updateAllProgressBars();
     
-    const header = $('header');
     window.addEventListener('scroll', () => {
         header.classList.toggle('scrolled', window.scrollY > 10);
     });
   }
+  
+  // --- HELPERS ---
+  const getFormattedDate = () => {
+      const d = new Date();
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+  };
 
   function loadRoutineData() {
       const savedRoutine = localStorage.getItem('customRoutineData');
       if (savedRoutine) {
-          try { return JSON.parse(savedRoutine); } 
-          catch (e) { console.error("Error al cargar rutina guardada, usando la de por defecto.", e); return defaultRoutineData; }
+          try { 
+              const parsed = JSON.parse(savedRoutine);
+              if (!parsed.days) throw new Error("Invalid routine format");
+              return parsed;
+          } 
+          catch (e) { 
+              console.error("Error al cargar rutina guardada, usando la de por defecto.", e); 
+              return defaultRoutineData; 
+          }
       }
       return defaultRoutineData;
   }
   
-  function save() { localStorage.setItem(stateKey, JSON.stringify(state)); }
-  function currentDay() { const t = $('.tab.active', tabsContainer); return t ? +t.dataset.day : 0; }
+  function save() { 
+      try {
+          localStorage.setItem(stateKey, JSON.stringify(state)); 
+      } catch (e) {
+          console.error("Error al guardar el estado:", e);
+          showNotification("No se pudo guardar el progreso.", "error");
+      }
+  }
   
   let notificationTimeout;
   function showNotification(message, type = 'success') {
@@ -534,9 +832,12 @@
           try {
               const importedData = JSON.parse(e.target.result);
               if (!importedData.days || !Array.isArray(importedData.days)) { throw new Error("Formato de rutina inválido."); }
+              
               localStorage.setItem('customRoutineData', JSON.stringify(importedData));
+              // Limpieza completa del estado de la app para evitar conflictos con la nueva rutina
               localStorage.removeItem(stateKey); 
-              state = {};
+              state = {}; 
+              
               init();
               showNotification('Rutina importada con éxito.');
           } catch (error) {
