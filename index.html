@@ -23,7 +23,7 @@
     header { position: sticky; top: 0; z-index: 100; backdrop-filter: saturate(1.5) blur(20px); -webkit-backdrop-filter: saturate(1.5) blur(20px); background: rgba(26, 26, 28, 0.85); border-bottom: 1px solid var(--line); transition: box-shadow 0.3s ease; }
     header.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
     .header-content { max-width: 1100px; margin: 0 auto; padding: 1rem; padding-top: calc(1rem + env(safe-area-inset-top)); }
-    .title { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .title { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; cursor: pointer; }
     .logo { height: 75px; width: auto; }
     h1 { font-size: 1.25rem; margin: 0; font-weight: 700; }
     .subtitle { color: var(--muted); font-size: 0.9rem; margin: 0; }
@@ -136,13 +136,32 @@
     @media (min-width: 900px) { 
         .wrap { padding: 3rem 2rem; } 
         .grid { grid-template-columns: 1fr 0.6fr; } 
-        .day-tabs-container { overflow-x: visible; } 
         .day-tabs { display: grid; grid-template-columns: repeat(7, 1fr); } 
-        .quick-actions { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; } 
         .tab { white-space: normal; display: flex; align-items: center; justify-content: center; }
         body { padding-bottom: 0; } 
         #bottom-nav { display: none; }
         #progressBtnDesktop { display: inline-flex; }
+
+        /* --- NUEVO: Estilos para el header en PC --- */
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+        .title {
+            margin-bottom: 0;
+            flex-shrink: 0; /* Evita que el título se encoja */
+        }
+        .day-tabs-container {
+            margin-top: 0;
+            flex-grow: 1; /* Permite que las pestañas ocupen el espacio disponible */
+            overflow-x: visible;
+        }
+        .quick-actions {
+            margin-top: 0;
+            flex-shrink: 0; /* Evita que los botones se encojan */
+        }
     }
   </style>
 </head>
@@ -743,6 +762,8 @@
         const navBtn = e.target.closest('.nav-btn');
         if (navBtn) switchPage(navBtn.dataset.page);
     });
+
+    $('.title').addEventListener('click', () => switchPage('routine-page'));
     
     $('#progress-content').addEventListener('click', e => {
         const item = e.target.closest('.exercise-item');
