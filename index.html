@@ -903,32 +903,107 @@
   }
 })();
 </script>
-<!-- Huevo de pascua secreto: Toca 5 veces el título principal para exportar el progreso -->
+<!-- Huevo de pascua premium con botón de copiado automático en 1 clic -->
 <script>
   (function() {
     let clickCount = 0;
     let clickTimeout;
     
-    // Detectamos el título principal
-    const titleEl = document.querySelector('header h1') || document.querySelector('h1') || document.querySelector('.header-branding');
+    // Detecta el título principal de la app antigua
+    const titleEl = document.querySelector('header h1') || document.querySelector('h1') || document.querySelector('.header-title') || document.querySelector('.header-branding');
     
     if (titleEl) {
       titleEl.addEventListener('click', () => {
         clickCount++;
         clearTimeout(clickTimeout);
-        
-        // Si no se completa en 3 segundos, se reinicia el contador
         clickTimeout = setTimeout(() => { clickCount = 0; }, 3000);
         
         if (clickCount >= 5) {
           clickCount = 0;
           const oldState = localStorage.getItem('rutina-fuerza-elegante-v7-final');
           if (oldState) {
-            prompt("🔑 [Copia de Seguridad Secreta]\n\nSelecciona todo este texto y cópialo para guardar tu progreso:", oldState);
+            showSecretModal(oldState);
           } else {
             alert("No se ha encontrado progreso guardado en este dispositivo.");
           }
         }
+      });
+    }
+
+    function showSecretModal(jsonText) {
+      if (document.getElementById('secret-backup-modal')) return;
+
+      // Crear el fondo borroso del modal
+      const modal = document.createElement('div');
+      modal.id = 'secret-backup-modal';
+      modal.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        z-index: 999999; display: flex; align-items: center; justify-content: center;
+        padding: 20px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      `;
+
+      // Crear la tarjeta flotante oscura
+      modal.innerHTML = `
+        <div style="background: #1c1c1e; border: 1px solid #3a3a3c; border-radius: 20px; width: 100%; max-width: 360px; padding: 24px; box-sizing: border-box; text-align: center; color: #fff; box-shadow: 0 12px 40px rgba(0,0,0,0.6);">
+          <div style="font-size: 36px; margin-bottom: 12px;">🔑</div>
+          <h3 style="margin: 0 0 6px 0; font-size: 1.15rem; font-weight: 700; letter-spacing: -0.3px;">Copia de Seguridad Lista</h3>
+          <p style="margin: 0 0 20px 0; font-size: 0.85rem; color: #8e8e93; line-height: 1.4;">Tus 5 semanas de progreso están preparadas para transferir en un toque.</p>
+          
+          <button id="secret-copy-btn" style="background: #30d158; border: none; border-radius: 12px; color: #fff; width: 100%; padding: 14px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-bottom: 12px; -webkit-tap-highlight-color: transparent;">
+            📋 Copiar al Portapapeles
+          </button>
+          
+          <button id="secret-close-btn" style="background: transparent; border: 1px solid #3a3a3c; border-radius: 12px; color: #aeaeb2; width: 100%; padding: 12px; font-size: 0.9rem; font-weight: 500; cursor: pointer; -webkit-tap-highlight-color: transparent;">
+            Volver a la App
+          </button>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      const copyBtn = document.getElementById('secret-copy-btn');
+      const closeBtn = document.getElementById('secret-close-btn');
+
+      // Copiado en un clic con API nativa y fallback clásico
+      copyBtn.addEventListener('click', () => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(jsonText)
+            .then(() => showSuccessState())
+            .catch(() => fallbackCopy(jsonText));
+        } else {
+          fallbackCopy(jsonText);
+        }
+      });
+
+      function showSuccessState() {
+        copyBtn.style.backgroundColor = '#10b981';
+        copyBtn.innerHTML = '✅ ¡Copiado con Éxito!';
+        if ("vibrate" in navigator) navigator.vibrate(60); // Vibración háptica suave
+        
+        setTimeout(() => {
+          copyBtn.style.backgroundColor = '#30d158';
+          copyBtn.innerHTML = '📋 Copiar al Portapapeles';
+        }, 2000);
+      }
+
+      function fallbackCopy(text) {
+        try {
+          const temp = document.createElement('textarea');
+          temp.value = text;
+          temp.style.position = 'fixed';
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand('copy');
+          document.body.removeChild(temp);
+          showSuccessState();
+        } catch (e) {
+          alert("Error al copiar automáticamente. Intenta seleccionarlo manualmente.");
+        }
+      }
+
+      closeBtn.addEventListener('click', () => {
+        document.body.removeChild(modal);
       });
     }
   })();
