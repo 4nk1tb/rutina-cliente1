@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rutina-elegante-v2'; // Incrementa este número (v2, v3...) cada vez que hagas cambios
+const CACHE_NAME = 'rutina-elegante-v2.1'; // Incrementa este número (v2, v3...) cada vez que hagas cambios
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
