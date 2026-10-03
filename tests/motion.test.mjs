@@ -112,6 +112,9 @@ test('missing or throwing animation support never blocks a subsequent interactio
   assert.doesNotThrow(() => motion.page(unsupported));
   assert.doesNotThrow(() => motion.content(throwing));
   assert.doesNotThrow(() => motion.setCompleted({ querySelector: () => null }, throwing, 0, 1, true));
+  assert.doesNotThrow(() => motion.record(null));
+  assert.doesNotThrow(() => motion.record(unsupported));
+  assert.doesNotThrow(() => motion.record(throwing));
   const healthy = element();
   motion.page(healthy);
   assert.equal(healthy.animations.length, 1);
@@ -137,16 +140,82 @@ test('rapid page changes cancel obsolete animations while allowing the same page
 test('enabling reduced motion during playback cancels outstanding effects immediately', () => {
   const media = new Media();
   const motion = createMotion(new Root(), media);
-  const page = element(), content = element();
+  const page = element(), content = element(), badge = element();
   motion.page(page);
   motion.content(content);
+  motion.record(badge);
   media.change(true);
   assert.equal(page.animations[0].cancellations, 1);
   assert.equal(content.animations[0].cancellations, 1);
+  assert.equal(badge.animations[0].cancellations, 1);
+  motion.record(badge);
+  assert.ok(badge.animations[1].frames.every(frame => !Object.hasOwn(frame, 'transform')));
   motion.page(page);
   assert.ok(page.animations[1].frames.every(frame => !Object.hasOwn(frame, 'transform')));
   media.change(false);
   motion.page(page);
   assert.equal(page.animations[1].cancellations, 1);
   assert.ok(Object.hasOwn(page.animations[2].frames[0], 'transform'));
+});
+
+test('record celebration stays brief and subtle without changing badge state or layout', () => {
+  const motion = createMotion(new Root(), new Media());
+  const badge = element();
+  badge.attributes.set('aria-label', 'Nuevo récord de carga');
+  badge.attributes.set('data-record-count', '1');
+  const before = { attributes: [...badge.attributes], style: { ...badge.style } };
+  motion.record(badge);
+  assert.equal(badge.animations.length, 1);
+  const animation = badge.animations[0];
+  assert.equal(animation.options.duration, 240);
+  assert.equal(animation.options.easing, 'cubic-bezier(0.23, 1, 0.32, 1)');
+  assert.equal(animation.options.fill, undefined, 'presentation must not persist an inline transform');
+  assert.ok(animation.frames.every(frame => Object.keys(frame).every(key => ['opacity', 'transform', 'offset'].includes(key))));
+  const scales = animation.frames.map(frame => Number(frame.transform.match(/scale\(([^)]+)\)/)[1]));
+  assert.ok(Math.min(...scales) >= .96 && Math.max(...scales) <= 1.025);
+  assert.equal(scales.at(-1), 1);
+  assert.equal(animation.frames.at(-1).opacity, 1);
+  assert.deepEqual([...badge.attributes], before.attributes);
+  assert.deepEqual(badge.style, before.style);
+});
+
+test('record celebration uses only a short fade with reduced motion', () => {
+  const motion = createMotion(new Root(), new Media(true));
+  const badge = element();
+  motion.record(badge);
+  assert.equal(badge.animations.length, 1);
+  const animation = badge.animations[0];
+  assert.ok(animation.options.duration <= 100);
+  assert.ok(animation.frames.every(frame => Object.keys(frame).every(key => key === 'opacity')));
+  assert.equal(animation.frames.at(-1).opacity, 1);
+});
+
+test('keyboard and assistive activation leave record badges immediately visible without animation', () => {
+  const root = new Root();
+  const motion = createMotion(root, new Media());
+  const badge = element();
+  root.dispatchEvent(event('keydown', { key: 'Enter' }));
+  motion.record(badge);
+  assert.equal(badge.animations.length, 0);
+  root.dispatchEvent(event('pointerdown'));
+  motion.record(badge);
+  assert.equal(badge.animations.length, 1);
+  root.dispatchEvent(event('click', { detail: 0 }));
+  assert.equal(badge.animations[0].cancellations, 1);
+  motion.record(badge);
+  assert.equal(badge.animations.length, 1);
+});
+
+test('a repeated record celebration cancels its predecessor even after cancellation cleanup settles', async () => {
+  const motion = createMotion(new Root(), new Media());
+  const badge = element();
+  motion.record(badge);
+  motion.record(badge);
+  assert.equal(badge.animations[0].cancellations, 1);
+  assert.equal(badge.animations[1].cancellations, 0);
+  await Promise.resolve();
+  await Promise.resolve();
+  motion.record(badge);
+  assert.equal(badge.animations[1].cancellations, 1);
+  assert.equal(badge.animations[2].cancellations, 0);
 });

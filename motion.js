@@ -43,6 +43,16 @@ export function createMotion(root, media = globalThis.matchMedia?.('(prefers-red
     play(element, frames, media?.matches ? 100 : 200);
   }
   function content(element) { play(element, [{ opacity: .8 }, { opacity: 1 }], media?.matches ? 80 : 140); }
+  function record(element) {
+    const frames = media?.matches
+      ? [{ opacity: .65 }, { opacity: 1 }]
+      : [
+        { opacity: .65, transform: 'scale(.96)' },
+        { opacity: 1, transform: 'scale(1.025)', offset: .6 },
+        { opacity: 1, transform: 'scale(1)' },
+      ];
+    play(element, frames, media?.matches ? 90 : 240);
+  }
   function setCompleted(button, progress, from, to, completed) {
     if (media?.matches || root.dataset.input === 'keyboard') return;
     if (completed) {
@@ -54,5 +64,5 @@ export function createMotion(root, media = globalThis.matchMedia?.('(prefers-red
     }
     if (progress && from !== to) play(progress, [{ transform: `scaleX(${from})` }, { transform: `scaleX(${to})` }], 200);
   }
-  return { page, content, setCompleted };
+  return { page, content, record, setCompleted };
 }

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { STORAGE_KEY, MUSCLE_GROUPS, localDate, loadState, saveState, clearHistory, normalizeRoutine, estimateRM, setVolume, createDraftSets, markSetEdited, suggestNextSet, summarizeSession, getExerciseHistory, createExport, importData } from '../data.js';
+import { STORAGE_KEY, MUSCLE_GROUPS, localDate, loadState, saveState, clearHistory, normalizeRoutine, estimateRM, setVolume, createDraftSets, markSetEdited, suggestNextSet, compareExerciseProgress, getPreviousExercise, summarizeSession, getExerciseHistory, createExport, importData } from '../data.js';
 
 const routine = { days: [{ title: 'Empuje', exercises: [{ id: 'banca', name: 'Press banca', sets: 3, reps: '6-8', timer: 2 }] }] };
 const fresh = () => loadState(routine, memory()).state;
@@ -556,4 +556,106 @@ test('completed history exports strip draft provenance and active flags validate
     state.activeSession.exercises[0].sets[0].edited = invalid;
     assert.throws(() => createExport(state, 'backup'), /edición/);
   }
+});
+
+test('progress comparisons use the strongest valid completed set and preserve both measures', () => {
+  const current = { name: 'Press banca', sets: [{ weight: 20, reps: 15, done: true }, { weight: 30, reps: 6, done: true }, { weight: 30, reps: 10, done: true }, { weight: 999, reps: 10, done: false }, { weight: 1000, reps: null, done: true }] };
+  const previous = { name: '  PRESS  BÁNCA ', sets: [{ weight: 25, reps: 10, done: true }] };
+  assert.deepEqual(compareExerciseProgress(current, previous), { kind: 'weight', delta: 5, current: { weight: 30, reps: 10 }, previous: { weight: 25, reps: 10 } });
+  assert.equal(compareExerciseProgress({ name: current.name, sets: [{ weight: 20, reps: 10, done: true }] }, previous).delta, -5);
+  assert.equal(compareExerciseProgress({ name: current.name, sets: [{ weight: 30, reps: 10, done: false }] }, previous), null);
+});
+
+test('equal loads compare repetitions, equal sets are unchanged, and changing both measures stays mixed', () => {
+  const exercise = (weight, reps, count = 1) => ({ name: 'Press banca', sets: Array.from({ length: count }, () => ({ weight, reps, done: true })) });
+  assert.deepEqual(compareExerciseProgress(exercise(30, 10), exercise(30, 8, 5)), { kind: 'reps', delta: 2, current: { weight: 30, reps: 10 }, previous: { weight: 30, reps: 8 } });
+  assert.equal(compareExerciseProgress(exercise(30, 8), exercise(30, 10)).delta, -2);
+  assert.equal(compareExerciseProgress(exercise(30, 10), exercise(30, 10, 3)).kind, 'same');
+  assert.equal(compareExerciseProgress(exercise(30, 10), exercise(30, 10)).delta, 0);
+  assert.deepEqual(compareExerciseProgress(exercise(35, 8), exercise(30, 10)), { kind: 'mixed', delta: null, current: { weight: 35, reps: 8 }, previous: { weight: 30, reps: 10 } });
+  assert.equal(compareExerciseProgress(exercise(35, 12), exercise(30, 10)).kind, 'mixed', 'more load and more reps are described without declaring an inferred improvement');
+});
+
+test('zero loads are comparable but different modes, different exercises and weight-only history are baselines', () => {
+  const current = { name: 'Elevación lateral', weightMode: 'perDumbbell', sets: [{ weight: 0, reps: 12, done: true }] };
+  const previous = { ...current, sets: [{ weight: 0, reps: 10, done: true }] };
+  assert.equal(compareExerciseProgress(current, previous).kind, 'reps');
+  assert.equal(compareExerciseProgress(current, previous).delta, 2);
+  assert.equal(compareExerciseProgress(current, { ...previous, weightMode: 'total' }).kind, 'baseline');
+  assert.equal(compareExerciseProgress(current, { ...previous, name: 'Curl bíceps' }).kind, 'baseline');
+  assert.equal(compareExerciseProgress(current, { ...previous, sets: [{ weight: 30, reps: null, done: true }] }).kind, 'baseline');
+  assert.equal(compareExerciseProgress(current, null).previous, null);
+});
+
+test('previous-exercise lookup orders sessions by completion time and aggregates only matching valid duplicates', () => {
+  const now = Date.now();
+  const priorSession = (id, ago, mode = 'perDumbbell') => {
+    const value = session(id, 20, 8);
+    value.startedAt = new Date(now - ago - 3600000).toISOString();
+    value.finishedAt = new Date(now - ago).toISOString();
+    value.exercises[0].weightMode = mode;
+    return value;
+  };
+  const older = priorSession('older', 600000);
+  const latest = priorSession('latest', 120000);
+  latest.exercises.push({ exerciseId: 'duplicate', name: ' PRESS BÁNCA ', weightMode: 'perDumbbell', sets: [{ weight: 25, reps: 10, done: true }, { weight: 999, reps: 1, done: false }] });
+  latest.exercises.push({ exerciseId: 'other-mode', name: 'Press banca', weightMode: 'total', sets: [{ weight: 500, reps: 10, done: true }] });
+  const empty = priorSession('empty-newer', 60000);
+  empty.exercises[0].sets.forEach(set => { set.done = false; });
+  const state = fresh();
+  state.sessions = [latest, empty, older];
+  const before = JSON.stringify(state);
+  const found = getPreviousExercise(state, 'press banca', 'perDumbbell');
+  assert.equal(found.sessionId, 'latest');
+  assert.deepEqual(found.sets.map(set => [set.weight, set.reps]), [[20, 8], [25, 10]]);
+  assert.equal(getPreviousExercise(state, 'press banca', 'perDumbbell', latest.finishedAt).sessionId, 'older');
+  assert.equal(getPreviousExercise(state, 'press banca', 'perDumbbell', undefined, 'latest').sessionId, 'older');
+  assert.equal(JSON.stringify(state), before);
+});
+
+test('previous-exercise bounds reject future and invalid timestamps and never fabricate legacy repetitions', () => {
+  const now = Date.now();
+  const past = session('past');
+  past.finishedAt = new Date(now - 120000).toISOString();
+  const future = session('future', 100, 10);
+  future.finishedAt = new Date(now + 3600000).toISOString();
+  const invalid = session('invalid');
+  invalid.finishedAt = 'not-a-date';
+  const state = fresh();
+  state.sessions = [future, past, invalid];
+  assert.equal(getPreviousExercise(state, 'Press banca', 'total', now + 7200000).sessionId, 'past');
+  assert.equal(getPreviousExercise(state, 'Press banca', 'total', new Date(now - 180000)), null);
+  assert.equal(getPreviousExercise(state, 'Press banca', 'total', 'invalid'), null);
+  state.sessions = [];
+  state.legacyProgress = [{ exerciseId: 'banca', name: 'Press banca', date: localDate(), weight: 80, reps: null }];
+  assert.equal(getPreviousExercise(state, 'Press banca'), null);
+});
+
+test('same-day exercise history uses timestamps instead of random IDs and keeps legacy records before sessions', () => {
+  const early = session('z-early', 20, 10);
+  early.startedAt = new Date(2026, 9, 1, 9).toISOString();
+  early.finishedAt = new Date(2026, 9, 1, 10).toISOString();
+  const late = session('a-late', 30, 10);
+  late.startedAt = new Date(2026, 9, 1, 11).toISOString();
+  late.finishedAt = new Date(2026, 9, 1, 12).toISOString();
+  const state = fresh();
+  state.sessions = [late, early];
+  state.legacyProgress = [{ exerciseId: '0:banca', name: 'Press banca', date: localDate(new Date(early.finishedAt)), weight: 10, reps: null }];
+  const records = getExerciseHistory(state)[0].records;
+  assert.deepEqual(records.map(record => record.sessionId), [null, 'z-early', 'a-late']);
+  assert.equal(records[0].finishedAt, null);
+  assert.equal(records[0].reps, null);
+  assert.equal(records[2].finishedAt, late.finishedAt);
+});
+
+test('aggregated exercise history resolves equal-load duplicates using the higher repetitions', () => {
+  const value = session('duplicates', 30, 6);
+  value.exercises.push({ exerciseId: 'banca-extra', name: 'PRESS BANCA', sets: [{ weight: 30, reps: 10, done: true }] });
+  const state = fresh();
+  state.sessions = [value];
+  const records = getExerciseHistory(state)[0].records;
+  assert.equal(records.length, 1);
+  assert.equal(records[0].weight, 30);
+  assert.equal(records[0].reps, 10);
+  assert.equal(records[0].volume, 480);
 });

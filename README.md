@@ -37,6 +37,8 @@ Para trasladar los datos de la vista previa local a la web publicada, exporta un
 - Con dos mancuernas introduces el peso de una. El volumen cuenta ambas, y carga, récords y 1RM se muestran por mancuerna. Una sola mancuerna, una barra o una máquina utilizan carga total. Puedes elegir el modo en el editor; el historial mantiene el modo con el que se registró y no compara marcas entre modos distintos.
 - Peso máximo, volumen y 1RM aproximado se calculan por ejercicio. Epley se aplica a series de 1–12 repeticiones; una repetición utiliza el peso real. Es una estimación, no una marca medida.
 - Los récords comparan sesiones anteriores del mismo ejercicio. La primera sesión establece la referencia.
+- Durante el entrenamiento y en Progreso se compara la mejor serie con la última sesión del mismo ejercicio y modo de peso. Con la misma carga se muestra el cambio de repeticiones; con las mismas repeticiones, el cambio de carga. Si cambian ambas, se muestran los dos resultados sin afirmar una mejora. Los registros antiguos sin repeticiones no generan comparaciones inventadas.
+- Al superar un récord de carga o de 1RM estimado aparece un aviso breve y una insignia. El descanso empieza primero; desmarcar y volver a completar no repite la celebración. La insignia desaparece si se desmarca la serie que sostenía el récord.
 - El resumen semanal cuenta días reales del calendario local. Las siluetas resaltan el grupo muscular principal indicado en los ejercicios realizados; los registros sin grupo se conservan sin inventarlo.
 - Los temas oscuro y claro se eligen en Perfil o con el botón del encabezado.
 - El @usuario guardado en Perfil se usa por defecto en los PNG, junto con la fecha del entrenamiento.

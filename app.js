@@ -1,5 +1,5 @@
 import { defaultRoutineData } from './default-routine.js';
-import { loadState, saveState, localDate, normalizeRoutine, getExerciseHistory, summarizeSession, createExport, importData, clearHistory, createDraftSets, suggestNextSet, markSetEdited } from './data.js';
+import { loadState, saveState, localDate, normalizeRoutine, getExerciseHistory, summarizeSession, createExport, importData, clearHistory, createDraftSets, suggestNextSet, markSetEdited, compareExerciseProgress, getPreviousExercise, estimateRM } from './data.js';
 import { ROUTINE_TEMPLATES } from './routine-templates.js';
 import { renderShareCard, saveCanvas, downloadCanvas, copyCanvas, shareCanvas, isAppleMobile } from './share.js';
 import { createMotion } from './motion.js';
@@ -63,6 +63,14 @@ let shareRevision = 0;
 let restTotal = 90;
 const invalidSetDrafts = new WeakMap();
 const shareButtons = ['share-native', 'share-download', 'share-copy', 'share-file-download'];
+const recordKey = exercise => JSON.stringify([exercise.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim(), exercise.weightMode || 'total']);
+const celebrationKey = record => JSON.stringify([state.activeSession?.id, recordKey(record)]);
+function recordOwner(session, record) {
+  const value = record.type === 'weight' ? record.weight : record.estimatedRM;
+  return session?.exercises.find(exercise => recordKey(exercise) === recordKey(record) && exercise.sets.some(set => set.done && (record.type === 'weight' ? set.weight : estimateRM(set.weight, set.reps)) === value))?.exerciseId;
+}
+// A restored draft may already hold a record; opening it is not another celebration.
+const celebratedRecords = new Set(state.activeSession ? sessionSummary(state.activeSession).records.map(celebrationKey) : []);
 
 function toast(message, error = false) {
   clearTimeout(toastTimeout);
@@ -119,9 +127,33 @@ function pageHead(eyebrow, title, subtitle, action = '') {
 function stat(label, value, unit = '') { return `<div class="stat"><span class="stat-label">${label}</span><strong class="stat-value">${value}<small class="stat-unit">${unit}</small></strong></div>`; }
 function completedSets(session) { return session?.exercises.flatMap(ex => ex.sets.filter(set => set.done)) || []; }
 function weightUnit(exercise) { return exercise.weightMode === 'perDumbbell' ? 'kg por mancuerna' : 'kg'; }
+function comparisonHTML(comparison, exercise, extraClass = '') {
+  if (!comparison) return '';
+  const { kind, delta, current, previous } = comparison;
+  const unit = exercise.weightMode === 'perDumbbell' ? 'kg/ud.' : 'kg';
+  const series = set => `${num(set.weight)} ${unit} × ${set.reps} reps`;
+  let title;
+  if (kind === 'baseline') title = 'Tu primera referencia';
+  else if (kind === 'same') title = 'Misma carga y repeticiones';
+  else if (kind === 'reps') title = `Mismo peso, ${num(Math.abs(delta), 0)} ${Math.abs(delta) === 1 ? 'repetición' : 'repeticiones'} ${delta > 0 ? 'más' : 'menos'}`;
+  else if (kind === 'weight') title = `${num(Math.abs(delta))} ${unit} ${delta > 0 ? 'más' : 'menos'}, mismas repeticiones`;
+  else title = 'Peso y repeticiones diferentes';
+  const detail = previous ? `Mejor serie · Antes ${series(previous)} · Ahora ${series(current)}` : `Mejor serie: ${series(current)}`;
+  const context = extraClass === 'detail-comparison' ? `<span>${previous ? 'Última sesión frente a la anterior' : 'Última sesión registrada'}</span>` : '';
+  return `<div class="progress-comparison ${delta > 0 ? 'is-improvement' : ''} ${extraClass}">${context}<strong>${esc(title)}</strong><span>${esc(detail)}</span></div>`;
+}
+function groupComparison(group) {
+  const records = group.records;
+  const asExercise = record => record ? { name: group.name, weightMode: group.weightMode, sets: [{ weight: record.weight, reps: record.reps, done: true }] } : null;
+  return compareExerciseProgress(asExercise(records.at(-1)), asExercise(records.at(-2)));
+}
+function progressSource(source) {
+  const now = Date.now();
+  const today = localDate();
+  return { ...source, sessions: source.sessions.filter(session => new Date(session.finishedAt).getTime() <= now), legacyProgress: source.legacyProgress.filter(record => record.date <= today) };
+}
 function lastExercise(name, weightMode = 'total') {
-  const same = value => value.toLocaleLowerCase('es') === name.toLocaleLowerCase('es');
-  return [...state.sessions].sort((a, b) => new Date(b.finishedAt) - new Date(a.finishedAt)).flatMap(s => s.exercises).find(ex => same(ex.name) && (ex.weightMode || 'total') === weightMode);
+  return getPreviousExercise(state, name, weightMode, state.activeSession?.startedAt, state.activeSession?.id);
 }
 function reviewBanner() {
   return reviewState ? `<div class="info-box review-banner"><div><b>Revisando ${esc(reviewState.profile.displayName || reviewState.profile.handle || 'seguimiento importado')}</b><p class="caption">Vista de consulta. Estos datos no se han mezclado con los tuyos.</p></div><button class="btn secondary small" data-action="end-review">Volver a mis datos</button></div>` : '';
@@ -138,14 +170,15 @@ function renderTrain() {
   const active = isCurrentActive() ? state.activeSession : null;
   const done = completedSets(active);
   const expected = active?.exercises.reduce((sum, ex) => sum + ex.sets.length, 0) || day.exercises.reduce((sum, ex) => sum + (ex.sets || 0), 0);
-  const volume = active ? summarizeSession(active).volume : 0;
+  const activeSummary = active ? sessionSummary(active) : null;
+  const volume = activeSummary?.volume || 0;
   const trainable = day.exercises.some(ex => ex.sets);
   const title = day.title.split('•').slice(-1)[0].trim();
   const startButton = active ? `<button class="btn primary" data-action="finish-session">Terminar sesión ${icon('check')}</button>` : state.activeSession ? '<button class="btn primary" data-action="resume-session">Volver a la sesión</button>' : trainable ? `<button class="btn primary" data-action="start-session">Empezar entrenamiento ${icon('arrow')}</button>` : '<button class="btn secondary" data-route="routine">Editar mi rutina</button>';
   $('#train-page').innerHTML = pageHead(esc(dateLabel(new Date().toISOString(), { weekday: 'long', year: 'numeric' })), esc(title), active ? 'Una serie a la vez. Todo cuenta.' : 'Tu plan está listo. Hoy también cuenta.', startButton) + `
     <div class="day-tabs" role="group" aria-label="Días de tu rutina">${state.routine.days.map((d, i) => `<button class="day-tab ${i === state.selectedDay ? 'active' : ''}" data-action="select-day" data-day="${i}" aria-pressed="${i === state.selectedDay}"><span class="day-abbr">${esc(d.title.split('•')[0].trim())}</span><span class="day-label">${d.exercises.filter(ex => ex.sets).length} ejercicios</span>${state.activeSession?.dayIndex === i ? '<span class="day-count">En curso</span>' : ''}</button>`).join('')}</div>
     ${state.activeSession && !active ? `<div class="info-box">Tienes una sesión en curso: <b>${esc(state.activeSession.title)}</b>. <button class="btn subtle small" data-action="resume-session">Continuar</button></div>` : ''}
-    <div class="workout-layout"><div class="exercise-list">${day.exercises.map((ex, exIndex) => exerciseHTML(ex, exIndex, active)).join('')}</div>
+    <div class="workout-layout"><div class="exercise-list">${day.exercises.map((ex, exIndex) => exerciseHTML(ex, exIndex, active, activeSummary)).join('')}</div>
     <aside class="session-aside"><section class="panel session-hero"><div class="panel-heading"><span class="eyebrow">${active ? 'Sesión en curso' : 'Tu sesión'}</span><span class="badge">${active ? 'En marcha' : 'A tu ritmo'}</span></div><h2 class="session-title">${esc(title)}</h2><div class="stats-row">${stat('Series', `${done.length}<span class="muted">/${expected}</span>`)}${stat('Volumen', num(volume), ' kg')}</div><div class="session-progress"><div class="progress-track"><span style="transform:scaleX(${expected ? done.length / expected : 0})"></span></div><span class="caption">${active ? `${Math.round(expected ? done.length / expected * 100 : 0)} % completado` : 'Empieza para registrar tus series'}</span></div>${active ? `<div class="session-clock">${icon('clock')}<span id="session-elapsed">${durationLabel((Date.now() - new Date(active.startedAt)) / 1000)}</span></div><button class="btn subtle small" data-action="discard-session">Descartar sesión en curso</button>` : ''}</section>
     <section class="panel"><h2 class="section-title">Tu constancia</h2>${weekStrip()}<button class="btn subtle small" data-route="progress">Ver mi progreso ${icon('arrow')}</button></section>
     <section class="panel"><label class="field">Notas ${active ? 'de esta sesión' : 'personales'}<textarea id="session-notes" placeholder="Cómo te has sentido, algo que recordar…" maxlength="5000">${esc(active?.notes ?? state.notes)}</textarea></label><details><summary>Mi plan de 6 semanas</summary><label class="field">Semana<select id="plan-week">${[1, 2, 3, 4, 5, 6].map(w => `<option value="${w}" ${Number(state.week) === w ? 'selected' : ''}>${w}${w === 4 ? ' · Descarga' : ''}</option>`).join('')}</select></label><p class="caption">${weekHint()}</p><p class="caption">RIR: repeticiones que te quedan antes del fallo. Tu rutina puede indicar un objetivo.</p></details></section></aside></div>`;
@@ -166,12 +199,16 @@ function renderTrain() {
 function weekHint() {
   return ({ 1: 'Plan original: compuestos RIR 2–3 y accesorios RIR 1–2.', 2: 'Plan original: compuestos RIR 1–2 y accesorios RIR 0–1.', 3: 'Plan original: compuestos RIR 1–2 y accesorios RIR 0–1.', 4: 'Semana de descarga del plan original: menos series y mayor margen de esfuerzo.', 5: 'Últimas semanas del plan original. Compara tus cargas con las primeras sesiones.', 6: 'Cierra el bloque y revisa tu progreso antes de preparar el siguiente.' })[state.week] || '';
 }
-function exerciseHTML(ex, exIndex, active) {
+function exerciseHTML(ex, exIndex, active, activeSummary = null) {
   const savedEx = active?.exercises.find(e => e.exerciseId === ex.id);
-  const previous = lastExercise(ex.name, ex.weightMode)?.sets.filter(s => s.done) || [];
+  const previousExercise = lastExercise(ex.name, ex.weightMode);
+  const previous = previousExercise?.sets.filter(s => s.done) || [];
+  const comparison = savedEx ? compareExerciseProgress(savedEx, previousExercise) : null;
+  const record = activeSummary?.records.find(candidate => recordKey(candidate) === recordKey(ex) && recordOwner(active, candidate) === ex.id);
   const sets = savedEx?.sets || Array.from({ length: ex.sets || 0 }, () => ({ weight: null, reps: null, done: false }));
   return `<article class="exercise-card" data-exercise-index="${exIndex}"><div class="exercise-heading"><span class="exercise-number">${String(exIndex + 1).padStart(2, '0')}</span><div class="exercise-info"><h2 class="exercise-name">${esc(ex.name)}</h2>${ex.sets ? `<p class="exercise-meta">${sets.length} series <span>·</span> ${esc(ex.reps)} reps <span>·</span> ${esc(ex.rir || '')} <span>·</span> ${num((ex.timer || 1.5) * 60, 0)} s descanso</p>` : ''}</div></div>
     ${ex.sets ? `<div class="set-table"><div class="set-labels"><span>Serie</span><span>Anterior</span><span>${ex.weightMode === 'perDumbbell' ? 'kg/ud.' : 'kg'}</span><span>Reps</span><span class="sr-only">Completar</span></div>${sets.map((set, index) => `<div class="set-row ${set.done ? 'is-done' : ''}" data-set-index="${index}"><span class="set-index">${index + 1}</span><span class="previous-set">${previous[index] ? `${num(previous[index].weight)} × ${previous[index].reps}` : '—'}</span><label class="set-input"><span class="sr-only">Peso (${weightUnit(ex)}) de la serie ${index + 1} de ${esc(ex.name)}</span><input type="number" inputmode="decimal" min="0" max="5000" step="0.25" placeholder="${previous[index]?.weight ?? '—'}" value="${set.weight ?? ''}" data-field="weight" ${!active || set.done ? 'disabled' : ''}></label><label class="set-input"><span class="sr-only">Repeticiones de la serie ${index + 1} de ${esc(ex.name)}</span><input type="number" inputmode="numeric" min="1" max="500" step="1" placeholder="${esc(ex.reps || '—')}" value="${set.reps ?? ''}" data-field="reps" ${!active || set.done ? 'disabled' : ''}></label><button class="set-complete" data-action="complete-set" data-exercise-index="${exIndex}" data-set-index="${index}" aria-label="${set.done ? 'Desmarcar' : 'Completar'} serie ${index + 1} de ${esc(ex.name)}" aria-pressed="${set.done}" ${!active ? 'disabled' : ''}>${icon('check')}</button></div>`).join('')}</div><div class="set-footer"><button class="mini-btn" data-action="add-set" data-exercise-index="${exIndex}" ${!active ? 'disabled' : ''}>${icon('plus')} Añadir serie</button>${active && sets.length > 1 ? `<button class="mini-btn" data-action="remove-set" data-exercise-index="${exIndex}">Quitar última</button>` : ""}${active ? `<button class="mini-btn" data-action="manual-rest" data-exercise-index="${exIndex}">${icon('clock')} Descansar</button>` : '<span class="caption">El descanso empieza al completar una serie</span>'}</div>` : ''}
+    ${comparisonHTML(comparison, ex, 'training-comparison')}${record ? `<span class="record-tag live-record" data-record-key="${esc(recordKey(ex))}">${icon('trophy')} Nuevo récord de ${record.type === 'weight' ? 'carga' : '1RM estimado'}</span>` : ''}
     ${ex.weightMode === 'perDumbbell' ? '<p class="caption exercise-note">Peso de una mancuerna. El volumen cuenta las dos.</p>' : ''}${ex.note ? `<p class="exercise-note">${esc(ex.note)}</p>` : ''}</article>`;
 }
 function startSession() {
@@ -183,6 +220,7 @@ function startSession() {
   });
   if (!exercises.length) return;
   if (commit(s => { s.activeSession = { id: uid(), title: day.title, dayIndex: s.selectedDay, startedAt: new Date().toISOString(), finishedAt: null, notes: '', exercises, restEndsAt: null, restName: '' }; })) {
+    celebratedRecords.clear();
     renderTrain(); toast('Al completar una serie, se prepara la siguiente con los mismos datos.');
   }
 }
@@ -203,6 +241,7 @@ function completeSet(button) {
     $(`[data-field="${field}"]`, row)?.focus(); return;
   }
   const completing = !set.done;
+  const previousRecords = new Set(completing ? sessionSummary(state.activeSession).records.map(recordKey) : []);
   const expected = state.activeSession.exercises.reduce((sum, entry) => sum + entry.sets.length, 0);
   const before = completedSets(state.activeSession).length / expected;
   if (commit(() => {
@@ -215,6 +254,16 @@ function completeSet(button) {
     const replacement = $(`[data-action="complete-set"][data-exercise-index="${button.dataset.exerciseIndex}"][data-set-index="${index}"]`);
     replacement?.focus({ preventScroll: true });
     uiMotion.setCompleted(replacement, $('.progress-track > span'), before, completedSets(state.activeSession).length / expected, completing);
+    if (completing) {
+      const record = sessionSummary(state.activeSession).records.find(candidate => recordKey(candidate) === recordKey(entry));
+      const key = record && recordKey(record);
+      if (key && !previousRecords.has(key) && !celebratedRecords.has(celebrationKey(record))) {
+        celebratedRecords.add(celebrationKey(record));
+        const badge = $$('.live-record').find(element => element.dataset.recordKey === key);
+        uiMotion.record(badge);
+        toast(`Nuevo récord de ${record.type === 'weight' ? 'carga' : '1RM estimado'} en ${record.name}. ¡Bien hecho!`);
+      }
+    }
   }
 }
 function startRest(ex) {
@@ -266,7 +315,7 @@ function sparkline(records, width = 130, height = 40) {
   return `<svg class="sparkline" viewBox="0 0 ${width} ${height}" aria-hidden="true"><polyline points="${points}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
 function renderProgress() {
-  const source = reviewState || state;
+  const source = progressSource(reviewState || state);
   const groups = getExerciseHistory(source);
   const month = localDate().slice(0, 7);
   const monthly = source.sessions.filter(s => localDate(new Date(s.finishedAt)).startsWith(month));
@@ -277,13 +326,13 @@ function renderProgress() {
     ${groups.length ? `<div class="section-heading"><h2 class="section-title">Ejercicio a ejercicio</h2><span class="caption">Carga · volumen · 1RM estimado</span></div><div class="exercise-progress-list">${groups.map(group => {
       const last = group.records.at(-1);
       const best = Math.max(...group.records.map(r => r.weight));
-      return `<button class="exercise-progress-item" data-action="exercise-progress" data-id="${esc(group.id)}"><div class="exercise-progress-top"><div><h3>${esc(group.name)}</h3><p class="caption">${group.records.length} registros · Máximo ${num(best)} ${weightUnit(group)}</p></div><span class="progress-last">${num(last.weight)}<small> ${weightUnit(group)}</small></span></div>${sparkline(group.records)}<span class="caption">Ver evolución ${icon('arrow')}</span></button>`;
+      return `<button class="exercise-progress-item" data-action="exercise-progress" data-id="${esc(group.id)}"><div class="exercise-progress-top"><div><h3>${esc(group.name)}</h3><p class="caption">${group.records.length} registros · Máximo ${num(best)} ${weightUnit(group)}</p></div><span class="progress-last">${num(last.weight)}<small> ${weightUnit(group)}</small></span></div>${sparkline(group.records)}<span class="caption">Ver evolución ${icon('arrow')}</span>${comparisonHTML(groupComparison(group), group)}</button>`;
     }).join('')}</div>` : emptyState('chart', 'Tu progreso empieza con una sesión.', 'Registra peso y repeticiones. Aquí verás tus cargas, volumen y marcas personales.', '<button class="btn primary" data-route="train">Ir a entrenar</button>')}`;
   if (selectedExercise && groups.some(g => g.id === selectedExercise)) renderExerciseProgress();
 }
 function emptyState(symbol, title, description, button = '') { return `<div class="empty-state"><div class="empty-icon">${icon(symbol)}</div><h2>${title}</h2><p>${description}</p>${button}</div>`; }
 function renderExerciseProgress() {
-  const group = getExerciseHistory(reviewState || state).find(g => g.id === selectedExercise);
+  const group = getExerciseHistory(progressSource(reviewState || state)).find(g => g.id === selectedExercise);
   if (!group) { selectedExercise = null; renderProgress(); return; }
   const cutoff = Date.now() - Number(chartRange === 'all' ? 99999 : chartRange) * 86400000;
   const records = group.records.filter(r => new Date(`${r.date.slice(0, 10)}T12:00:00`) >= cutoff);
@@ -295,6 +344,7 @@ function renderExerciseProgress() {
   const change = first > 0 && valid.length > 1 ? (last - first) / first * 100 : null;
   $('#progress-page').innerHTML = reviewBanner() + `<button class="btn subtle back-button" data-action="progress-back">${icon('back')} Todos los ejercicios</button>` + pageHead('Tu evolución', esc(group.name), `${group.records.length} registros guardados.`, '') + `
     <div class="dashboard-grid"><div class="metric-card">${stat('Mayor carga', num(bestWeight), group.weightMode === 'perDumbbell' ? ' kg/ud.' : ' kg')}</div><div class="metric-card">${stat('Mejor 1RM estimado', rms.length ? num(Math.max(...rms)) : '—', rms.length ? (group.weightMode === 'perDumbbell' ? ' kg/ud.' : ' kg') : '')}</div><div class="metric-card">${stat('Cambio en el periodo', change === null ? '—' : `${change > 0 ? '+' : ''}${num(change)} %`)}</div></div>
+    ${comparisonHTML(groupComparison(group), group, 'detail-comparison')}
     <section class="chart-panel panel"><div class="chart-controls"><div class="segmented" aria-label="Métrica">${[['weight', 'Carga'], ['estimatedRM', '1RM'], ['volume', 'Volumen']].map(([key, label]) => `<button data-action="chart-metric" data-value="${key}" class="${chartMetric === key ? 'active' : ''}" aria-pressed="${chartMetric === key}">${label}</button>`).join('')}</div><label class="field compact"><span class="sr-only">Periodo del gráfico</span><select id="chart-range"><option value="all" ${chartRange === 'all' ? 'selected' : ''}>Todo el historial</option><option value="30" ${chartRange === '30' ? 'selected' : ''}>30 días</option><option value="90" ${chartRange === '90' ? 'selected' : ''}>90 días</option></select></label></div>
     ${valid.length ? chartSVG(valid, chartMetric, units) : '<div class="empty-state"><h3>Sin datos para esta métrica.</h3><p>El 1RM requiere peso y entre 1 y 12 repeticiones. Los registros antiguos solo contienen la carga.</p></div>'}
     <p class="caption">${chartMetric === 'estimatedRM' ? '1RM aproximado con Epley: peso × (1 + repeticiones / 30). Se calcula con series de 1 a 12 reps; una repetición usa el peso real.' : chartMetric === 'volume' ? `Volumen de las series completadas: peso × repeticiones${group.weightMode === 'perDumbbell' ? ' × 2 mancuernas' : ''}. No disponible en registros antiguos sin repeticiones.` : 'Mayor carga registrada en cada sesión. No se mezcla el peso de ejercicios distintos.'}</p></section>

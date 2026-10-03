@@ -270,6 +270,16 @@ button.exercise-progress-item > .caption .icon { width: 14px; height: 14px; }
 .history-stats strong { color: var(--text); }
 .record-tag { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; color: var(--accent); font-size: 11px; }
 .record-tag svg { width: 14px; height: 14px; }
+.live-record { padding: 6px 9px; border-radius: 8px; background: var(--accent-soft); transform-origin: left center; }
+.progress-comparison { display: grid; gap: 4px; min-width: 0; font-size: 12px; line-height: 1.6; }
+.progress-comparison strong { font-weight: 550; color: var(--text); }
+.progress-comparison > span { color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.progress-comparison.is-improvement strong { color: var(--accent); }
+.training-comparison { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line-soft); }
+button.exercise-progress-item > .progress-comparison { grid-column: 1 / -1; grid-row: 3; }
+.detail-comparison { margin: -6px 0 24px; padding: 15px 0 15px 16px; border-left: 2px solid var(--accent); }
+.detail-comparison strong { font-size: 15px; }
+.detail-comparison > span { font-size: 12px; }
 .history-card > .button-row { margin-top: 0; flex-shrink: 0; }
 .routine-days { display: grid; gap: 18px; }
 .routine-toolbar { gap: 6px 12px; margin: -10px 0 25px; padding-bottom: 17px; border-bottom: 1px solid var(--line-soft); }

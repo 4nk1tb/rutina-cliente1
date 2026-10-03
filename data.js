@@ -443,6 +443,55 @@ export function setVolume(set, mode = 'total') {
   return set.weight * set.reps * multiplier;
 }
 
+function validCompletedSets(exercise) {
+  if (!Array.isArray(exercise?.sets)) return [];
+  return exercise.sets.filter(set => set?.done === true && Number.isFinite(set.weight) && set.weight >= 0 && set.weight <= 10000 && Number.isInteger(set.reps) && set.reps >= 1 && set.reps <= 1000);
+}
+
+function bestCompletedSet(exercise) {
+  return validCompletedSets(exercise).reduce((best, set) => !best || set.weight > best.weight || (set.weight === best.weight && set.reps > best.reps) ? set : best, null);
+}
+
+export function compareExerciseProgress(exercise, previousExercise) {
+  const best = bestCompletedSet(exercise);
+  if (!best) return null;
+  const current = { weight: best.weight, reps: best.reps };
+  const sameIdentity = typeof exercise.name === 'string' && typeof previousExercise?.name === 'string' && exerciseKey(exercise.name, exercise.weightMode) === exerciseKey(previousExercise.name, previousExercise.weightMode);
+  const priorBest = sameIdentity ? bestCompletedSet(previousExercise) : null;
+  if (!priorBest) return { kind: 'baseline', delta: null, current, previous: null };
+  const previous = { weight: priorBest.weight, reps: priorBest.reps };
+  if (current.weight === previous.weight) {
+    const delta = current.reps - previous.reps;
+    return { kind: delta === 0 ? 'same' : 'reps', delta, current, previous };
+  }
+  if (current.reps === previous.reps) return { kind: 'weight', delta: current.weight - previous.weight, current, previous };
+  return { kind: 'mixed', delta: null, current, previous };
+}
+
+export function getPreviousExercise(state, name, mode = 'total', beforeTime = Date.now(), excludeSessionId) {
+  if (typeof name !== 'string' || !Array.isArray(state?.sessions)) return null;
+  const requested = beforeTime instanceof Date ? beforeTime.getTime() : typeof beforeTime === 'number' ? beforeTime : new Date(beforeTime).getTime();
+  if (!Number.isFinite(requested)) return null;
+  const cutoff = Math.min(requested, Date.now());
+  const key = exerciseKey(name, mode);
+  const prior = state.sessions.map((session, index) => ({ session, index, time: session?.finishedAt ? new Date(session.finishedAt).getTime() : NaN }))
+    .filter(({ session, time }) => session.id !== excludeSessionId && Number.isFinite(time) && time < cutoff)
+    .sort((a, b) => b.time - a.time || String(b.session.id).localeCompare(String(a.session.id)) || a.index - b.index);
+  for (const { session } of prior) {
+    const matches = (Array.isArray(session.exercises) ? session.exercises : []).filter(exercise => typeof exercise?.name === 'string' && exerciseKey(exercise.name, exercise.weightMode) === key && validCompletedSets(exercise).length);
+    if (!matches.length) continue;
+    return {
+      ...matches[0],
+      weightMode: weightMode(mode),
+      sets: matches.flatMap(exercise => validCompletedSets(exercise).map(set => ({ weight: set.weight, reps: set.reps, done: true }))),
+      sessionId: session.id,
+      finishedAt: new Date(session.finishedAt).toISOString()
+    };
+  }
+  // Weight-only legacy data cannot establish a load/repetition comparison.
+  return null;
+}
+
 function exerciseStats(exercise) {
   const done = exercise.sets.filter(set => set.done);
   const weighted = done.filter(set => Number.isFinite(set.weight) && set.weight >= 0);
@@ -477,20 +526,20 @@ export function getExerciseHistory(state) {
       const stats = exerciseStats(exercise);
       if (!stats.sets || stats.weight === null) continue;
       const group = getGroup(exercise.name, exercise.weightMode);
-      if (!inSession.has(group.id)) inSession.set(group.id, { group, record: { date: localDate(new Date(session.finishedAt)), weight: stats.weight, reps: stats.reps, volume: stats.volume, estimatedRM: stats.estimatedRM, sessionId: session.id } });
+      if (!inSession.has(group.id)) inSession.set(group.id, { group, record: { date: localDate(new Date(session.finishedAt)), finishedAt: new Date(session.finishedAt).toISOString(), weight: stats.weight, reps: stats.reps, volume: stats.volume, estimatedRM: stats.estimatedRM, sessionId: session.id } });
       else {
         const record = inSession.get(group.id).record;
         record.volume += stats.volume;
-        if (stats.weight > record.weight) { record.weight = stats.weight; record.reps = stats.reps; }
+        if (stats.weight > record.weight || (stats.weight === record.weight && (stats.reps ?? 0) > (record.reps ?? 0))) { record.weight = stats.weight; record.reps = stats.reps; }
         if (stats.estimatedRM !== null && (record.estimatedRM === null || stats.estimatedRM > record.estimatedRM)) record.estimatedRM = stats.estimatedRM;
       }
     }
     for (const { group, record } of inSession.values()) group.records.push(record);
   }
   for (const record of state.legacyProgress || []) {
-    getGroup(record.name).records.push({ date: record.date, weight: record.weight, reps: record.reps ?? null, volume: record.reps === null || record.reps === undefined ? null : setVolume(record), estimatedRM: estimateRM(record.weight, record.reps), sessionId: null });
+    getGroup(record.name).records.push({ date: record.date, finishedAt: null, weight: record.weight, reps: record.reps ?? null, volume: record.reps === null || record.reps === undefined ? null : setVolume(record), estimatedRM: estimateRM(record.weight, record.reps), sessionId: null });
   }
-  return [...groups.values()].map(group => ({ ...group, records: group.records.sort((a, b) => a.date.localeCompare(b.date) || String(a.sessionId || '').localeCompare(String(b.sessionId || ''))) }));
+  return [...groups.values()].map(group => ({ ...group, records: group.records.sort((a, b) => a.date.localeCompare(b.date) || String(a.finishedAt || '').localeCompare(String(b.finishedAt || '')) || String(a.sessionId || '').localeCompare(String(b.sessionId || ''))) }));
 }
 
 export function summarizeSession(session, priorSessions = [], legacyProgress = []) {
