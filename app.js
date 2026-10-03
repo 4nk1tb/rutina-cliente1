@@ -1,7 +1,7 @@
 import { defaultRoutineData } from './default-routine.js';
-import { loadState, saveState, localDate, normalizeRoutine, getExerciseHistory, summarizeSession, createExport, importData, clearHistory } from './data.js';
+import { loadState, saveState, localDate, normalizeRoutine, getExerciseHistory, summarizeSession, createExport, importData, clearHistory, createDraftSets, suggestNextSet, markSetEdited } from './data.js';
 import { ROUTINE_TEMPLATES } from './routine-templates.js';
-import { renderShareCard, downloadCanvas, copyCanvas, shareCanvas } from './share.js';
+import { renderShareCard, saveCanvas, downloadCanvas, copyCanvas, shareCanvas, isAppleMobile } from './share.js';
 import { createMotion } from './motion.js';
 
 const $ = (selector, parent = document) => parent.querySelector(selector);
@@ -61,6 +61,8 @@ let sharePhoto = null;
 let shareRender = Promise.resolve();
 let shareRevision = 0;
 let restTotal = 90;
+const invalidSetDrafts = new WeakMap();
+const shareButtons = ['share-native', 'share-download', 'share-copy', 'share-file-download'];
 
 function toast(message, error = false) {
   clearTimeout(toastTimeout);
@@ -147,6 +149,14 @@ function renderTrain() {
     <aside class="session-aside"><section class="panel session-hero"><div class="panel-heading"><span class="eyebrow">${active ? 'Sesión en curso' : 'Tu sesión'}</span><span class="badge">${active ? 'En marcha' : 'A tu ritmo'}</span></div><h2 class="session-title">${esc(title)}</h2><div class="stats-row">${stat('Series', `${done.length}<span class="muted">/${expected}</span>`)}${stat('Volumen', num(volume), ' kg')}</div><div class="session-progress"><div class="progress-track"><span style="transform:scaleX(${expected ? done.length / expected : 0})"></span></div><span class="caption">${active ? `${Math.round(expected ? done.length / expected * 100 : 0)} % completado` : 'Empieza para registrar tus series'}</span></div>${active ? `<div class="session-clock">${icon('clock')}<span id="session-elapsed">${durationLabel((Date.now() - new Date(active.startedAt)) / 1000)}</span></div><button class="btn subtle small" data-action="discard-session">Descartar sesión en curso</button>` : ''}</section>
     <section class="panel"><h2 class="section-title">Tu constancia</h2>${weekStrip()}<button class="btn subtle small" data-route="progress">Ver mi progreso ${icon('arrow')}</button></section>
     <section class="panel"><label class="field">Notas ${active ? 'de esta sesión' : 'personales'}<textarea id="session-notes" placeholder="Cómo te has sentido, algo que recordar…" maxlength="5000">${esc(active?.notes ?? state.notes)}</textarea></label><details><summary>Mi plan de 6 semanas</summary><label class="field">Semana<select id="plan-week">${[1, 2, 3, 4, 5, 6].map(w => `<option value="${w}" ${Number(state.week) === w ? 'selected' : ''}>${w}${w === 4 ? ' · Descarga' : ''}</option>`).join('')}</select></label><p class="caption">${weekHint()}</p><p class="caption">RIR: repeticiones que te quedan antes del fallo. Tu rutina puede indicar un objetivo.</p></details></section></aside></div>`;
+  if (active) day.exercises.forEach((exercise, exerciseIndex) => {
+    active.exercises.find(entry => entry.exerciseId === exercise.id)?.sets.forEach((set, setIndex) => {
+      for (const [field, value] of Object.entries(invalidSetDrafts.get(set) || {})) {
+        const input = $(`[data-exercise-index="${exerciseIndex}"] [data-set-index="${setIndex}"] [data-field="${field}"]`);
+        if (input) { input.value = value; input.setAttribute('aria-invalid', 'true'); }
+      }
+    });
+  });
   const strip = $('.day-tabs'); strip.scrollLeft = previousTabScroll;
   const activeTab = $('.day-tab.active', strip);
   const box = strip.getBoundingClientRect(), tabBox = activeTab.getBoundingClientRect();
@@ -169,11 +179,11 @@ function startSession() {
   const day = currentDay();
   const exercises = day.exercises.filter(ex => ex.sets).map(ex => {
     const previous = lastExercise(ex.name, ex.weightMode)?.sets.filter(s => s.done) || [];
-    return { exerciseId: ex.id, name: ex.name, weightMode: ex.weightMode || 'total', ...(ex.muscleGroup ? { muscleGroup: ex.muscleGroup } : {}), sets: Array.from({ length: ex.sets }, (_, index) => ({ weight: previous[index]?.weight ?? null, reps: previous[index]?.reps ?? null, done: false })) };
+    return { exerciseId: ex.id, name: ex.name, weightMode: ex.weightMode || 'total', ...(ex.muscleGroup ? { muscleGroup: ex.muscleGroup } : {}), sets: createDraftSets(ex.sets, previous) };
   });
   if (!exercises.length) return;
   if (commit(s => { s.activeSession = { id: uid(), title: day.title, dayIndex: s.selectedDay, startedAt: new Date().toISOString(), finishedAt: null, notes: '', exercises, restEndsAt: null, restName: '' }; })) {
-    renderTrain(); toast('Sesión iniciada. Registra el peso y las repeticiones de cada serie.');
+    renderTrain(); toast('Al completar una serie, se prepara la siguiente con los mismos datos.');
   }
 }
 function completeSet(button) {
@@ -195,7 +205,11 @@ function completeSet(button) {
   const completing = !set.done;
   const expected = state.activeSession.exercises.reduce((sum, entry) => sum + entry.sets.length, 0);
   const before = completedSets(state.activeSession).length / expected;
-  if (commit(() => { if (completing) { set.weight = weight; set.reps = reps; } set.done = completing; })) {
+  if (commit(() => {
+    if (completing) { set.weight = weight; set.reps = reps; }
+    set.done = completing;
+    if (completing) suggestNextSet(entry.sets, index);
+  })) {
     if (completing) startRest(ex);
     renderTrain();
     const replacement = $(`[data-action="complete-set"][data-exercise-index="${button.dataset.exerciseIndex}"][data-set-index="${index}"]`);
@@ -410,6 +424,7 @@ function openShare(session, type = 'session') {
   $('#share-photo-status').textContent = 'La foto se procesa en tu dispositivo.';
   $('#share-type').value = type; $('#share-style').value = 'transparent'; $('#share-format').value = 'sticker'; $('#share-theme').value = 'dark'; $('#share-handle').value = state.profile.handle || '';
   $('#share-status').textContent = 'Puedes colocar el PNG sobre una foto en tus historias.';
+  $('#share-file-download').hidden = true;
   $('#share-dialog').showModal(); updateShare();
 }
 function updateShare() {
@@ -421,9 +436,9 @@ function updateShare() {
   const options = { type: $('#share-type').value, style: style === 'photo' && !sharePhoto ? 'card' : style, theme: $('#share-theme').value, format: $('#share-format').value, session: sharedSession, summary: sessionSummary(sharedSession), profile: { ...state.profile, handle: $('#share-handle').value.trim() }, photo: sharePhoto, sessions: state.sessions, date: new Date(), brand: 'Repite' };
   $('.share-preview').dataset.previewTheme = options.theme;
   const revision = ++shareRevision;
-  ['share-native', 'share-download', 'share-copy'].forEach(id => { $(`#${id}`).disabled = true; });
+  shareButtons.forEach(id => { $(`#${id}`).disabled = true; });
   shareRender = shareRender.catch(() => {}).then(() => renderShareCard($('#share-canvas'), options)).then(() => {
-    if (revision === shareRevision) ['share-native', 'share-download', 'share-copy'].forEach(id => { $(`#${id}`).disabled = false; });
+    if (revision === shareRevision) shareButtons.forEach(id => { $(`#${id}`).disabled = false; });
   }).catch(error => { $('#share-status').textContent = error.message || 'No se pudo crear la imagen.'; throw error; });
   shareRender.catch(() => {});
 }
@@ -457,7 +472,8 @@ document.addEventListener('click', event => {
       const entry = state.activeSession?.exercises.find(e => e.exerciseId === ex.id);
       if (!entry) break;
       if (entry.sets.length >= 30) { toast('Puedes registrar hasta 30 series por ejercicio.', true); break; }
-      if (commit(() => entry.sets.push({ weight: null, reps: null, done: false }))) renderTrain(); break;
+      const previous = entry.sets.filter(set => set.done).at(-1) || lastExercise(ex.name, ex.weightMode)?.sets.filter(set => set.done).at(-1);
+      if (commit(() => entry.sets.push(...createDraftSets(1, previous ? [previous] : [])))) renderTrain(); break;
     }
     case 'manual-rest': startRest(currentDay().exercises[Number(button.dataset.exerciseIndex)]); break;
     case 'remove-set': {
@@ -516,8 +532,18 @@ document.addEventListener('input', event => {
     const value = input.value === '' ? null : Number(input.value);
     const valid = value === null || (Number.isFinite(value) && (input.dataset.field === 'weight' ? value >= 0 && value <= 5000 : Number.isInteger(value) && value >= 1 && value <= 500));
     input.setAttribute('aria-invalid', String(!valid));
-    if (!valid) return;
-    commit(s => { s.activeSession.exercises.find(e => e.exerciseId === ex.id).sets[rowIndex][input.dataset.field] = Number.isFinite(value) ? value : null; });
+    commit(s => {
+      const set = s.activeSession.exercises.find(e => e.exerciseId === ex.id).sets[rowIndex];
+      markSetEdited(set, input.dataset.field);
+      if (valid) {
+        set[input.dataset.field] = Number.isFinite(value) ? value : null;
+        const draft = invalidSetDrafts.get(set);
+        if (draft) delete draft[input.dataset.field];
+      } else {
+        set[input.dataset.field] = null;
+        invalidSetDrafts.set(set, { ...invalidSetDrafts.get(set), [input.dataset.field]: input.value });
+      }
+    });
   }
   if (input.id === 'session-notes') commit(s => { if (isCurrentActive()) s.activeSession.notes = input.value; else s.notes = input.value; });
   if (input.id === 'share-handle') updateShare();
@@ -547,7 +573,11 @@ $('#timer-skip').innerHTML = icon('close');
 $('#dialog-close').innerHTML = icon('close'); $('#share-close').innerHTML = icon('close');
 $('#timer-skip').addEventListener('click', stopRest);
 $('#timer-add').addEventListener('click', () => { if (!state.activeSession?.restEndsAt) return; restTotal += 30; commit(s => { s.activeSession.restEndsAt = new Date(new Date(s.activeSession.restEndsAt).getTime() + 30000).toISOString(); }); tick(); });
-for (const [id, action] of [['share-download', downloadCanvas], ['share-copy', copyCanvas], ['share-native', shareCanvas]]) {
+const appleMobile = isAppleMobile();
+$('#share-download').textContent = appleMobile ? 'Guardar imagen' : 'Descargar PNG';
+$('#share-save-hint').hidden = !appleMobile;
+$('#share-save-hint').textContent = 'En el menú, elige «Guardar imagen» para añadirla a Fotos.';
+for (const [id, action] of [['share-download', saveCanvas], ['share-copy', copyCanvas], ['share-native', shareCanvas], ['share-file-download', downloadCanvas]]) {
   $(`#${id}`).addEventListener('click', async event => {
     const button = event.currentTarget;
     button.disabled = true;
@@ -555,10 +585,15 @@ for (const [id, action] of [['share-download', downloadCanvas], ['share-copy', c
       // The PNG is prepared before buttons enable; call the browser API in this gesture.
       const pending = action($('#share-canvas'), `repite-${localDate(new Date(sharedSession.finishedAt))}.png`);
       const result = await pending;
-      $('#share-status').textContent = id === 'share-copy' ? 'PNG copiado. Puedes pegarlo sobre una foto.' : result === 'downloaded' ? 'PNG guardado. Usa el menú de compartir de tu iPhone para enviarlo.' : id === 'share-download' ? 'PNG guardado con el fondo que has elegido.' : 'Imagen compartida.';
+      $('#share-status').textContent = id === 'share-copy' ? 'PNG copiado. Puedes pegarlo sobre una foto.'
+        : result === 'downloaded' || id === 'share-file-download' ? appleMobile ? 'PNG descargado. Ábrelo y elige Compartir → Guardar imagen para añadirlo a Fotos.' : 'PNG descargado con el fondo que has elegido.'
+        : id === 'share-download' ? 'Si has elegido «Guardar imagen», la encontrarás en Fotos.' : 'Acción de compartir completada.';
       const handle = $('#share-handle').value.trim().replace(/^@+/, '');
       commit(s => { s.profile.handle = handle ? `@${handle}` : ''; });
-    } catch (error) { $('#share-status').textContent = error.name === 'AbortError' ? 'Puedes compartir la imagen cuando quieras.' : error.message || 'No se pudo compartir. Prueba Guardar PNG.'; }
+    } catch (error) {
+      if (error.name !== 'AbortError') $('#share-file-download').hidden = false;
+      $('#share-status').textContent = error.name === 'AbortError' ? 'Puedes guardar o compartir la imagen cuando quieras.' : error.message || 'No se pudo guardar. Prueba Descargar PNG.';
+    }
     finally { button.disabled = false; }
   });
 }

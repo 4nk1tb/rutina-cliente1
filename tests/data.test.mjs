@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { STORAGE_KEY, MUSCLE_GROUPS, localDate, loadState, saveState, clearHistory, normalizeRoutine, estimateRM, setVolume, summarizeSession, getExerciseHistory, createExport, importData } from '../data.js';
+import { STORAGE_KEY, MUSCLE_GROUPS, localDate, loadState, saveState, clearHistory, normalizeRoutine, estimateRM, setVolume, createDraftSets, markSetEdited, suggestNextSet, summarizeSession, getExerciseHistory, createExport, importData } from '../data.js';
 
 const routine = { days: [{ title: 'Empuje', exercises: [{ id: 'banca', name: 'Press banca', sets: 3, reps: '6-8', timer: 2 }] }] };
 const fresh = () => loadState(routine, memory()).state;
@@ -390,6 +390,7 @@ test('clearHistory saves an empty history, preserves active training and prefere
   state.sessions = [session()];
   state.legacyProgress = [{ exerciseId: '0:banca', name: 'Press banca', date: '2026-09-01', weight: 70, reps: null }];
   state.activeSession = { ...session('draft'), finishedAt: null, restEndsAt: '2026-10-03T11:01:00.000Z', restName: 'Press banca' };
+  state.activeSession.exercises[0].sets.forEach(set => { set.edited = { weight: true, reps: true }; });
   state.profile = { displayName: 'Yanki', handle: '@yanki' };
   state.notes = 'Conservar mis notas';
   state.week = 4;
@@ -453,4 +454,106 @@ test('clearHistory reports incomplete cleanup with its already-persisted state f
   assert.deepEqual(JSON.parse(storage.getItem(STORAGE_KEY)).sessions, []);
   assert.equal(storage.getItem('rutina-fuerza-elegante-v7-final'), null);
   assert.equal(storage.getItem(recoveryKey), 'protected-copy');
+});
+
+test('draft suggestions retain different prior loads by completed-set position and repeat the last for extras', () => {
+  const previous = [{ weight: 0, reps: 15, done: true }, { weight: 999, reps: 1, done: false }, { weight: 20, reps: 10, done: true }, { weight: 25, reps: 8, done: true }];
+  const before = JSON.stringify(previous);
+  const drafts = createDraftSets(5, previous);
+  assert.deepEqual(drafts.map(set => [set.weight, set.reps]), [[0, 15], [20, 10], [25, 8], [25, 8], [25, 8]]);
+  assert.ok(drafts.every(set => set.done === false && Object.keys(set.edited).length === 0));
+  assert.equal(JSON.stringify(previous), before);
+  drafts[0].edited.weight = true;
+  assert.deepEqual(drafts[1].edited, {}, 'each draft owns its independent edit flags');
+  assert.deepEqual(createDraftSets(2), [{ weight: null, reps: null, done: false, edited: {} }, { weight: null, reps: null, done: false, edited: {} }]);
+  assert.throws(() => createDraftSets(1.5), /número de series/);
+});
+
+test('next-set suggestions protect each manually edited field, including an explicitly cleared value', () => {
+  const sets = createDraftSets(2);
+  Object.assign(sets[0], { weight: 20, reps: 10, done: true });
+  sets[1].weight = 30;
+  markSetEdited(sets[1], 'weight');
+  assert.equal(suggestNextSet(sets, 0), true);
+  assert.equal(sets[1].weight, 30);
+  assert.equal(sets[1].reps, 10);
+  sets[1].weight = null;
+  markSetEdited(sets[1], 'weight');
+  sets[0].weight = 0;
+  sets[0].reps = 12;
+  assert.equal(suggestNextSet(sets, 0), true);
+  assert.equal(sets[1].weight, null, 'cleared manual values must not be repopulated');
+  assert.equal(sets[1].reps, 12);
+  sets[1].reps = null;
+  markSetEdited(sets[1], 'reps');
+  assert.equal(suggestNextSet(sets, 0), false);
+  assert.equal(sets[1].reps, null);
+  const zero = createDraftSets(2);
+  Object.assign(zero[0], { weight: 0, reps: 8, done: true });
+  assert.equal(suggestNextSet(zero, 0), true);
+  assert.equal(zero[1].weight, 0);
+  assert.equal(zero[1].done, false);
+});
+
+test('out-of-order suggestions affect only the immediate next draft and never skip completed sets', () => {
+  const sets = createDraftSets(4);
+  Object.assign(sets[1], { weight: 50, reps: 8, done: true });
+  assert.equal(suggestNextSet(sets, 1), true);
+  assert.equal(sets[0].weight, null);
+  assert.equal(sets[2].weight, 50);
+  assert.equal(sets[3].weight, null);
+  Object.assign(sets[0], { weight: 40, reps: 10, done: true });
+  const snapshot = JSON.stringify(sets);
+  assert.equal(suggestNextSet(sets, 0), false, 'a completed next row is not replaced or skipped');
+  assert.equal(JSON.stringify(sets), snapshot);
+  assert.equal(suggestNextSet(sets, 3), false);
+  assert.equal(suggestNextSet(sets, -1), false);
+  sets[2].done = true;
+  sets[2].reps = null;
+  assert.equal(suggestNextSet(sets, 2), false, 'incomplete source data cannot become a suggestion');
+  assert.equal(sets[3].weight, null);
+});
+
+test('active edit flags survive storage and backups, while old filled drafts remain protected', () => {
+  const state = fresh();
+  state.activeSession = { ...session('draft'), finishedAt: null };
+  state.activeSession.exercises[0].sets = createDraftSets(2);
+  const next = state.activeSession.exercises[0].sets[1];
+  markSetEdited(next, 'weight');
+  const storage = memory();
+  saveState(state, storage);
+  const reloaded = loadState(routine, storage).state;
+  assert.deepEqual(reloaded.activeSession.exercises[0].sets[1].edited, { weight: true });
+  assert.equal(reloaded.activeSession.exercises[0].sets[1].weight, null);
+  const restored = importData(fresh(), createExport(state, 'backup'), 'replace').state;
+  assert.deepEqual(restored.activeSession.exercises[0].sets[1].edited, { weight: true });
+  const old = fresh();
+  old.activeSession = { ...session('old-draft'), finishedAt: null };
+  old.activeSession.exercises[0].sets = [{ weight: 60, reps: 8, done: true }, { weight: null, reps: 6, done: false }, { weight: null, reps: null, done: false }];
+  const oldStorage = memory({ [STORAGE_KEY]: JSON.stringify(old) });
+  const migrated = loadState(routine, oldStorage).state.activeSession.exercises[0].sets;
+  assert.deepEqual(migrated[0].edited, { weight: true, reps: true });
+  assert.deepEqual(migrated[1].edited, { reps: true });
+  assert.deepEqual(migrated[2].edited, {});
+  suggestNextSet(migrated, 0);
+  assert.equal(migrated[1].weight, 60);
+  assert.equal(migrated[1].reps, 6);
+});
+
+test('completed history exports strip draft provenance and active flags validate strictly', () => {
+  const state = fresh();
+  state.sessions = [session()];
+  state.sessions[0].exercises[0].sets[0].edited = { weight: true, reps: false };
+  const progress = createExport(state, 'progress');
+  assert.ok(progress.data.sessions[0].exercises[0].sets.every(set => !Object.hasOwn(set, 'edited')));
+  const storage = memory();
+  saveState(state, storage);
+  assert.ok(loadState(routine, storage).state.sessions[0].exercises[0].sets.every(set => !Object.hasOwn(set, 'edited')));
+  state.activeSession = { ...session('draft'), finishedAt: null };
+  state.activeSession.exercises[0].sets[0].edited = { weight: false, reps: true };
+  assert.deepEqual(createExport(state, 'backup').data.activeSession.exercises[0].sets[0].edited, { weight: false, reps: true });
+  for (const invalid of [[], true, { weight: 'yes' }, { other: true }]) {
+    state.activeSession.exercises[0].sets[0].edited = invalid;
+    assert.throws(() => createExport(state, 'backup'), /edición/);
+  }
 });

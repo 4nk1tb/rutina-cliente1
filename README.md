@@ -25,8 +25,10 @@ Para trasladar los datos de la vista previa local a la web publicada, exporta un
 1. Selecciona un día y pulsa **Empezar entrenamiento**.
 2. Registra peso y repeticiones por serie. Se muestran las series del entrenamiento anterior como referencia. Se admite 0 kg para ejercicios sin carga externa.
 3. Pulsa el botón de completar: comienza automáticamente el descanso. Puedes añadir 30 segundos, terminar el descanso o añadir y quitar series.
+   La siguiente serie se prepara con el mismo peso y repeticiones. Los campos que ya hayas editado, incluso si los borraste, se conservan. Al empezar un entrenamiento se sugieren los datos de la última sesión del mismo ejercicio y modo de peso; sin historial, los introduces una vez.
 4. **Terminar sesión** permite revisar y guardar duración, series, volumen y récords. Solo cuentan las series completadas.
 5. La sesión queda en Historial y se abre el editor de imagen. Elige una foto opcional, un PNG transparente o una tarjeta redondeada; guarda, copia o comparte la imagen según el soporte del navegador.
+   En iPhone/iPad, **Guardar imagen** abre el menú del sistema: elige **Guardar imagen** para añadirla a Fotos. La web no puede escoger Fotos ni confirmar ese destino automáticamente. Si no se pueden compartir archivos, el PNG se descarga; si el menú falla, aparece **Descargar PNG** como alternativa. En escritorio se descarga directamente.
 
 ## Rutina y progreso
 

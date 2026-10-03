@@ -109,6 +109,52 @@ function weightMode(value = 'total') {
 }
 const exerciseKey = (name, mode = 'total') => JSON.stringify([normalizedName(name), weightMode(mode)]);
 
+function normalizedEdited(set) {
+  if (set.edited === undefined) {
+    // Old drafts had no provenance. Preserve filled values as manually entered.
+    return { ...(set.weight !== null && set.weight !== undefined ? { weight: true } : {}), ...(set.reps !== null && set.reps !== undefined ? { reps: true } : {}) };
+  }
+  object(set.edited, 'Las marcas de edición de la serie');
+  const clean = {};
+  for (const [field, edited] of Object.entries(set.edited)) {
+    if (!['weight', 'reps'].includes(field) || typeof edited !== 'boolean') fail('Las marcas de edición solo admiten peso y repeticiones con valores booleanos.');
+    clean[field] = edited;
+  }
+  return clean;
+}
+
+export function createDraftSets(count, previousSets = []) {
+  number(count, 0, LIMITS.sets, 'El número de series', true);
+  const previous = array(previousSets, LIMITS.sets, 'Las series anteriores').filter(set => set?.done === true).map(set => ({
+    weight: optionalNumber(set.weight, 0, 10000, 'El peso anterior'),
+    reps: optionalNumber(set.reps, 1, 1000, 'Las repeticiones anteriores', true)
+  }));
+  return Array.from({ length: count }, (_, index) => {
+    const suggestion = previous[index] || previous.at(-1);
+    return { weight: suggestion?.weight ?? null, reps: suggestion?.reps ?? null, done: false, edited: {} };
+  });
+}
+
+export function markSetEdited(set, field) {
+  object(set, 'La serie');
+  if (!['weight', 'reps'].includes(field)) fail('Solo se puede marcar la edición del peso o las repeticiones.');
+  set.edited = { ...normalizedEdited(set), [field]: true };
+  return set;
+}
+
+export function suggestNextSet(sets, completedIndex) {
+  if (!Array.isArray(sets) || !Number.isInteger(completedIndex) || completedIndex < 0 || completedIndex >= sets.length - 1) return false;
+  const source = sets[completedIndex], next = sets[completedIndex + 1];
+  if (!source || source.done !== true || !Number.isFinite(source.weight) || source.weight < 0 || source.weight > 10000 || !Number.isInteger(source.reps) || source.reps < 1 || source.reps > 1000 || !next || next.done !== false) return false;
+  const edited = normalizedEdited(next);
+  let changed = false;
+  for (const field of ['weight', 'reps']) {
+    if (!edited[field] && next[field] !== source[field]) { next[field] = source[field]; changed = true; }
+  }
+  next.edited = edited;
+  return changed;
+}
+
 export function normalizeRoutine(data) {
   inspectJson(data);
   object(data, 'La rutina');
@@ -169,6 +215,7 @@ function normalizeSession(value, active = false) {
           done: set.done
         };
         if (clean.done && (clean.weight === null || clean.reps === null)) fail('Una serie completada necesita un peso y unas repeticiones válidas.');
+        if (active) clean.edited = normalizedEdited(set);
         return clean;
       })
     };

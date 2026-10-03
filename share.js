@@ -722,3 +722,23 @@ export async function shareCanvas(canvas, filename = 'repite-entrenamiento.png')
   await downloadCanvas(canvas, filename);
   return 'downloaded';
 }
+
+/** Includes iPadOS Safari's desktop-style identity without treating a Mac as iPad. */
+export function isAppleMobile() {
+  const device = globalThis.navigator;
+  if (!device) return false;
+  const userAgent = textValue(device.userAgent);
+  if (/\b(iPhone|iPad|iPod)\b/i.test(userAgent)) return true;
+  const macIdentity = device.platform === 'MacIntel' || /\bMacintosh\b/i.test(userAgent);
+  return macIdentity && Number(device.maxTouchPoints) > 1;
+}
+
+/**
+ * On iPhone/iPad, let the person choose Save Image in the native share sheet.
+ * A website cannot select Photos or confirm which share target they chose.
+ * Return the existing share promise directly to preserve the original tap.
+ */
+export function saveCanvas(canvas, filename = 'repite-entrenamiento.png') {
+  if (isAppleMobile()) return shareCanvas(canvas, filename);
+  return downloadCanvas(canvas, filename).then(() => 'downloaded');
+}

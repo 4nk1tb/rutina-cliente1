@@ -3,7 +3,25 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const source = await readFile(new URL('../share.js', import.meta.url), 'utf8');
-const { renderShareCard, canvasBlob, copyCanvas, shareCanvas } = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
+const { renderShareCard, canvasBlob, downloadCanvas, copyCanvas, shareCanvas, saveCanvas, isAppleMobile } = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
+
+function browserStub(device) {
+  const originals = new Map(['navigator', 'document', 'setTimeout'].map((key) => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
+  const downloads = [];
+  const link = { click() { downloads.push({ name: this.download, href: this.href }); }, remove() {} };
+  Object.defineProperty(globalThis, 'navigator', { configurable: true, value: device });
+  Object.defineProperty(globalThis, 'document', { configurable: true, value: {
+    createElement(name) { assert.equal(name, 'a'); return link; },
+    body: { appendChild() {} },
+  } });
+  Object.defineProperty(globalThis, 'setTimeout', { configurable: true, value: (callback) => { callback(); return 0; } });
+  return { downloads, restore() {
+    for (const [key, descriptor] of originals) {
+      if (descriptor) Object.defineProperty(globalThis, key, descriptor);
+      else delete globalThis[key];
+    }
+  } };
+}
 
 function canvasStub() {
   const calls = [];
@@ -235,4 +253,111 @@ test('native share cancellation is propagated without initiating a download', as
     if (originalNavigator) Object.defineProperty(globalThis, 'navigator', originalNavigator);
     else delete globalThis.navigator;
   }
+});
+
+test('Apple mobile detection covers iPadOS desktop identity and excludes desktop or Android touchscreens', () => {
+  const originalNavigator = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+  const examples = [
+    [{ userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)', maxTouchPoints: 5 }, true],
+    [{ userAgent: 'Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X)', maxTouchPoints: 5 }, true],
+    [{ userAgent: 'Mozilla/5.0 (iPod touch; CPU iPhone OS 15_0 like Mac OS X)' }, true],
+    [{ userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)', platform: 'MacIntel', maxTouchPoints: 5 }, true],
+    [{ userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)', maxTouchPoints: 5 }, true],
+    [{ userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)', platform: 'MacIntel', maxTouchPoints: 0 }, false],
+    [{ userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)', platform: 'MacIntel', maxTouchPoints: 1 }, false],
+    [{ userAgent: 'Mozilla/5.0 (Linux; Android 15)', platform: 'Linux armv8l', maxTouchPoints: 5 }, false],
+    [{ userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', platform: 'Win32', maxTouchPoints: 10 }, false],
+  ];
+  try {
+    for (const [device, expected] of examples) {
+      Object.defineProperty(globalThis, 'navigator', { configurable: true, value: device });
+      assert.equal(isAppleMobile(), expected, device.userAgent);
+    }
+    Object.defineProperty(globalThis, 'navigator', { configurable: true, value: undefined });
+    assert.equal(isAppleMobile(), false);
+  } finally {
+    if (originalNavigator) Object.defineProperty(globalThis, 'navigator', originalNavigator);
+    else delete globalThis.navigator;
+  }
+});
+
+test('save on iPhone and desktop-identity iPad calls native share in the original tap', async () => {
+  for (const identity of [
+    { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)', maxTouchPoints: 5 },
+    { userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)', platform: 'MacIntel', maxTouchPoints: 5 },
+  ]) {
+    let shared = null;
+    const browser = browserStub({ ...identity, canShare: () => true, share: async (data) => { shared = data; } });
+    try {
+      const canvas = canvasStub();
+      await renderShareCard(canvas, { session });
+      const saving = saveCanvas(canvas, 'mi-imagen.png');
+      assert.ok(shared, 'saveCanvas must call navigator.share before returning its promise');
+      assert.equal(shared.files[0].type, 'image/png');
+      assert.equal(shared.files[0].name, 'mi-imagen.png');
+      assert.equal(await saving, 'shared');
+      assert.equal(browser.downloads.length, 0);
+    } finally { browser.restore(); }
+  }
+});
+
+test('save on desktop downloads directly even when native file sharing is available', async () => {
+  let shares = 0;
+  const browser = browserStub({ userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)', platform: 'MacIntel', maxTouchPoints: 0, canShare: () => true, share: async () => { shares += 1; } });
+  try {
+    const canvas = canvasStub();
+    await renderShareCard(canvas, { session });
+    assert.equal(await saveCanvas(canvas, 'mi-imagen'), 'downloaded');
+    assert.equal(shares, 0);
+    assert.equal(browser.downloads.length, 1);
+    assert.equal(browser.downloads[0].name, 'mi-imagen.png');
+    assert.match(browser.downloads[0].href, /^blob:/);
+  } finally { browser.restore(); }
+});
+
+test('save on iPhone falls back to download only when file sharing is unsupported', async () => {
+  let shares = 0;
+  const browser = browserStub({ userAgent: 'iPhone', maxTouchPoints: 5, canShare: () => false, share: async () => { shares += 1; } });
+  try {
+    const canvas = canvasStub();
+    await renderShareCard(canvas, { session });
+    assert.equal(await saveCanvas(canvas, 'fallback.png'), 'downloaded');
+    assert.equal(shares, 0);
+    assert.equal(browser.downloads.length, 1);
+  } finally { browser.restore(); }
+});
+
+test('canceling Save Image never triggers a download or reports success', async () => {
+  const abort = Object.assign(new Error('Cancelado'), { name: 'AbortError' });
+  const browser = browserStub({ userAgent: 'iPhone', maxTouchPoints: 5, canShare: () => true, share: async () => { throw abort; } });
+  try {
+    const canvas = canvasStub();
+    await renderShareCard(canvas, { session });
+    await assert.rejects(saveCanvas(canvas), (error) => error === abort);
+    assert.equal(browser.downloads.length, 0);
+  } finally { browser.restore(); }
+});
+
+test('blocked native sharing reports a clear error without a surprise download', async () => {
+  const denied = Object.assign(new Error('Permission denied'), { name: 'NotAllowedError' });
+  const browser = browserStub({ userAgent: 'iPhone', maxTouchPoints: 5, canShare: () => true, share: async () => { throw denied; } });
+  try {
+    const canvas = canvasStub();
+    await renderShareCard(canvas, { session });
+    await assert.rejects(saveCanvas(canvas), /No se pudo abrir Compartir/);
+    assert.equal(browser.downloads.length, 0);
+  } finally { browser.restore(); }
+});
+
+test('downloadCanvas stays a plain download on iPhone', async () => {
+  let shares = 0;
+  const browser = browserStub({ userAgent: 'iPhone', maxTouchPoints: 5, canShare: () => true, share: async () => { shares += 1; } });
+  try {
+    const canvas = canvasStub();
+    await renderShareCard(canvas, { session });
+    assert.equal(await downloadCanvas(canvas, 'directo.png'), undefined);
+    assert.equal(shares, 0);
+    assert.equal(browser.downloads.length, 1);
+    assert.equal(browser.downloads[0].name, 'directo.png');
+  } finally { browser.restore(); }
 });
