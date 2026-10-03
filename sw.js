@@ -1,45 +1,22 @@
-const CACHE_NAME = 'rutina-elegante-v2.1'; // Incrementa este número (v2, v3...) cada vez que hagas cambios
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  // Es buena práctica cachear también la fuente para que funcione offline
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap'
-];
-
-// Evento de instalación: se abre la caché y se guardan los assets
+const CACHE_NAME = 'repite-v2.0.5';
+const ASSETS = ['./', './index.html', './app.css', './app.js', './data.js', './default-routine.js', './routine-templates.js', './share.js', './manifest.webmanifest', './favicon.svg', './repite-icon-180.png', './repite-icon-192.png', './repite-icon-512.png'];
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Cache abierta:', CACHE_NAME);
-        return cache.addAll(ASSETS_TO_CACHE);
-      })
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
-
-// Evento de activación: se limpia la caché antigua
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cache => {
-          if (cache !== CACHE_NAME) {
-            console.log('Borrando caché antigua:', cache);
-            return caches.delete(cache);
-          }
-        })
-      );
-    })
-  );
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME && (key.startsWith('repite-') || key.startsWith('rutina-elegante-'))).map(key => caches.delete(key)))).then(() => self.clients.claim()));
 });
-
-// Evento fetch: sirve los assets desde la caché si es posible (estrategia Cache-First)
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Si se encuentra en caché, la devuelve. Si no, la busca en la red.
-        return response || fetch(event.request);
-      })
-  );
+  if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
+  if (['localhost', '127.0.0.1', '[::1]'].includes(self.location.hostname)) {
+    event.respondWith(fetch(event.request).catch(() => caches.open(CACHE_NAME).then(cache => cache.match(event.request))));
+    return;
+  }
+  // Keep HTML, styles and modules in one installed version. A new worker only
+  // takes over after the complete next shell has been cached successfully.
+  event.respondWith(caches.open(CACHE_NAME).then(async cache => {
+    const cached = await cache.match(event.request.mode === 'navigate' ? './index.html' : event.request);
+    if (cached) return cached;
+    return fetch(event.request);
+  }));
 });
