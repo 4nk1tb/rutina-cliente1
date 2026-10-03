@@ -12,6 +12,14 @@ npm run dev
 
 Abre http://127.0.0.1:4173. Para comprobar el diseño desde un teléfono de la misma red, ejecuta `npm run dev -- --host` y abre la IP local del ordenador, puerto 4173. Algunas funciones del navegador, como instalar, compartir archivos y escribir PNG en el portapapeles, necesitan HTTPS o localhost. Para el uso en iPhone, utiliza la web publicada con HTTPS y Safari → Compartir → Añadir a pantalla de inicio.
 
+## Publicar en GitHub Pages
+
+La app se sirve directamente, sin compilación. En **Settings → Pages**, selecciona **Deploy from a branch**, la rama **main** y **/(root)**. El archivo `.nojekyll` evita el procesamiento de Jekyll. Al subir cambios a esa rama, GitHub publica la nueva versión.
+
+La dirección de este repositorio es `https://4nk1tb.github.io/rutina-cliente1/`. Las rutas y el service worker funcionan dentro de ese subdirectorio. La publicación debe finalizar correctamente antes de utilizar el enlace.
+
+Para trasladar los datos de la vista previa local a la web publicada, exporta una **Copia completa** desde Perfil e impórtala en la nueva dirección. Cada navegador y origen conserva sus propios datos.
+
 ## Entrenar
 
 1. Selecciona un día y pulsa **Empezar entrenamiento**.
