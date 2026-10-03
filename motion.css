@@ -1,0 +1,12 @@
+/* JS coordinates only the element changed by an action; CSS remains the fallback. */
+:root[data-motion="ready"] .page.active { animation: none; }
+:root[data-input="keyboard"] .page.active { animation: none; }
+:root[data-input="keyboard"] .toast { transition-duration: 0ms; }
+:root[data-input="keyboard"] .app-dialog,
+:root[data-input="keyboard"] .share-dialog,
+:root[data-input="keyboard"] .app-dialog::backdrop,
+:root[data-input="keyboard"] .share-dialog::backdrop { transition-duration: 0ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-motion="ready"] .page.active { animation: none; }
+}

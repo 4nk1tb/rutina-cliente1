@@ -2,9 +2,11 @@ import { defaultRoutineData } from './default-routine.js';
 import { loadState, saveState, localDate, normalizeRoutine, getExerciseHistory, summarizeSession, createExport, importData, clearHistory } from './data.js';
 import { ROUTINE_TEMPLATES } from './routine-templates.js';
 import { renderShareCard, downloadCanvas, copyCanvas, shareCanvas } from './share.js';
+import { createMotion } from './motion.js';
 
 const $ = (selector, parent = document) => parent.querySelector(selector);
 const $$ = (selector, parent = document) => [...parent.querySelectorAll(selector)];
+const uiMotion = createMotion(document.documentElement);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const num = (value, digits = 1) => Number(value || 0).toLocaleString('es-ES', { maximumFractionDigits: digits });
 const dateLabel = (value, options = {}) => new Date(/^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T12:00:00` : value).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', ...options });
@@ -83,9 +85,14 @@ function setTheme(theme, persist = true) {
   $('meta[name="theme-color"]').content = theme === 'light' ? '#f5f4ef' : '#171916';
   $('#theme-toggle').innerHTML = icon(theme === 'dark' ? 'sun' : 'moon');
   $('#theme-toggle').setAttribute('aria-label', theme === 'dark' ? 'Activar tema claro' : 'Activar tema oscuro');
+  $$('[data-action="theme"]').forEach(button => {
+    button.classList.toggle('active', button.dataset.value === theme);
+    button.setAttribute('aria-pressed', String(button.dataset.value === theme));
+  });
   if (persist) { try { localStorage.setItem('repite-theme', theme); } catch {} }
 }
 function navigate(next, scroll = true) {
+  const previous = route;
   route = next;
   if (!['progress', 'history'].includes(route)) reviewState = null;
   $$('.page').forEach(page => { page.hidden = page.id !== `${route}-page`; page.classList.toggle('active', !page.hidden); });
@@ -95,6 +102,10 @@ function navigate(next, scroll = true) {
   });
   renderPage();
   if (scroll) window.scrollTo({ top: 0, behavior: 'instant' });
+  if (previous !== next) {
+    const order = ['train', 'progress', 'history', 'routine', 'settings'];
+    uiMotion.page($(`#${route}-page`), Math.sign(order.indexOf(next) - order.indexOf(previous)) || 1);
+  }
 }
 function renderPage() {
   $('#profile-initial').textContent = state.profile.displayName ? state.profile.displayName.slice(0, 2).toUpperCase() : 'Tú';
@@ -182,11 +193,14 @@ function completeSet(button) {
     $(`[data-field="${field}"]`, row)?.focus(); return;
   }
   const completing = !set.done;
+  const expected = state.activeSession.exercises.reduce((sum, entry) => sum + entry.sets.length, 0);
+  const before = completedSets(state.activeSession).length / expected;
   if (commit(() => { if (completing) { set.weight = weight; set.reps = reps; } set.done = completing; })) {
     if (completing) startRest(ex);
     renderTrain();
     const replacement = $(`[data-action="complete-set"][data-exercise-index="${button.dataset.exerciseIndex}"][data-set-index="${index}"]`);
     replacement?.focus({ preventScroll: true });
+    uiMotion.setCompleted(replacement, $('.progress-track > span'), before, completedSets(state.activeSession).length / expected, completing);
   }
 }
 function startRest(ex) {
@@ -431,7 +445,10 @@ document.addEventListener('click', event => {
   if (!button || button.disabled) return;
   const action = button.dataset.action;
   switch (action) {
-    case 'select-day': if (commit(s => { s.selectedDay = Number(button.dataset.day); })) renderTrain(); break;
+    case 'select-day': {
+      const changed = state.selectedDay !== Number(button.dataset.day);
+      if (commit(s => { s.selectedDay = Number(button.dataset.day); })) { renderTrain(); if (changed) uiMotion.content($('.workout-layout')); } break;
+    }
     case 'start-session': startSession(); break;
     case 'resume-session': commit(s => { s.selectedDay = s.activeSession.dayIndex; }); navigate('train'); break;
     case 'complete-set': completeSet(button); break;
@@ -452,9 +469,9 @@ document.addEventListener('click', event => {
     }
     case 'finish-session': finishSession(); break;
     case 'discard-session': showDialog('Sesión en curso', 'Descartar este entrenamiento', '<p>Se eliminarán las series de esta sesión que todavía no has guardado. Tu historial anterior se conserva.</p>', 'Descartar sesión', () => { if (commit(s => { s.activeSession = null; })) { $('#app-dialog').close(); stopRest(); renderTrain(); } }, true); break;
-    case 'exercise-progress': selectedExercise = button.dataset.id; chartMetric = 'weight'; chartRange = 'all'; renderExerciseProgress(); window.scrollTo({ top: 0, behavior: 'instant' }); break;
-    case 'progress-back': selectedExercise = null; renderProgress(); window.scrollTo({ top: 0, behavior: 'instant' }); break;
-    case 'chart-metric': chartMetric = button.dataset.value; renderExerciseProgress(); break;
+    case 'exercise-progress': selectedExercise = button.dataset.id; chartMetric = 'weight'; chartRange = 'all'; renderExerciseProgress(); window.scrollTo({ top: 0, behavior: 'instant' }); uiMotion.page($('#progress-page')); break;
+    case 'progress-back': selectedExercise = null; renderProgress(); window.scrollTo({ top: 0, behavior: 'instant' }); uiMotion.page($('#progress-page'), -1); break;
+    case 'chart-metric': chartMetric = button.dataset.value; renderExerciseProgress(); uiMotion.content($('.chart-panel')); break;
     case 'session-detail': showSession((reviewState || state).sessions.find(s => s.id === button.dataset.id)); break;
     case 'share-session': if (reviewState) toast('Vuelve a tus datos para compartir desde tu perfil.'); else openShare(state.sessions.find(s => s.id === button.dataset.id)); break;
     case 'end-review': reviewState = null; selectedExercise = null; renderPage(); break;
@@ -487,7 +504,7 @@ document.addEventListener('click', event => {
       const link = document.createElement('a'); link.href = url; link.download = `repite-recuperacion-${localDate()}.json`; document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); break;
     }
     case 'import': $('#import-file').click(); break;
-    case 'theme': setTheme(button.dataset.value); renderSettings(); break;
+    case 'theme': setTheme(button.dataset.value); break;
     case 'close-dialog': $('#app-dialog').close(); break;
   }
 });
@@ -525,7 +542,7 @@ $('#dialog-close').addEventListener('click', () => $('#app-dialog').close());
 $('#dialog-footer').addEventListener('click', event => { if (event.target.closest('#dialog-confirm')) dialogAction?.(); });
 $('#app-dialog').addEventListener('keydown', event => { if (event.key === 'Enter' && event.target.matches('input') && dialogAction) { event.preventDefault(); dialogAction(); } });
 $('#share-close').addEventListener('click', () => $('#share-dialog').close());
-$('#theme-toggle').addEventListener('click', () => { setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'); if (route === 'settings') renderSettings(); });
+$('#theme-toggle').addEventListener('click', () => { setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'); });
 $('#timer-skip').innerHTML = icon('close');
 $('#dialog-close').innerHTML = icon('close'); $('#share-close').innerHTML = icon('close');
 $('#timer-skip').addEventListener('click', stopRest);

@@ -29,4 +29,12 @@ La estética utiliza un fondo oscuro, texto legible y un acento dorado suave, co
 
 ## Siguiente validación
 
-Probar con el iPhone y con dos o tres amigos: registrar una sesión real, recuperar el descanso al cambiar de app, exportar un seguimiento, consultar un archivo ajeno y colocar un PNG en una historia. Las capturas y PNG de `.test-output` usan datos de prueba; no son entrenamientos del usuario. Las características para App Store y monetización se pueden definir después de esa prueba.
+Probar con el iPhone y con dos o tres amigos: registrar una sesión real, recuperar el descanso al cambiar de app, exportar un seguimiento, consultar un archivo ajeno y colocar un PNG en una historia. Los PNG de ejemplo de `.test-output` usan datos de prueba; las capturas muestran la vista previa local. Las características para App Store y monetización se pueden definir después de esa prueba.
+
+## Pulido visual de Repite
+
+La segunda revisión conserva composición, información y navegación. Refuerza ligeramente superficies y bordes, sube el contraste del texto tenue, unifica controles táctiles en 44 px y aumenta las etiquetas pequeñas a 11 px. La pestaña móvil activa tiene una placa discreta y los paneles utilizan una curva de entrada más natural.
+
+Las transiciones de página duran 200 ms; completar una serie dibuja el check en 160 ms y actualiza la barra en 200 ms. El temporizador aparece y se retira con una transición de 220 ms. No hay efectos continuos ni animación de cifras. Cambiar el tema conserva el formulario de perfil sin guardar. Se comprueban navegación rápida, teclado, movimiento reducido y navegadores sin soporte de animaciones.
+
+El detector de Impeccable se ejecutó una vez. Se corrigieron las etiquetas pequeñas. Sus avisos de contraste mezclaban los tokens de impresión (`@media print`) con superficies oscuras: se revisaron las parejas de los dos temas por separado. Los bordes y sombras de los diálogos y el temporizador se conservan como límite y elevación de paneles superpuestos, dentro del diseño existente.

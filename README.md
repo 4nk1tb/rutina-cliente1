@@ -51,6 +51,8 @@ npm test
 
 La lógica está separada en `data.js` (migración, cálculos e intercambio), `app.js` (interfaz), `share.js` (PNG), `default-routine.js` (plan original) y `routine-templates.js` (plantillas). No hay compilación ni bibliotecas de interfaz. Los diálogos utilizan el elemento nativo `dialog`.
 
+`motion.js` coordina transiciones breves de navegación y la respuesta al completar series mediante Web Animations API. Los datos y el temporizador se actualizan antes del efecto visual. Cambios rápidos cancelan animaciones anteriores; el teclado funciona de forma inmediata y movimiento reducido utiliza solo fundidos suaves. `motion.css` evita duplicar la entrada CSS de las páginas.
+
 `sw.js` almacena el conjunto completo de archivos para uso sin conexión. En localhost intenta la red primero para facilitar el desarrollo. Al publicar cambios, incrementa el nombre de caché del service worker para actualizar todos los módulos juntos.
 
 Las pruebas cubren importaciones repetidas y erróneas, migración, recuperación, sesiones, estimaciones, récords, fechas, formatos de imagen y el inicio inmediato de compartir/copiar. Las vistas y el flujo de entrenamiento también se han comprobado en navegador con tamaños móviles y de escritorio. Compartir, copiar PNG, áreas seguras, teclado y uso en segundo plano quedan pendientes de una prueba física en iPhone; el temporizador se recalcula al volver a la app, pero esta versión no envía una alarma con la app cerrada.
