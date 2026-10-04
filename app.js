@@ -658,14 +658,70 @@ state.selectedDay = Math.max(0, Math.min(state.selectedDay, state.routine.days.l
 if (state.activeSession?.restEndsAt) restTotal = Math.max(90, Math.ceil((new Date(state.activeSession.restEndsAt) - Date.now()) / 1000));
 navigate('train', false); tick(); setInterval(tick, 1000);
 function navigateFromGuide(destination) {
+  tourSnapshot = null;
   selectedExercise = null;
   navigate(destination);
   const heading = $(`#${destination}-page h1`);
   heading?.setAttribute('tabindex', '-1');
   heading?.focus({ preventScroll: true });
 }
+let tourSnapshot = null;
+function captureTourView(mode) {
+  tourSnapshot = {
+    route, selectedExercise, reviewState, chartMetric, chartRange, scrollY: window.scrollY,
+    profile: route === 'settings' ? Object.fromEntries(new FormData($('#profile-form'))) : null,
+    mode: mode || document.activeElement?.dataset.guideMode
+  };
+}
+function restoreTourProfile() {
+  if (!tourSnapshot?.profile) return;
+  for (const [name, value] of Object.entries(tourSnapshot.profile)) {
+    const field = $(`#profile-form [name="${name}"]`);
+    if (field) field.value = value;
+  }
+}
+function restoreTourView() {
+  if (!tourSnapshot) return;
+  const saved = tourSnapshot;
+  selectedExercise = saved.selectedExercise; reviewState = saved.reviewState;
+  chartMetric = saved.chartMetric; chartRange = saved.chartRange;
+  navigate(saved.route, false);
+  restoreTourProfile();
+  window.scrollTo({ top: saved.scrollY, behavior: 'instant' });
+  tourSnapshot = null;
+  const opener = saved.route === 'settings' && $(`[data-action="open-guide"][data-guide-mode="${saved.mode}"]`);
+  const target = opener || $(`#${saved.route}-page h1`);
+  if (target?.tagName === 'H1') target.setAttribute('tabindex', '-1');
+  return target;
+}
+function showTourStep(key) {
+  const destination = ({ routine: 'routine', start: 'train', sets: 'train', progress: 'progress', history: 'history', profile: 'settings', backup: 'settings' })[key];
+  selectedExercise = null; reviewState = null;
+  navigate(destination);
+  if (destination === 'settings') restoreTourProfile();
+  const page = $(`#${destination}-page`);
+  for (const animation of page.getAnimations()) animation.cancel();
+  const find = selector => $(selector, page);
+  const step = (selector, title, description) => ({ target: find(selector) || find('h1'), title, description });
+  switch (key) {
+    case 'routine': return step('[data-action="routine-templates"]', 'Prepara tu rutina.', 'Aquí eliges una plantilla. También puedes crear o importar tu plan y editar días, ejercicios y descansos.' + (state.activeSession ? ' Podrás cambiarlo al terminar tu sesión en curso.' : ''));
+    case 'start': {
+      const action = find('.head-actions .btn');
+      const type = action?.dataset.action;
+      if (!type && state.routine.days.some(day => day.exercises.some(exercise => exercise.sets))) return step('.day-tabs', 'Elige el día que entrenas.', 'Este día de tu plan no tiene series. Elige otro con ejercicios en esta fila para poder empezar. El recorrido conserva el día que tenías seleccionado.');
+      return { target: action || find('.day-tabs'), title: type === 'finish-session' ? 'Tu sesión sigue aquí.' : 'Empieza por tu sesión.', description: type === 'finish-session' ? 'Sigue registrando tus series. Al acabar, pulsa Terminar sesión, revisa el resumen y elige Guardar entrenamiento.' : type === 'resume-session' ? 'Tienes un entrenamiento en curso. Este botón te devuelve a él; el recorrido no inicia ni termina sesiones.' : type === 'start-session' ? 'Elige el día en la fila de arriba y pulsa Empezar entrenamiento para activar las casillas de tus series.' : 'Este día aún no tiene ejercicios registrables. Añádelos desde Rutina para poder empezar.' };
+    }
+    case 'sets': return find('.set-row') ? step('.set-table .set-row', 'Peso, repeticiones y un toque.', 'Anota peso y repeticiones tras iniciar la sesión. El check arranca el descanso y sugiere esos datos para la siguiente serie. Con dos mancuernas, anota el peso de una.') : step('.day-tabs', 'Cada día tiene su entrenamiento.', state.routine.days.some(day => day.exercises.some(exercise => exercise.sets)) ? 'Este día no tiene series. Elige otro con ejercicios en esta fila para ver las casillas de peso, repeticiones y el check que inicia el descanso.' : 'Las casillas de peso, repeticiones y el check aparecerán cuando añadas ejercicios con series desde Rutina. El recorrido no crea entrenamientos.');
+    case 'progress': return step('.exercise-progress-item h3, .empty-state h2', 'Mira cómo avanzas.', find('.exercise-progress-item') ? 'Abre un ejercicio para ver cargas, volumen, marcas y 1RM estimado. Más repeticiones con el mismo peso también cuentan.' : 'Tras guardar tu primer entrenamiento, aquí verás la evolución de tus ejercicios: cargas, volumen, marcas y 1RM estimado.');
+    case 'history': return step('.history-card .button-row, .empty-state h2', 'Tu sesión, guardada y compartida.', find('.history-card') ? 'Aquí revisas una sesión y creas su imagen con fecha, @usuario y foto opcional. En iPhone, Guardar imagen abre el menú para guardarla en Fotos.' : 'Al terminar, revisa y guarda la sesión. Aquí podrás verla y crear su imagen con fecha, @usuario y foto opcional. En iPhone la guardas en Fotos desde el menú.');
+    case 'profile': return step('#profile-form [name="handle"]', 'Tu @usuario, siempre a mano.', 'Guarda aquí el @usuario que aparecerá en tus imágenes. En Perfil también eliges el tema claro u oscuro y puedes repetir cualquiera de las guías.');
+    case 'backup': return step('[data-action="export"][data-kind="backup"]', 'Conserva una copia.', 'Tus datos se guardan en este dispositivo, sin sincronización automática. Exporta una Copia completa para recuperarlos o llevarlos a otro móvil. También puedes intercambiar rutina o seguimiento con un entrenador.');
+  }
+}
 const onboarding = createOnboarding({
   dialog: $('#guide-dialog'), icon,
+  onStart: captureTourView, onStep: showTourStep, onRestore: restoreTourView,
+  onComplete: () => { tourSnapshot = null; const heading = $(`#${route}-page h1`); heading?.setAttribute('tabindex', '-1'); heading?.focus({ preventScroll: true }); },
   onChooseRoutine: () => { navigateFromGuide('routine'); if (!state.activeSession) chooseTemplate(); },
   onTrain: () => navigateFromGuide('train')
 });

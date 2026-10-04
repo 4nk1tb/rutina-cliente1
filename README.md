@@ -24,7 +24,7 @@ Para trasladar los datos de la vista previa local a la web publicada, exporta un
 
 La primera visita ofrece **Tutorial rápido** (4 pasos), **Guía detallada** (7 pasos) o **Entrar sin guía**. La elección o el cierre se recuerdan en ese navegador; las actualizaciones no fuerzan el recorrido a usuarios con datos anteriores. Desde **Perfil → Guías de Repite** puedes repetir cualquiera de los dos.
 
-La práctica de una serie y su descanso utiliza datos de ejemplo separados: no inicia una sesión real ni modifica rutina, historial o temporizador de entrenamiento. La guía completa recorre rutina, registro de series, progreso, historial, imágenes y perfil, incluidos el peso de una mancuerna, el guardado en Fotos y las copias locales.
+El recorrido abre las pantallas reales y resalta sus controles con explicaciones breves. No inicia sesiones ni modifica rutina, historial o temporizador de entrenamiento. Si aún no hay registros, explica dónde aparecerán. Puedes avanzar, retroceder o salir; al tocar un control de la app sales de la guía para utilizarlo. La guía completa también señala el inicio de sesión, el @usuario y las copias locales.
 
 1. Selecciona un día y pulsa **Empezar entrenamiento**.
 2. Registra peso y repeticiones por serie. Se muestran las series del entrenamiento anterior como referencia. Se admite 0 kg para ejercicios sin carga externa.

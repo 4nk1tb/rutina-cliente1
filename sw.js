@@ -1,4 +1,4 @@
-const CACHE_NAME = 'repite-v2.3.0';
+const CACHE_NAME = 'repite-v2.3.1';
 const ASSETS = ['./', './index.html', './app.css', './motion.css', './onboarding.css', './app.js', './motion.js', './onboarding.js', './onboarding-state.js', './data.js', './default-routine.js', './routine-templates.js', './share.js', './manifest.webmanifest', './favicon.svg', './repite-icon-180.png', './repite-icon-192.png', './repite-icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
