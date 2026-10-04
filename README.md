@@ -22,6 +22,10 @@ Para trasladar los datos de la vista previa local a la web publicada, exporta un
 
 ## Entrenar
 
+La primera visita ofrece **Tutorial rápido** (4 pasos), **Guía detallada** (7 pasos) o **Entrar sin guía**. La elección o el cierre se recuerdan en ese navegador; las actualizaciones no fuerzan el recorrido a usuarios con datos anteriores. Desde **Perfil → Guías de Repite** puedes repetir cualquiera de los dos.
+
+La práctica de una serie y su descanso utiliza datos de ejemplo separados: no inicia una sesión real ni modifica rutina, historial o temporizador de entrenamiento. La guía completa recorre rutina, registro de series, progreso, historial, imágenes y perfil, incluidos el peso de una mancuerna, el guardado en Fotos y las copias locales.
+
 1. Selecciona un día y pulsa **Empezar entrenamiento**.
 2. Registra peso y repeticiones por serie. Se muestran las series del entrenamiento anterior como referencia. Se admite 0 kg para ejercicios sin carga externa.
 3. Pulsa el botón de completar: comienza automáticamente el descanso. Puedes añadir 30 segundos, terminar el descanso o añadir y quitar series.

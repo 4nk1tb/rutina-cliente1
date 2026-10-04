@@ -12,6 +12,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="app.css">
   <link rel="stylesheet" href="motion.css">
+  <link rel="stylesheet" href="onboarding.css">
   <title>Repite · Tu entrenamiento, a tu ritmo</title>
 </head>
 <body>
@@ -69,6 +70,7 @@
       </div>
     </div>
   </dialog>
+  <dialog id="guide-dialog" class="app-dialog guide-dialog" aria-labelledby="guide-title" aria-describedby="guide-description"></dialog>
   <input type="file" id="import-file" accept=".json,application/json" hidden>
   <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <script type="module" src="app.js"></script>

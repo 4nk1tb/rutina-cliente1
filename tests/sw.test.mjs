@@ -99,7 +99,7 @@ test('installation caches the complete shell before taking over', async () => {
   const worker = harness();
   await worker.dispatch('install');
   const required = [
-    './', './index.html', './app.css', './motion.css', './app.js', './motion.js', './data.js',
+    './', './index.html', './app.css', './motion.css', './onboarding.css', './app.js', './motion.js', './onboarding.js', './onboarding-state.js', './data.js',
     './default-routine.js', './routine-templates.js', './share.js', './manifest.webmanifest',
     './favicon.svg', './repite-icon-180.png', './repite-icon-192.png', './repite-icon-512.png',
   ];

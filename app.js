@@ -3,6 +3,8 @@ import { loadState, saveState, localDate, normalizeRoutine, getExerciseHistory, 
 import { ROUTINE_TEMPLATES } from './routine-templates.js';
 import { renderShareCard, saveCanvas, downloadCanvas, copyCanvas, shareCanvas, isAppleMobile } from './share.js';
 import { createMotion } from './motion.js';
+import { createOnboarding } from './onboarding.js';
+import { shouldShowOnboarding } from './onboarding-state.js';
 
 const $ = (selector, parent = document) => parent.querySelector(selector);
 const $$ = (selector, parent = document) => [...parent.querySelectorAll(selector)];
@@ -436,7 +438,7 @@ function confirmClearHistory() {
   $('[data-action="close-dialog"]', $('#dialog-footer')).focus();
 }
 function renderSettings() {
-  $('#settings-page').innerHTML = pageHead('Tu espacio', 'A tu manera.', 'Tu perfil, tu estilo y tus datos, siempre contigo.') + (storageRecovery?.raw ? '<div class="info-box"><p>Hay una copia de datos que no se pudo leer. Puedes descargar el archivo original para recuperarlo.</p><button class="btn secondary small" data-action="export-recovery">Descargar original para recuperar</button></div>' : '') + `
+  $('#settings-page').innerHTML = pageHead('Tu espacio', 'A tu manera.', 'Tu perfil, tu estilo y tus datos, siempre contigo.') + `<section class="settings-guide"><div><h2>Guías de Repite</h2><p class="caption">Repasa lo básico o recorre todas las pantallas. Puedes volver cuando quieras.</p></div><div class="button-row"><button class="btn secondary small" data-action="open-guide" data-guide-mode="simple">Tutorial rápido</button><button class="btn secondary small" data-action="open-guide" data-guide-mode="detailed">Guía detallada</button></div></section>` + (storageRecovery?.raw ? '<div class="info-box"><p>Hay una copia de datos que no se pudo leer. Puedes descargar el archivo original para recuperarlo.</p><button class="btn secondary small" data-action="export-recovery">Descargar original para recuperar</button></div>' : '') + `
     <div class="settings-grid"><section class="settings-panel panel"><h2 class="section-title">Tu perfil</h2><p class="caption">Este @usuario aparecerá por defecto en tus imágenes.</p><form id="profile-form"><label class="field">Nombre<input name="displayName" autocomplete="nickname" maxlength="80" placeholder="Cómo te llamas" value="${esc(state.profile.displayName)}"></label><label class="field">@usuario<input name="handle" autocapitalize="none" spellcheck="false" maxlength="60" placeholder="@tuusuario" value="${esc(state.profile.handle)}"></label><button class="btn primary" type="submit">Guardar perfil</button></form></section>
     <section class="settings-panel panel"><h2 class="section-title">Apariencia</h2><p class="caption">Un espacio tranquilo para concentrarte.</p><div class="segmented"><button data-action="theme" data-value="dark" class="${document.documentElement.dataset.theme === 'dark' ? 'active' : ''}">${icon('moon')} Oscuro</button><button data-action="theme" data-value="light" class="${document.documentElement.dataset.theme === 'light' ? 'active' : ''}">${icon('sun')} Claro</button></div><h3 class="section-subtitle">En tu iPhone</h3><p class="caption">Abre la app en Safari, pulsa Compartir y «Añadir a pantalla de inicio». Después de la primera visita, podrás usarla sin conexión.</p></section>
     <section class="settings-panel panel full"><h2 class="section-title">Tus datos van contigo.</h2><p class="caption">Guarda una copia, cambia de dispositivo o envía tu seguimiento a un entrenador. Los archivos se importan desde aquí.</p><div class="export-options">${[['routine', 'Solo la rutina', 'Días, ejercicios, series objetivo y descansos.'], ['progress', 'Seguimiento y progresión', 'Sesiones, pesos, repeticiones y registros antiguos.'], ['backup', 'Copia completa', 'Rutina, historial, perfil y sesión en curso.']].map(([kind, label, description]) => `<div class="export-option"><div><h3>${label}</h3><p class="caption">${description}</p></div><button class="btn secondary small" data-action="export" data-kind="${kind}">${icon('download')} Exportar</button></div>`).join('')}</div><button class="btn primary" data-action="import">Importar archivo JSON</button><p class="info-box">Al importar seguimiento, se añade sin duplicar sesiones. Importar una rutina conserva tu historial. Los datos se guardan en este dispositivo: exporta una copia para llevarlos a otro.</p></section><section class="settings-panel panel full"><h2 class="section-title">Empezar un historial nuevo</h2><p class="caption">Puedes borrar tus sesiones, cargas antiguas y copias de recuperación guardadas en este navegador. La app pedirá confirmación antes de hacerlo.</p><button class="btn danger" data-action="clear-history">Borrar todo mi historial</button></section></div>`;
@@ -561,6 +563,7 @@ document.addEventListener('click', event => {
     case 'routine-templates': chooseTemplate(); break;
     case 'preview-template': previewTemplate(button.dataset.template, Number(button.dataset.days)); break;
     case 'clear-history': confirmClearHistory(); break;
+    case 'open-guide': onboarding.open(button.dataset.guideMode); break;
     case 'blank-routine': replaceRoutine({ name: 'Mi nueva rutina', days: [{ title: 'Día 1', exercises: [] }] }); break;
     case 'original-routine': replaceRoutine({ ...structuredClone(defaultRoutineData), name: 'Plan original · Fuerza e hipertrofia' }); break;
     case 'export': downloadJSON(button.dataset.kind); break;
@@ -654,6 +657,19 @@ setTheme(storedTheme === 'light' ? 'light' : 'dark', false);
 state.selectedDay = Math.max(0, Math.min(state.selectedDay, state.routine.days.length - 1));
 if (state.activeSession?.restEndsAt) restTotal = Math.max(90, Math.ceil((new Date(state.activeSession.restEndsAt) - Date.now()) / 1000));
 navigate('train', false); tick(); setInterval(tick, 1000);
+function navigateFromGuide(destination) {
+  selectedExercise = null;
+  navigate(destination);
+  const heading = $(`#${destination}-page h1`);
+  heading?.setAttribute('tabindex', '-1');
+  heading?.focus({ preventScroll: true });
+}
+const onboarding = createOnboarding({
+  dialog: $('#guide-dialog'), icon,
+  onChooseRoutine: () => { navigateFromGuide('routine'); if (!state.activeSession) chooseTemplate(); },
+  onTrain: () => navigateFromGuide('train')
+});
+if (shouldShowOnboarding(state)) onboarding.open();
 document.addEventListener('visibilitychange', tick);
 if (warnings.length) setTimeout(() => toast(warnings.join(' ')), 500);
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
