@@ -1,386 +1,477 @@
+// Plan personal "Bear Mode · Reinicio": vuelta tras 6 meses sin entrenar.
+// Prioridad: brazos > pecho > cuádriceps/gemelos > hombro lateral y espalda (mantenimiento).
+// Restricciones: rodilla sin flexión profunda bajo carga, sin press militar, remos con apoyo en pecho,
+// 3-4 min de descanso en compuestos de pierna y técnicas de intensidad solo en máquinas monoarticulares.
+// Explicación completa y fuentes: RUTINA.md. Copia importable: rutinas/bear-mode-reinicio.json.
+const kneePrep = id => ({
+  "id": id,
+  "name": "Preparación de rodilla (6-8 min)",
+  "note": "Rodillera de compresión puesta. 5 min de bici suave + TKE con banda 2 × 15-20 + extensión isométrica 2 × 30 s. Después, 2-3 series ligeras del primer ejercicio."
+});
+
 export const defaultRoutineData = {
+  "name": "Bear Mode · Reinicio 6 días",
   "days": [
     {
-      "title": "Lunes • Push (Pecho)",
+      "title": "Lunes • Torso A · Pecho y espalda",
       "exercises": [
         {
-          "id": "press_banca",
-          "name": "Press banca barra",
+          "id": "bm-l-press-inclinado-maquina",
+          "name": "Press inclinado en máquina",
+          "muscleGroup": "pecho",
+          "sets": 3,
+          "reps": "6-10",
+          "rir": "RIR 2",
+          "rest": "180 s",
+          "timer": 3,
+          "note": "Prioridad pecho. Escápulas atrás y abajo. Baja hasta notar estiramiento en el pecho y controla 1 s abajo. Sube carga cuando hagas 10 reps en todas las series."
+        },
+        {
+          "id": "bm-l-fondos-lastrados",
+          "name": "Fondos lastrados en paralelas",
+          "muscleGroup": "pecho",
+          "sets": 3,
+          "reps": "6-10",
+          "rir": "RIR 2",
+          "rest": "180 s",
+          "timer": 3,
+          "note": "Anota solo el lastre (0 kg si vas sin peso). Torso inclinado hacia delante para cargar el pecho. Baja hasta un estiramiento cómodo, sin dolor en la parte delantera del hombro."
+        },
+        {
+          "id": "bm-l-remo-t-apoyo",
+          "name": "Remo en T con apoyo en pecho",
+          "muscleGroup": "espalda",
+          "sets": 3,
+          "reps": "6-10",
+          "rir": "RIR 2",
+          "rest": "150 s",
+          "timer": 2.5,
+          "note": "El apoyo en el pecho descarga la zona lumbar. Pausa de 1 s arriba con las escápulas juntas."
+        },
+        {
+          "id": "bm-l-jalon-neutro",
+          "name": "Jalón al pecho agarre neutro",
+          "muscleGroup": "espalda",
+          "sets": 2,
+          "reps": "8-12",
+          "rir": "RIR 1-2",
+          "rest": "120 s",
+          "timer": 2,
+          "note": "Mantenimiento del dorsal. Estira bien arriba sin perder la postura."
+        },
+        {
+          "id": "bm-l-aperturas-polea-media",
+          "name": "Aperturas en polea media",
+          "muscleGroup": "pecho",
+          "sets": 2,
+          "reps": "10-15",
+          "rir": "RIR 1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "Poleas a la altura del pecho. Busca el estiramiento atrás y baja en 2-3 s."
+        },
+        {
+          "id": "bm-l-curl-bayesiano",
+          "name": "Curl bayesiano en polea",
+          "muscleGroup": "biceps",
+          "sets": 2,
+          "reps": "8-12",
+          "rir": "RIR 1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "De espaldas a la polea baja, brazo por detrás del cuerpo: el bíceps trabaja estirado y sin molestar al hombro. Codo fijo. A una mano: anota el peso de la polea."
+        },
+        {
+          "id": "bm-l-triceps-sobre-cabeza",
+          "name": "Extensión de tríceps sobre la cabeza en polea",
+          "muscleGroup": "triceps",
+          "sets": 2,
+          "reps": "8-12",
+          "rir": "RIR 1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "De espaldas a la polea, brazos junto a la cabeza. Baja hasta notar el estiramiento: la cabeza larga es la parte más grande del tríceps."
+        }
+      ]
+    },
+    {
+      "title": "Martes • Pierna A · Cuádriceps",
+      "exercises": [
+        kneePrep("bm-m-prep-rodilla"),
+        {
+          "id": "bm-m-prensa-45",
+          "name": "Prensa 45° pies a media altura",
+          "muscleGroup": "cuadriceps",
+          "sets": 3,
+          "reps": "8-12",
+          "rir": "RIR 2",
+          "rest": "210 s",
+          "timer": 3.5,
+          "note": "Pies a media altura, a la anchura de los hombros. Baja solo hasta donde no aparezca dolor. Sin fallo. Suelta el aire al empujar: no aguantes la respiración varias repeticiones seguidas. Descanso de 3-4 min."
+        },
+        {
+          "id": "bm-m-extension-cuadriceps",
+          "name": "Extensión de cuádriceps en máquina",
+          "muscleGroup": "cuadriceps",
+          "sets": 3,
+          "reps": "10-15",
+          "rir": "RIR 1",
+          "rest": "120 s",
+          "timer": 2,
+          "note": "Empieza desde la posición más flexionada que no duela: esa primera mitad del recorrido es la que más hace crecer. Si duele, limita el recorrido. Desde la semana 4, última serie en rest-pause (15 s y 3-5 reps más, dos veces)."
+        },
+        {
+          "id": "bm-m-curl-femoral-sentado",
+          "name": "Curl femoral sentado en máquina",
+          "muscleGroup": "isquios",
+          "sets": 3,
+          "reps": "8-12",
+          "rir": "RIR 1",
+          "rest": "120 s",
+          "timer": 2,
+          "note": "Inclina el torso hacia delante para estirar más el isquio. Si el final de la flexión molesta a la rodilla, no cierres del todo. Desde la semana 4, última serie en drop-set (baja un 25 % y repite)."
+        },
+        {
+          "id": "bm-m-aductores",
+          "name": "Aductores en máquina",
+          "muscleGroup": "otros",
+          "sets": 2,
+          "reps": "10-15",
+          "rir": "RIR 1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "Compensa el trabajo de aductor que se pierde al no bajar profundo. Abre hasta un estiramiento cómodo."
+        },
+        {
+          "id": "bm-m-gemelos-pie",
+          "name": "Gemelos de pie en máquina",
+          "muscleGroup": "gemelos",
+          "sets": 4,
+          "reps": "8-12",
+          "rir": "RIR 1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "Rodilla estirada para cargar el gemelo. Pausa de 2 s abajo en estiramiento máximo, sin rebote."
+        }
+      ]
+    },
+    {
+      "title": "Miércoles • Brazos y hombros",
+      "exercises": [
+        {
+          "id": "bm-x-curl-barra-ez",
+          "name": "Curl con barra EZ",
+          "muscleGroup": "biceps",
+          "sets": 3,
+          "reps": "6-10",
+          "rir": "RIR 1-2",
+          "rest": "120 s",
+          "timer": 2,
+          "note": "El curl pesado de la semana. Codos quietos, sin balanceo. Baja hasta extender el brazo."
+        },
+        {
+          "id": "bm-x-press-frances-ez",
+          "name": "Press francés con barra EZ",
+          "muscleGroup": "triceps",
+          "sets": 3,
+          "reps": "8-12",
+          "rir": "RIR 1-2",
+          "rest": "120 s",
+          "timer": 2,
+          "note": "En banco plano, lleva la barra por detrás de la cabeza para estirar más el tríceps. Si molestan los codos, cámbialo por extensión sobre la cabeza en polea."
+        },
+        {
+          "id": "bm-x-curl-predicador-maquina",
+          "name": "Curl predicador en máquina",
+          "muscleGroup": "biceps",
+          "sets": 3,
+          "reps": "8-12",
+          "rir": "RIR 1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "Trabaja el bíceps estirado sin cargar el hombro. Controla la bajada. Desde la semana 4, última serie en drop-set."
+        },
+        {
+          "id": "bm-x-triceps-cuerda",
+          "name": "Extensión de tríceps en polea con cuerda",
+          "muscleGroup": "triceps",
+          "sets": 3,
+          "reps": "10-15",
+          "rir": "RIR 1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "Codos pegados al cuerpo. Abre la cuerda al final."
+        },
+        {
+          "id": "bm-x-lateral-polea",
+          "name": "Elevación lateral en polea a una mano",
+          "muscleGroup": "hombros",
+          "sets": 3,
+          "reps": "10-15",
+          "rir": "RIR 1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "Mantenimiento del deltoides lateral. Cable por detrás del cuerpo, tensión desde abajo. Anota el peso de la polea."
+        },
+        {
+          "id": "bm-x-pajaros-maquina",
+          "name": "Pájaros en máquina (contractor inverso)",
+          "muscleGroup": "hombros",
+          "sets": 2,
+          "reps": "12-20",
+          "rir": "RIR 1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "Deltoides posterior. Brazos casi rectos; abre sin juntar las escápulas."
+        },
+        {
+          "id": "bm-x-martillo-cuerda",
+          "name": "Curl martillo en polea con cuerda",
+          "muscleGroup": "biceps",
+          "sets": 2,
+          "reps": "10-15",
+          "rir": "RIR 1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "Braquial y braquiorradial: dan grosor al brazo y al antebrazo."
+        },
+        {
+          "id": "bm-x-gemelos-sentado",
+          "name": "Gemelos sentado en máquina",
+          "muscleGroup": "gemelos",
+          "sets": 3,
+          "reps": "12-20",
+          "rir": "RIR 1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "Trabaja el sóleo. Pausa de 2 s abajo."
+        }
+      ]
+    },
+    {
+      "title": "Jueves • Torso B · Pecho y espalda",
+      "exercises": [
+        {
+          "id": "bm-j-press-banca-pausa",
+          "name": "Press de banca con barra (pausa)",
+          "muscleGroup": "pecho",
           "sets": 3,
           "reps": "5-8",
           "rir": "RIR 2",
-          "rest": "2-3’",
-          "timer": 2.5,
-          "muscleGroup": "pecho"
+          "rest": "180 s",
+          "timer": 3,
+          "note": "El ejercicio de fuerza del plan. Pausa de 1 s en el pecho, sin rebote. Las primeras semanas empieza muy por debajo de tus marcas antiguas."
         },
         {
-          "id": "press_inclinado_manc",
-          "name": "Press inclinado mancuernas",
+          "id": "bm-j-remo-maquina-apoyo",
+          "name": "Remo en máquina con apoyo en pecho",
+          "muscleGroup": "espalda",
+          "sets": 3,
+          "reps": "8-12",
+          "rir": "RIR 1-2",
+          "rest": "150 s",
+          "timer": 2.5,
+          "note": "Agarre ancho y codos a unos 45°: dorsal alto, romboides y deltoides posterior."
+        },
+        {
+          "id": "bm-j-press-inclinado-mancuernas",
+          "name": "Press inclinado con mancuernas 30°",
+          "muscleGroup": "pecho",
+          "weightMode": "perDumbbell",
+          "sets": 2,
+          "reps": "8-12",
+          "rir": "RIR 1-2",
+          "rest": "150 s",
+          "timer": 2.5,
+          "note": "Banco a unos 30°. Baja hasta que las mancuernas queden a la altura del pecho."
+        },
+        {
+          "id": "bm-j-pullover-polea",
+          "name": "Pullover en polea alta",
+          "muscleGroup": "espalda",
+          "sets": 2,
+          "reps": "10-15",
+          "rir": "RIR 1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "Mantenimiento del dorsal sin carga lumbar. Brazos casi rectos; estira arriba."
+        },
+        {
+          "id": "bm-j-peck-deck",
+          "name": "Contractor de pecho (peck-deck)",
+          "muscleGroup": "pecho",
+          "sets": 2,
+          "reps": "10-15",
+          "rir": "RIR 0-1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "Asiento a la altura que lleve las manos al centro del pecho. Abre hasta un estiramiento cómodo."
+        },
+        {
+          "id": "bm-j-laterales-mancuernas",
+          "name": "Elevaciones laterales con mancuernas",
+          "muscleGroup": "hombros",
           "weightMode": "perDumbbell",
           "sets": 3,
-          "reps": "8-12",
-          "rir": "RIR 1-2",
-          "rest": "2’",
-          "timer": 2,
-          "muscleGroup": "pecho"
-        },
-        {
-          "id": "press_maquina",
-          "name": "Press máquina convergente",
-          "sets": 2,
-          "reps": "10-12",
+          "reps": "12-20",
           "rir": "RIR 1",
-          "rest": "90”",
+          "rest": "90 s",
           "timer": 1.5,
-          "muscleGroup": "pecho"
+          "note": "Ligeramente inclinado hacia delante. Sube hasta la línea del hombro."
         },
         {
-          "id": "aperturas_cable",
-          "name": "Aperturas en cable",
-          "sets": 2,
-          "reps": "12-15",
-          "rir": "RIR 0-1",
-          "rest": "60-90”",
-          "timer": 1.5,
-          "muscleGroup": "pecho"
-        },
-        {
-          "id": "laterales_maint",
-          "name": "Elevación lateral (mantenimiento)",
+          "id": "bm-j-face-pull",
+          "name": "Face pull en polea",
+          "muscleGroup": "hombros",
           "sets": 2,
           "reps": "12-20",
           "rir": "RIR 1",
-          "rest": "60-90”",
+          "rest": "90 s",
           "timer": 1.5,
-          "muscleGroup": "hombros"
-        },
-        {
-          "id": "gemelos_pie_l",
-          "name": "Gemelos de pie",
-          "sets": 3,
-          "reps": "8-12",
-          "rir": "RIR 1",
-          "rest": "60-90”",
-          "timer": 1.5,
-          "note": "Pausa de 2 segundos abajo.",
-          "muscleGroup": "gemelos"
+          "note": "Deltoides posterior y salud del hombro. Tira hacia la frente y rota hacia fuera."
         }
       ]
     },
     {
-      "title": "Martes • Pull (Dorsal)",
+      "title": "Viernes • Pierna B · Cuádriceps y posterior",
       "exercises": [
+        kneePrep("bm-v-prep-rodilla"),
         {
-          "id": "dominadas",
-          "name": "Dominadas lastradas",
-          "sets": 4,
-          "reps": "6-8",
-          "rir": "RIR 1-2",
-          "rest": "2-3’",
-          "timer": 2.5,
-          "muscleGroup": "espalda"
-        },
-        {
-          "id": "jalon_neutro",
-          "name": "Jalón agarre neutro",
+          "id": "bm-v-hack-pendulo",
+          "name": "Sentadilla hack o péndulo",
+          "muscleGroup": "cuadriceps",
           "sets": 3,
           "reps": "8-12",
-          "rir": "RIR 1-2",
-          "rest": "2’",
-          "timer": 2,
-          "muscleGroup": "espalda"
+          "rir": "RIR 2",
+          "rest": "210 s",
+          "timer": 3.5,
+          "note": "Pon los topes a la profundidad sin dolor: con unos 90° de rodilla el cuádriceps crece casi igual que en profundo. Sin fallo. Alternativa: sentadilla con cinturón (belt squat). Descanso de 3-4 min."
         },
         {
-          "id": "pullover_polea",
-          "name": "Pullover en polea (estirado)",
-          "sets": 2,
-          "reps": "12-15",
-          "rir": "RIR 1",
-          "rest": "90”",
-          "timer": 1.5,
-          "muscleGroup": "espalda"
-        },
-        {
-          "id": "face_pull",
-          "name": "Face pull",
-          "sets": 2,
-          "reps": "15-20",
-          "rir": "RIR 0-1",
-          "rest": "60-90”",
-          "timer": 1.5,
-          "muscleGroup": "hombros"
-        },
-        {
-          "id": "curl_barra",
-          "name": "Curl barra",
-          "sets": 3,
-          "reps": "6-10",
-          "rir": "RIR 1-2",
-          "rest": "90”",
-          "timer": 1.5,
-          "muscleGroup": "biceps"
-        },
-        {
-          "id": "gemelos_sentado_m",
-          "name": "Gemelos sentado (sóleo)",
-          "sets": 4,
-          "reps": "12-20",
-          "rir": "RIR 1",
-          "rest": "60-90”",
-          "timer": 1.5,
-          "note": "Al final, estiramiento cargado 30 s.",
-          "muscleGroup": "gemelos"
-        }
-      ]
-    },
-    {
-      "title": "Miércoles • Pierna (Quads)",
-      "exercises": [
-        {
-          "id": "prep_rodilla",
-          "name": "Preparación de Rodilla (6–8 min)",
-          "note": "TKE banda 2×15–20 + Isométricos extensión 2×20–30 s + Trineo atrás 2×20 m."
-        },
-        {
-          "id": "prensa_45_x",
-          "name": "Prensa 45°",
-          "sets": 4,
-          "reps": "10-12",
-          "rir": "RIR 1-2",
-          "rest": "2-3’",
-          "timer": 2.5,
-          "note": "Pies medios, ROM sin dolor.",
-          "muscleGroup": "cuadriceps"
-        },
-        {
-          "id": "extension_iso",
-          "name": "Extensión de rodilla",
-          "sets": 3,
-          "reps": "12-15",
-          "rir": "RIR 1",
-          "rest": "90”",
-          "timer": 1.5,
-          "note": "Isométrico 2-3 s en medio de la rep.",
-          "muscleGroup": "cuadriceps"
-        },
-        {
-          "id": "rdl_x",
-          "name": "Peso muerto rumano",
+          "id": "bm-v-peso-muerto-rumano",
+          "name": "Peso muerto rumano con barra",
+          "muscleGroup": "isquios",
           "sets": 3,
           "reps": "6-10",
           "rir": "RIR 2",
-          "rest": "2-3’",
-          "timer": 2.5,
-          "muscleGroup": "isquios"
+          "rest": "210 s",
+          "timer": 3.5,
+          "note": "Bisagra de cadera con las rodillas casi fijas: isquios y glúteo sin flexionar la rodilla. Baja hasta media tibia o hasta donde la espalda siga neutra. Descanso de 3-4 min."
         },
         {
-          "id": "hip_thrust_x",
-          "name": "Hip thrust barra",
+          "id": "bm-v-extension-cuadriceps",
+          "name": "Extensión de cuádriceps en máquina",
+          "muscleGroup": "cuadriceps",
           "sets": 3,
-          "reps": "6-10",
-          "rir": "RIR 1-2",
-          "rest": "2’",
+          "reps": "10-15",
+          "rir": "RIR 1",
+          "rest": "120 s",
           "timer": 2,
-          "muscleGroup": "gluteos"
+          "note": "Mismo recorrido sin dolor que el martes. Desde la semana 4, última serie en drop-set (baja un 25 % y repite)."
         },
         {
-          "id": "curl_femoral_x",
-          "name": "Curl femoral tumbado",
-          "sets": 3,
-          "reps": "8-12",
+          "id": "bm-v-curl-femoral-sentado",
+          "name": "Curl femoral sentado en máquina",
+          "muscleGroup": "isquios",
+          "sets": 2,
+          "reps": "10-15",
           "rir": "RIR 1",
-          "rest": "90”",
-          "timer": 1.5,
-          "muscleGroup": "isquios"
+          "rest": "120 s",
+          "timer": 2,
+          "note": "Torso hacia delante. Desde la semana 4, última serie en rest-pause."
         },
         {
-          "id": "gemelos_pie_x",
-          "name": "Gemelos de pie",
-          "sets": 3,
-          "reps": "8-12",
+          "id": "bm-v-gemelos-prensa",
+          "name": "Gemelos en prensa",
+          "muscleGroup": "gemelos",
+          "sets": 4,
+          "reps": "10-15",
           "rir": "RIR 1",
-          "rest": "60-90”",
+          "rest": "90 s",
           "timer": 1.5,
-          "muscleGroup": "gemelos"
+          "note": "Rodillas estiradas, solo la punta del pie en la plataforma. Pausa de 2 s en el estiramiento."
         }
       ]
     },
     {
-      "title": "Jueves • Push (Delts)",
+      "title": "Sábado • Pecho y brazos",
       "exercises": [
         {
-          "id": "militar_manc",
-          "name": "Press militar sentado mancuernas",
-          "weightMode": "perDumbbell",
+          "id": "bm-s-press-maquina-convergente",
+          "name": "Press de pecho en máquina convergente",
+          "muscleGroup": "pecho",
           "sets": 3,
-          "reps": "6-10",
+          "reps": "8-12",
+          "rir": "RIR 1-2",
+          "rest": "150 s",
+          "timer": 2.5,
+          "note": "Recorrido completo y bajada controlada."
+        },
+        {
+          "id": "bm-s-press-cerrado-multipower",
+          "name": "Press cerrado en multipower",
+          "muscleGroup": "triceps",
+          "sets": 2,
+          "reps": "8-12",
           "rir": "RIR 2",
-          "rest": "2’",
-          "timer": 2,
-          "muscleGroup": "hombros"
-        },
-        {
-          "id": "press_cerrado_smith",
-          "name": "Press banca agarre cerrado Smith",
-          "sets": 2,
-          "reps": "8-12",
-          "rir": "RIR 1-2",
-          "rest": "2’",
-          "timer": 2,
-          "muscleGroup": "triceps"
-        },
-        {
-          "id": "laterales_j",
-          "name": "Elevación lateral",
-          "sets": 2,
-          "reps": "12-20",
-          "rir": "RIR 1",
-          "rest": "60-90”",
-          "timer": 1.5,
-          "muscleGroup": "hombros"
-        },
-        {
-          "id": "peck_deck",
-          "name": "Peck-deck",
-          "sets": 2,
-          "reps": "10-15",
-          "rir": "RIR 1",
-          "rest": "90”",
-          "timer": 1.5,
-          "muscleGroup": "pecho"
-        },
-        {
-          "id": "triceps_ez",
-          "name": "Extensión tríceps barra EZ",
-          "sets": 2,
-          "reps": "10-12",
-          "rir": "RIR 1",
-          "rest": "60-90”",
-          "timer": 1.5,
-          "muscleGroup": "triceps"
-        },
-        {
-          "id": "gemelos_sentado_j",
-          "name": "Gemelos sentado",
-          "sets": 3,
-          "reps": "12-20",
-          "rir": "RIR 1",
-          "rest": "60-90”",
-          "timer": 1.5,
-          "muscleGroup": "gemelos"
-        }
-      ]
-    },
-    {
-      "title": "Viernes • Pull (Espesor)",
-      "exercises": [
-        {
-          "id": "remo_t",
-          "name": "Remo T apoyado pecho",
-          "sets": 4,
-          "reps": "6-10",
-          "rir": "RIR 1-2",
-          "rest": "2-3’",
+          "rest": "150 s",
           "timer": 2.5,
-          "muscleGroup": "espalda"
+          "note": "Manos a la anchura de los hombros, codos cerca del cuerpo. Tríceps con carga alta."
         },
         {
-          "id": "remo_cable_neutro",
-          "name": "Remo cable neutro",
-          "sets": 3,
-          "reps": "8-12",
-          "rir": "RIR 1-2",
-          "rest": "2’",
-          "timer": 2,
-          "muscleGroup": "espalda"
-        },
-        {
-          "id": "reverse_fly",
-          "name": "Reverse fly",
+          "id": "bm-s-aperturas-abajo-arriba",
+          "name": "Aperturas en polea de abajo arriba",
+          "muscleGroup": "pecho",
           "sets": 2,
-          "reps": "15-20",
-          "rir": "RIR 0-1",
-          "rest": "60-90”",
-          "timer": 1.5,
-          "muscleGroup": "hombros"
-        },
-        {
-          "id": "curl_martillo",
-          "name": "Curl martillo",
-          "sets": 2,
-          "reps": "8-12",
-          "rir": "RIR 1",
-          "rest": "90”",
-          "timer": 1.5,
-          "muscleGroup": "biceps"
-        },
-        {
-          "id": "curl_inclinado",
-          "name": "Curl inclinado (estirado)",
-          "sets": 2,
-          "reps": "10-15",
-          "rir": "RIR 1",
-          "rest": "90”",
-          "timer": 1.5,
-          "muscleGroup": "biceps"
-        }
-      ]
-    },
-    {
-      "title": "Sábado • Pierna (Full)",
-      "exercises": [
-        {
-          "id": "hack_squat",
-          "name": "Hack squat / Pendulum",
-          "sets": 4,
-          "reps": "8-12",
-          "rir": "RIR 1-2",
-          "rest": "2-3’",
-          "timer": 2.5,
-          "note": "ROM Cómodo. Si duele: step-up bajo o belt squat.",
-          "muscleGroup": "cuadriceps"
-        },
-        {
-          "id": "prensa_pies_bajos",
-          "name": "Prensa 45° pies bajos",
-          "sets": 3,
-          "reps": "10-15",
-          "rir": "RIR 1-2",
-          "rest": "2-3’",
-          "timer": 2.5,
-          "note": "Hacer si se tolera (más quad).",
-          "muscleGroup": "cuadriceps"
-        },
-        {
-          "id": "extension_1.5",
-          "name": "Extensión 1.5 reps",
-          "sets": 3,
           "reps": "12-15",
           "rir": "RIR 1",
-          "rest": "90”",
+          "rest": "90 s",
           "timer": 1.5,
-          "note": "Recorrido: mitad → completo → mitad.",
-          "muscleGroup": "cuadriceps"
+          "note": "Poleas bajas; sube hacia la altura de la barbilla para el pecho alto."
         },
         {
-          "id": "curl_femoral_sentado",
-          "name": "Curl femoral sentado",
+          "id": "bm-s-curl-bayesiano",
+          "name": "Curl bayesiano en polea",
+          "muscleGroup": "biceps",
           "sets": 3,
           "reps": "10-15",
           "rir": "RIR 1",
-          "rest": "90”",
+          "rest": "90 s",
           "timer": 1.5,
-          "muscleGroup": "isquios"
+          "note": "De espaldas a la polea baja, brazo por detrás del cuerpo. Codo fijo. A una mano: anota el peso de la polea."
         },
         {
-          "id": "gemelos_pie_s",
-          "name": "Gemelos de pie",
-          "sets": 4,
-          "reps": "8-12",
+          "id": "bm-s-triceps-sobre-cabeza",
+          "name": "Extensión de tríceps sobre la cabeza en polea",
+          "muscleGroup": "triceps",
+          "sets": 3,
+          "reps": "10-15",
           "rir": "RIR 1",
-          "rest": "60-90”",
+          "rest": "90 s",
           "timer": 1.5,
-          "muscleGroup": "gemelos"
+          "note": "Brazos junto a la cabeza y estiramiento completo abajo."
+        },
+        {
+          "id": "bm-s-curl-inverso-ez",
+          "name": "Curl inverso con barra EZ",
+          "muscleGroup": "biceps",
+          "sets": 2,
+          "reps": "10-15",
+          "rir": "RIR 1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "Agarre prono (palmas hacia abajo). Braquiorradial y extensores: engrosa el antebrazo."
+        },
+        {
+          "id": "bm-s-lateral-maquina",
+          "name": "Elevación lateral en máquina",
+          "muscleGroup": "hombros",
+          "sets": 2,
+          "reps": "12-20",
+          "rir": "RIR 1",
+          "rest": "90 s",
+          "timer": 1.5,
+          "note": "Mantenimiento del deltoides lateral."
         }
       ]
     },
@@ -388,9 +479,9 @@ export const defaultRoutineData = {
       "title": "Domingo • Descanso",
       "exercises": [
         {
-          "id": "descanso",
-          "name": "Descanso Activo",
-          "note": "Paseo ligero, movilidad suave. El objetivo es recuperar bien para la próxima semana."
+          "id": "bm-d-descanso",
+          "name": "Día libre",
+          "note": "Hoy trabajas: no entrenes. Come como un día de entreno y duerme 8-9 h. Si te apetece, un paseo suave."
         }
       ]
     }

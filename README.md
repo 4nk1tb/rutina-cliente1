@@ -2,6 +2,10 @@
 
 Aplicación de entrenamiento para uso personal y entre amigos. Es una web instalable, con datos guardados en el dispositivo y sin servicios de pago, cuentas obligatorias ni APIs externas.
 
+## Plan personal incluido
+
+El plan original es **Bear Mode · Reinicio 6 días**: seis sesiones de lunes a sábado, con el domingo libre, para volver tras un parón con prioridad en brazos, pecho, cuádriceps y gemelos. Está en `default-routine.js`. `rutinas/bear-mode-reinicio.json` es la misma rutina para importarla desde **Perfil → Importar** sin esperar a una publicación. El porqué de cada ejercicio, las 6 semanas de progresión, las precauciones de rodilla, corazón y riñón y las fuentes están en [RUTINA.md](RUTINA.md).
+
 ## Arrancar en local
 
 Necesitas Node.js 24 o una versión compatible con los comandos de prueba. No hay dependencias que instalar.

@@ -183,7 +183,7 @@ function renderTrain() {
     <div class="workout-layout"><div class="exercise-list">${day.exercises.map((ex, exIndex) => exerciseHTML(ex, exIndex, active, activeSummary)).join('')}</div>
     <aside class="session-aside"><section class="panel session-hero"><div class="panel-heading"><span class="eyebrow">${active ? 'Sesión en curso' : 'Tu sesión'}</span><span class="badge">${active ? 'En marcha' : 'A tu ritmo'}</span></div><h2 class="session-title">${esc(title)}</h2><div class="stats-row">${stat('Series', `${done.length}<span class="muted">/${expected}</span>`)}${stat('Volumen', num(volume), ' kg')}</div><div class="session-progress"><div class="progress-track"><span style="transform:scaleX(${expected ? done.length / expected : 0})"></span></div><span class="caption">${active ? `${Math.round(expected ? done.length / expected * 100 : 0)} % completado` : 'Empieza para registrar tus series'}</span></div>${active ? `<div class="session-clock">${icon('clock')}<span id="session-elapsed">${durationLabel((Date.now() - new Date(active.startedAt)) / 1000)}</span></div><button class="btn subtle small" data-action="discard-session">Descartar sesión en curso</button>` : ''}</section>
     <section class="panel"><h2 class="section-title">Tu constancia</h2>${weekStrip()}<button class="btn subtle small" data-route="progress">Ver mi progreso ${icon('arrow')}</button></section>
-    <section class="panel"><label class="field">Notas ${active ? 'de esta sesión' : 'personales'}<textarea id="session-notes" placeholder="Cómo te has sentido, algo que recordar…" maxlength="5000">${esc(active?.notes ?? state.notes)}</textarea></label><details><summary>Mi plan de 6 semanas</summary><label class="field">Semana<select id="plan-week">${[1, 2, 3, 4, 5, 6].map(w => `<option value="${w}" ${Number(state.week) === w ? 'selected' : ''}>${w}${w === 4 ? ' · Descarga' : ''}</option>`).join('')}</select></label><p class="caption">${weekHint()}</p><p class="caption">RIR: repeticiones que te quedan antes del fallo. Tu rutina puede indicar un objetivo.</p></details></section></aside></div>`;
+    <section class="panel"><label class="field">Notas ${active ? 'de esta sesión' : 'personales'}<textarea id="session-notes" placeholder="Cómo te has sentido, algo que recordar…" maxlength="5000">${esc(active?.notes ?? state.notes)}</textarea></label><details><summary>Mi plan de 6 semanas</summary><label class="field">Semana<select id="plan-week">${[1, 2, 3, 4, 5, 6].map(w => `<option value="${w}" ${Number(state.week) === w ? 'selected' : ''}>${w}${weekLabel(w)}</option>`).join('')}</select></label><p class="caption">${weekHint()}</p><p class="caption">RIR: repeticiones que te quedan antes del fallo. Tu rutina puede indicar un objetivo.</p></details></section></aside></div>`;
   if (active) day.exercises.forEach((exercise, exerciseIndex) => {
     active.exercises.find(entry => entry.exerciseId === exercise.id)?.sets.forEach((set, setIndex) => {
       for (const [field, value] of Object.entries(invalidSetDrafts.get(set) || {})) {
@@ -198,8 +198,11 @@ function renderTrain() {
   if (tabBox.left < box.left) strip.scrollLeft -= box.left - tabBox.left;
   else if (tabBox.right > box.right) strip.scrollLeft += tabBox.right - box.right;
 }
+function weekLabel(week) {
+  return ({ 1: ' · Reintroducción', 2: ' · Reintroducción', 6: ' · Cierre' })[week] || '';
+}
 function weekHint() {
-  return ({ 1: 'Plan original: compuestos RIR 2–3 y accesorios RIR 1–2.', 2: 'Plan original: compuestos RIR 1–2 y accesorios RIR 0–1.', 3: 'Plan original: compuestos RIR 1–2 y accesorios RIR 0–1.', 4: 'Semana de descarga del plan original: menos series y mayor margen de esfuerzo.', 5: 'Últimas semanas del plan original. Compara tus cargas con las primeras sesiones.', 6: 'Cierra el bloque y revisa tu progreso antes de preparar el siguiente.' })[state.week] || '';
+  return ({ 1: 'Plan original: 2 series por ejercicio, RIR 3-4 y cargas muy por debajo de tus marcas antiguas. Sin rest-pause ni drop-sets.', 2: 'Plan original: una serie menos que lo indicado en los ejercicios de 3-4 series, RIR 2-3. Sin rest-pause ni drop-sets.', 3: 'Plan original: todas las series. Compuestos RIR 2 y aislamientos RIR 1-2.', 4: 'Plan original: compuestos RIR 1-2 y aislamientos RIR 0-1. Rest-pause o drop-set solo en la última serie de extensión, curl femoral y curl predicador en máquina.', 5: 'Plan original: igual que la semana 4. Intenta superar repeticiones o carga de la semana anterior.', 6: 'Cierra el bloque y revisa tu progreso. La semana 1 del siguiente bloque sirve de descarga.' })[state.week] || '';
 }
 function exerciseHTML(ex, exIndex, active, activeSummary = null) {
   const savedEx = active?.exercises.find(e => e.exerciseId === ex.id);
@@ -565,7 +568,7 @@ document.addEventListener('click', event => {
     case 'clear-history': confirmClearHistory(); break;
     case 'open-guide': onboarding.open(button.dataset.guideMode); break;
     case 'blank-routine': replaceRoutine({ name: 'Mi nueva rutina', days: [{ title: 'Día 1', exercises: [] }] }); break;
-    case 'original-routine': replaceRoutine({ ...structuredClone(defaultRoutineData), name: 'Plan original · Fuerza e hipertrofia' }); break;
+    case 'original-routine': replaceRoutine(structuredClone(defaultRoutineData)); break;
     case 'export': downloadJSON(button.dataset.kind); break;
     case 'export-recovery': {
       if (!storageRecovery?.raw) break;
